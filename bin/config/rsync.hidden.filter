@@ -1,0 +1,68 @@
+##############
+## Excludes ##
+##############
+
+# All hidden files and directories
+- .*
+# MeeGo cache files
+- /cities/diskcache/
+# Auto run files
+- /autorun.inf
+# Backup / tmp files
+- *~
+- #*
+- ,*
+- _$*
+- *$
+- *.bak
+- *.BAK
+- *.tmp
+- *.old
+- *.orig
+- *.rej
+- *.a
+- *.olb
+- *.o
+- *.obj
+- *.Z
+- *.elc
+- *.ln
+- *.cache
+- cache/
+- tmp/
+- thumbs/
+- RCS
+- SCCS
+- CVS
+- CVS.adm
+- RCSLOG
+- cvslog.*
+- tags
+- TAGS
+# Windows system files
+- Thumbs.db
+- desktop.ini
+- Desktop.ini
+- ehthumbs.db
+- $RECYCLE.BIN
+# Mac OS system files
+- __MACOSX/
+- .DS_Store
+
+##############
+## Includes ##
+##############
+
+# All image files (supported by kaa)
+#+ *.bmp
+#+ *.gif
+#+ *.im
+#+ *.jpg
+#+ *.jpe
+#+ *.jpeg
+#+ *.msp
+#+ *.pcx
+#+ *.png
+#+ *.ppm
+#+ *.tiff
+#+ *.xpm
