@@ -1,0 +1,50 @@
+###
+# Automount rules
+#
+# Some devices exposes multiple interfaces, hence the use of GOTO to avoid
+# multiple simultaneous connections to the same device.
+#
+
+#########
+# BLOCK #
+#########
+
+# env DEVTYPE should be "disk" or "partition"
+
+ACTION=="add",                        \
+	SUBSYSTEMS=="usb",            \
+	SUBSYSTEM=="block",           \
+	KERNEL=="sd[a-h]*",           \
+        GOTO="automount_rules_end",   \
+	RUN+="/memobox/bin/dispatcher.sh '$env{DEVTYPE}' '$kernel' '$env{DEVPATH}'"
+
+
+
+
+#########
+# IFUSE #
+#########
+
+ACTION=="add",                        \
+        ENV{ID_VENDOR}=="Apple_Inc.", \
+        GOTO="automount_rules_end",   \
+        RUN+="/memobox/bin/dispatcher.sh 'ifuse' '$env{ID_SERIAL_SHORT}' '$env{DEVPATH}'"
+
+
+
+
+#######
+# PTP #
+#######
+
+# env ID_GPHOTO2 == 1 set by /lib/udev/rules.d/60-libgphoto2-2.rules (unless set by the device itself)
+
+ACTION=="add",                      \
+	ENV{ID_GPHOTO2}=="1",       \
+        GOTO="automount_rules_end", \
+	RUN+="/memobox/bin/dispatcher.sh 'ptp' '$env{BUSNUM}_$env{DEVNUM}' '$env{DEVPATH}'"
+
+
+
+
+LABEL="automount_rules_end"
