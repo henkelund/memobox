@@ -23,19 +23,34 @@ DEVPATH="$3"
 
 # Programs w/ default options
 AUTOMOUNT="$(which bash) ""$CWD""/automount.sh"
-PARTED="$(which parted) --machine --script"
-GREP="$(which grep) --extended-regexp"
+PARTED="$(which parted)"
+GREP="$(which grep)"
+MKDIR="$(which mkdir)"
 
-# Prepare arguments for the automount scripe based on info from our udev rules
+$MKDIR -p "$(dirname ""$LOGFILE"")"
+
+# Check for required executables
+for var in PARTED GREP MKDIR
+do
+    exe="$(eval echo \$$var)"
+    if [ -z "$exe" ]
+    then
+        echo "Fatal: $var is not installed" >> "$LOGFILE" 2>&1
+        exit 1
+    fi
+done
+
+# Prepare arguments for the automount script based on info from our udev rules
 ARGS=""
 case "$TYPE" in
     "disk")
         # Check if disk is partitioned, exit if so
-        $PARTED "$DEVNAME" print | $GREP "^[0-9]+\:" > /dev/null 2>&1
+        $PARTED --machine --script "$DEVNAME" print \
+            | $GREP --extended-regexp "^[0-9]+\:" > /dev/null 2>&1
         if [ $? -eq 0 ]; then exit 3; fi
         ;&
     "partition")
-        # Unpartitioned disk and partitions are mounted in the same way so we
+        # Unpartitioned disks and partitions are mounted in the same way so we
         # dispatch the events as common type "block"
         TYPE="block"
         ;;
