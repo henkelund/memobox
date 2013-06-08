@@ -86,3 +86,14 @@ function backupdir
     echo "$dir"
     return 0
 }
+
+###
+# Check if device is connected
+#
+is_connected()
+{
+    path="$(devpath ""$1"")"
+    if [ -z "$path" ]; then echo 0; return 1; fi
+    echo 1
+    return 0
+}

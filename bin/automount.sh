@@ -18,6 +18,7 @@ LABEL="$2"
 MNTPNT="/media/$LABEL"
 COUNT=0
 MAX=100
+if [ -z $DEVPATH ]; then DEVPATH="$3"; fi
 
 # Programs used in this script
 CHKMNT="$(which mountpoint)"
@@ -48,6 +49,7 @@ do
 done
 
 # Include some helper functions
+export DEVPATH
 source "$CWD/synchelper.sh"
 
 # Check if data dir is a mountpoint
@@ -64,8 +66,7 @@ function is_mounted
 
 function _cleanup
 {
-    echo "Cleaning up"
-    echo -e "\tUnmounting $MNTPNT"
+    echo "Cleaning up.. Unmounting $MNTPNT"
     $UMOUNT "$MNTPNT" > /dev/null 2>&1
     while [ $(is_mounted) -eq 1 ];
     do
@@ -112,17 +113,33 @@ do
             ;;
         "ptp")
             # Udev gives us a filename friendly label: {$BUSNUM}_{$DEVNUM}
-            # If we replace the underscore w/ a comma we get a port numeber
+            # If we replace the underscore w/ a comma we get a port number
             port="$(echo ""$LABEL"" | $SED --regexp-extended 's/[^0-9]+/,/g')"
             $GPHOTOFS --port=usb:"$port" -o nonempty "$MNTPNT"
+            # If the device is busy gphotofs will still claim a successfull
+            # mount but trying to ls the mountpoint will reveal the error.
+            # This can be due to a file browser conflict and should not be
+            # a problem in a headless environment.
+            ls "$MNTPNT" > /dev/null 2>&1 || { echo "I/O Error" 1>&2; _cleanup; }
             ;;
         *)
             echo "Unrecognized mount type '$MNTTYPE', exiting" 1>&2
             exit 5
             ;;
     esac
+
+    # Check for successful mount
     if [ $(is_mounted) -eq 1 ]; then break; fi
+
     $SLEEP 3
+
+    # Check for disconnect
+    if [ $(is_connected) -eq 0 ]
+    then
+        echo "Device disconnected while trying to mount" 1>&2
+        exit 12
+    fi
+
     # Some other instance of this script could potentially
     # snatch the mount point while we were sleeping
 #    if [ $(is_mounted) -eq 0 ]
@@ -131,6 +148,7 @@ do
 #        trap - EXIT INT TERM
 #        exit 6
 #    fi
+
     COUNT=$(($COUNT + 1))
 done
 
@@ -174,9 +192,9 @@ then
     echo "Device disconnected during transfer (1)" 2>&1
     exit 9
 fi
-# check if source folder is empty
+# check if device looks disconnected
 SRC_LS_CNT=$(ls -1 "$MNTPNT" 2>/dev/null | wc -l)
-if [ $SRC_LS_CNT -eq 0 ]
+if [ $(is_connected) -eq 0 -o $SRC_LS_CNT -eq 0 ]
 then
     echo "Device disconnected during transfer (2)" 1>&2
     exit 10
