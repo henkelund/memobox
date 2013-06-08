@@ -1,0 +1,12 @@
+###
+# A list of programs / packages
+# This file is parsed by the /bin/installer.sh script
+# If the right column value is missing <pkg name> = <program name> is assumed.
+#
+
+# Mount / device info programs
+pmount
+ifuse
+idevicepair     libimobiledevice-utils
+gphotofs
+parted
