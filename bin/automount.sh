@@ -22,6 +22,8 @@ MAX=100
 # Programs used in this script
 CHKMNT="$(which mountpoint)"
 PMOUNT="$(which pmount) --read-only"
+IFUSE="$(which ifuse)"
+IDEVICEPAIR="$(which idevicepair)"
 UMOUNT="$(which umount)"
 MKDIR="$(which mkdir) -p"
 SLEEP="$(which sleep) 3"
@@ -36,7 +38,7 @@ source "$CWD/synchelper.sh"
 
 # Check if data dir is a mountpoint
 $CHKMNT -q "$DATADIR"
-if [ $? -ne 0 ]; then echo "$DATADIR is not a mounted" 1>&2; exit 2; fi
+if [ $? -ne 0 ]; then echo "$DATADIR is not a mounted volume" 1>&2; exit 2; fi
 
 function is_mounted
 {
@@ -87,9 +89,14 @@ do
         "block")
             $PMOUNT "$LABEL" "$LABEL"
             ;;
-        #TODO:
-        #$IFUSE -o nonempty "$MNTPNT"
-        #$GPHOTO" "$MNTPNT"
+        "ifuse")
+            $IDEVICEPAIR --uuid "$LABEL" unpair      \
+                && $IDEVICEPAIR --uuid "$LABEL" pair \
+                && $IFUSE "$MNTPNT" --uuid "$LABEL" -o nonempty
+            ;;
+        "ptp")
+            wait
+            ;&
         *)
             echo "Unrecognized mount type '$MNTTYPE', exiting" 1>&2
             exit 5

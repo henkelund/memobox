@@ -17,38 +17,32 @@ cd "$(dirname "$0")"
 CWD="$(pwd)"
 PATH="$PATH:$CWD"
 LOGFILE="$CWD/../log/automount.log"
+TYPE="$1"
+LABEL="$2"
+DEVPATH="$3"
 
 # Programs w/ default options
 AUTOMOUNT="$(which bash) ""$CWD""/automount.sh"
 PARTED="$(which parted) --machine --script"
 GREP="$(which grep) --extended-regexp"
 
-# Prepare arguments for the automount script based on info from our udev rules
+# Prepare arguments for the automount scripe based on info from our udev rules
 ARGS=""
-case "$1" in
+case "$TYPE" in
     "disk")
         # Check if disk is partitioned, exit if so
         $PARTED "$DEVNAME" print | $GREP "^[0-9]+\:" > /dev/null 2>&1
         if [ $? -eq 0 ]; then exit 3; fi
         ;&
     "partition")
-        # $2 given by the udev rule is the $kernel var, i.e. sdb1
-        ARGS="block $2"
+        # Unpartitioned disk and partitions are mounted in the same way so we
+        # dispatch the events as common type "block"
+        TYPE="block"
         ;;
-#TODO:
-#    "mtp")
-#        ;&
-#    "ptp")
-#        ...
-#        ;;
-#    "ifuse")
-#        ... "$DEVPATH"
-#        ;;
 esac
 
-if [ -z "$ARGS" ]; then exit 4; fi
-
-$AUTOMOUNT $ARGS >> "$LOGFILE" 2>&1
+export DEVPATH
+$AUTOMOUNT "$TYPE" "$LABEL" "$DEVPATH" $ARGS >> "$LOGFILE" 2>&1
 echo "automount.sh returned $?" >> "$LOGFILE"
 
 exit 0
