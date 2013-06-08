@@ -24,6 +24,7 @@ CHKMNT="$(which mountpoint)"
 PMOUNT="$(which pmount)"
 IFUSE="$(which ifuse)"
 IDEVICEPAIR="$(which idevicepair)"
+GPHOTOFS="$(which gphotofs)"
 UMOUNT="$(which umount)"
 MKDIR="$(which mkdir)"
 SLEEP="$(which sleep)"
@@ -32,10 +33,11 @@ FIND="$(which find)"
 XARGS="$(which xargs)"
 CHMOD="$(which chmod)"
 MV="$(which mv)"
+SED="$(which sed)"
 
 # Check for required executables
 for var in CHKMNT PMOUNT IFUSE IDEVICEPAIR UMOUNT MKDIR SLEEP RSYNC FIND XARGS \
-           CHMOD MV
+           CHMOD MV SED GPHOTOFS
 do
     exe="$(eval echo \$$var)"
     if [ -z "$exe" ]
@@ -109,8 +111,11 @@ do
                 && $IFUSE "$MNTPNT" --uuid "$LABEL" -o nonempty > /dev/null
             ;;
         "ptp")
-            wait
-            ;&
+            # Udev gives us a filename friendly label: {$BUSNUM}_{$DEVNUM}
+            # If we replace the underscore w/ a comma we get a port numeber
+            port="$(echo ""$LABEL"" | $SED --regexp-extended 's/[^0-9]+/,/g')"
+            $GPHOTOFS --port=usb:"$port" -o nonempty "$MNTPNT"
+            ;;
         *)
             echo "Unrecognized mount type '$MNTTYPE', exiting" 1>&2
             exit 5
