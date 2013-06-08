@@ -21,24 +21,36 @@ MAX=100
 
 # Programs used in this script
 CHKMNT="$(which mountpoint)"
-PMOUNT="$(which pmount) --read-only"
+PMOUNT="$(which pmount)"
 IFUSE="$(which ifuse)"
 IDEVICEPAIR="$(which idevicepair)"
 UMOUNT="$(which umount)"
-MKDIR="$(which mkdir) -p"
-SLEEP="$(which sleep) 3"
+MKDIR="$(which mkdir)"
+SLEEP="$(which sleep)"
 RSYNC="$(which rsync)"
 FIND="$(which find)"
 XARGS="$(which xargs)"
 CHMOD="$(which chmod)"
 MV="$(which mv)"
 
+# Check for required executables
+for var in CHKMNT PMOUNT IFUSE IDEVICEPAIR UMOUNT MKDIR SLEEP RSYNC FIND XARGS \
+           CHMOD MV
+do
+    exe="$(eval echo \$$var)"
+    if [ -z "$exe" ]
+    then
+        echo "Fatal: $var is not installed" 2>&1
+        exit 11
+    fi
+done
+
 # Include some helper functions
 source "$CWD/synchelper.sh"
 
 # Check if data dir is a mountpoint
-$CHKMNT -q "$DATADIR"
-if [ $? -ne 0 ]; then echo "$DATADIR is not a mounted volume" 1>&2; exit 2; fi
+#$CHKMNT -q "$DATADIR"
+#if [ $? -ne 0 ]; then echo "$DATADIR is not a mounted volume" 1>&2; exit 2; fi
 
 function is_mounted
 {
@@ -73,7 +85,7 @@ then
     echo "Could not complete initial cleanup, exiting" 1>&2
     exit 3
 fi
-$MKDIR "$MNTPNT"
+$MKDIR -p "$MNTPNT"
 if [ $? -ne 0 ]
 then
     echo "Could not create mount point" 1>&2
@@ -87,7 +99,7 @@ do
     echo "Mount attempt $(($COUNT + 1))/$MAX"
     case $MNTTYPE in
         "block")
-            $PMOUNT "$LABEL" "$LABEL"
+            $PMOUNT --read-only "$LABEL" "$LABEL"
             ;;
         "ifuse")
             $IDEVICEPAIR --uuid "$LABEL" unpair      \
@@ -103,7 +115,7 @@ do
             ;;
     esac
     if [ $(is_mounted) -eq 1 ]; then break; fi
-    $SLEEP
+    $SLEEP 3
     # Some other instance of this script could potentially
     # snatch the mount point while we were sleeping
 #    if [ $(is_mounted) -eq 0 ]
@@ -131,7 +143,7 @@ then
     exit 8
 fi
 TMPDEST="$DEST/tmp"
-$MKDIR "$TMPDEST"
+$MKDIR -p "$TMPDEST"
 
 # Uncomment to not rely on rsync filters and only copy camera files instead
 #if [ -d "$SRC/DCIM" ]; then SRC="$SRC/DCIM"; fi
@@ -174,7 +186,7 @@ $FIND "$TMPDEST"    \
         -0 $CHMOD 755
 
 FINALDEST="$DEST/$(date +"%Y/%m/%d")"
-$MKDIR "$FINALDEST"
+$MKDIR -p "$FINALDEST"
 $MV "$TMPDEST" "$FINALDEST/$(date +"%H%M%S")"
 
 trap - EXIT INT TERM
