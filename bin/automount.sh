@@ -63,6 +63,8 @@ function is_mounted
 function _cleanup
 {
     echo "Cleaning up"
+    echo -e "\tUnmounting $MNTPNT"
+    $UMOUNT "$MNTPNT" > /dev/null 2>&1
     while [ $(is_mounted) -eq 1 ];
     do
         echo -e "\tUnmounting $MNTPNT"
@@ -99,12 +101,12 @@ do
     echo "Mount attempt $(($COUNT + 1))/$MAX"
     case $MNTTYPE in
         "block")
-            $PMOUNT --read-only "$LABEL" "$LABEL"
+            $PMOUNT --read-only "$LABEL" "$LABEL" > /dev/null
             ;;
         "ifuse")
-            $IDEVICEPAIR --uuid "$LABEL" unpair      \
-                && $IDEVICEPAIR --uuid "$LABEL" pair \
-                && $IFUSE "$MNTPNT" --uuid "$LABEL" -o nonempty
+            $IDEVICEPAIR --uuid "$LABEL" unpair > /dev/null      \
+                && $IDEVICEPAIR --uuid "$LABEL" pair > /dev/null \
+                && $IFUSE "$MNTPNT" --uuid "$LABEL" -o nonempty > /dev/null
             ;;
         "ptp")
             wait
