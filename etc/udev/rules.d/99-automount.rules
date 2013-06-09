@@ -16,7 +16,7 @@ ACTION=="add",                        \
 	SUBSYSTEM=="block",           \
 	KERNEL=="sd[a-h]*",           \
         GOTO="automount_rules_end",   \
-	RUN+="/memobox/bin/dispatcher.sh '$env{DEVTYPE}' '$kernel' '$env{DEVPATH}'"
+	RUN+="#{DISPATCHER} '$env{DEVTYPE}' '$kernel' '$env{DEVPATH}'"
 
 
 
@@ -28,7 +28,7 @@ ACTION=="add",                        \
 ACTION=="add",                        \
         ENV{ID_VENDOR}=="Apple_Inc.", \
         GOTO="automount_rules_end",   \
-        RUN+="/memobox/bin/dispatcher.sh 'ifuse' '$env{ID_SERIAL_SHORT}' '$env{DEVPATH}'"
+        RUN+="#{DISPATCHER} 'ifuse' '$env{ID_SERIAL_SHORT}' '$env{DEVPATH}'"
 
 
 
@@ -42,7 +42,7 @@ ACTION=="add",                        \
 ACTION=="add",                      \
 	ENV{ID_GPHOTO2}=="1",       \
         GOTO="automount_rules_end", \
-	RUN+="/memobox/bin/dispatcher.sh 'ptp' '$env{BUSNUM}_$env{DEVNUM}' '$env{DEVPATH}'"
+	RUN+="#{DISPATCHER} 'ptp' '$env{BUSNUM}_$env{DEVNUM}' '$env{DEVPATH}'"
 
 
 

@@ -6,11 +6,17 @@
 # A modern Debian based GNU/Linux distribution is assumed.
 #
 
+printc()  { echo -ne "\e[$2m$1\e[0m"; }
+notice()  { printc "$1" "1;34"; }
+success() { printc "$1" "0;32"; }
+error()   { printc "$1" "0;31"; }
+warning() { printc "$1" "1;33"; }
+
 ############################
 # CHECK FOR INSTALLER DEPS #
 ############################
 
-echo "Checking installer dependencies"
+echo -n "Checking installer dependencies.. "
 
 PKG_INSTALLER_NAME="apt-get"
 PKG_INSTALLER="$(which ""$PKG_INSTALLER_NAME"")"
@@ -24,18 +30,22 @@ CUT_NAME="cut"
 CUT="$(which ""$CUT_NAME"")"
 GREP_NAME="grep"
 GREP="$(which ""$GREP_NAME"")"
+CAT_NAME="cat"
+CAT="$(which ""$CAT_NAME"")"
+TEE_NAME="tee"
+TEE="$(which ""$TEE_NAME"")"
 SUDO=""
 if [ $EUID -ne 0 ]
 then
     SUDO="$(which sudo)"
     if [ -z "$SUDO" ]
     then
-        echo "Please install sudo or run as root" 1>&2
+        error "Please install sudo or run as root\n" 1>&2
         exit 1
     fi
 fi
 
-for var in PKG_INSTALLER PKG_SEARCHER PKG_MANAGER SED CUT GREP
+for var in PKG_INSTALLER PKG_SEARCHER PKG_MANAGER SED CUT GREP CAT TEE
 do
     exe="$(eval echo \$$var)"
     if [ -z "$exe" ]
@@ -46,14 +56,18 @@ do
     fi
 done
 
+success "[OK]\n";
+
 ######################
 # SET UP DIRECTORIES #
 ######################
 
-echo "Setting up directory structure"
+echo -n "Setting up directory structure.. "
 
 BASE_DIR="$(cd ""$(dirname ""$0"")/.."" && pwd)"
+BIN_DIR="$BASE_DIR/bin"
 DOC_DIR="$BASE_DIR/doc"
+ETC_DIR="$BASE_DIR/etc"
 LOG_DIR="$BASE_DIR/log"
 DATA_DIR="$BASE_DIR/data"
 
@@ -72,11 +86,13 @@ do
     fi
 done
 
+success "[OK]\n";
+
 ########################
 # INSTALL DEPENDENCIES #
 ########################
 
-echo "Checking system dependencies"
+echo -n "Checking system dependencies.. "
 
 DEPS_FILE="$DOC_DIR/dependencies"
 NORM_WS="s/[ \t]+/ /"
@@ -108,7 +124,7 @@ done < "$DEPS_FILE"
 
 for package in $MISSING_PKGS
 do
-    echo -en "Package $package is required.\n\t"
+    notice "\nPackage $package is required.\n\t"
     $PKG_SEARCHER search "$package" | $GREP --extended-regexp "^$package - "
     echo -en "\tType YES to install it using $PKG_INSTALLER_NAME: "
     read proceed
@@ -116,25 +132,48 @@ do
 
     if [ "$proceed" != "YES" ]
     then
-        echo "Interpreting vague answer as NO."
-        echo "Exiting.."
+        error "Interpreting vague answer as NO.\n"
+        error "Exiting\n"
         exit 5
     fi
 
-    $SUDO $PKG_INSTALLER install "$package"
+    $SUDO $PKG_INSTALLER install "$package" \
+        || { error "Error installing $package\n"; exit 6; }
+
+    success "$package successfully installed\n"
 
 done
+
+success "[OK]\n";
 
 ####################
 # SETUP UDEV RULES #
 ####################
 
-#TODO
+echo -n "Installing udev rules.. "
+
+dispatcher="$BIN_DIR/dispatcher.sh"
+template_file="$ETC_DIR/udev/rules.d/99-automount.rules"
+template="$($CAT $template_file)"
+rule_file="/etc/udev/rules.d/$(basename ""$template_file"")"
+
+if [ -f "$rule_file" ]
+then
+    rule_backup="$rule_file.$(date +""%s"")"
+    warning "\nRule file already exists, backing it up as $rule_backup\n"
+    $SUDO mv "$rule_file" "$rule_backup"
+fi
+
+echo "${template//#\{DISPATCHER\}/$dispatcher}" \
+    | $SUDO $TEE "$rule_file" > /dev/null
+
+$SUDO service udev reload > /dev/null 2>&1
+if [ $? -eq 0 ]; then success "[OK]\n"; else error "[FAIL]\n"; fi
 
 #########################
 # INSTALLATION COMPLETE #
 #########################
 
-echo "Installation complete"
+success "Installation complete!\n"
 
 exit 0
