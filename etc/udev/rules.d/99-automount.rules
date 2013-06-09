@@ -27,6 +27,7 @@ ACTION=="add",                        \
 
 ACTION=="add",                        \
         ENV{ID_VENDOR}=="Apple_Inc.", \
+        SUBSYSTEM=="usb",             \
         GOTO="automount_rules_end",   \
         RUN+="#{DISPATCHER} 'ifuse' '$env{ID_SERIAL_SHORT}' '$env{DEVPATH}'"
 
