@@ -66,7 +66,7 @@ function is_mounted
 
 function _cleanup
 {
-    echo "Cleaning up.. Unmounting $MNTPNT"
+    echo "[$$] Cleaning up.. Unmounting $MNTPNT"
     $UMOUNT "$MNTPNT" > /dev/null 2>&1
     while [ $(is_mounted) -eq 1 ];
     do
@@ -83,17 +83,17 @@ function _cleanup
 }
 
 # Make sure mount point exists and is free
-echo "$MNTTYPE $LABEL plugged in, initial cleanup:"
+echo "[$$] $MNTTYPE $LABEL plugged in, initial cleanup:"
 _cleanup
 if [ $? -ne 0 ]
 then
-    echo "Could not complete initial cleanup, exiting" 1>&2
+    echo "[$$] Could not complete initial cleanup, exiting" 1>&2
     exit 3
 fi
 $MKDIR -p "$MNTPNT"
 if [ $? -ne 0 ]
 then
-    echo "Could not create mount point" 1>&2
+    echo "[$$] Could not create mount point" 1>&2
     exit 4
 fi
 trap _cleanup EXIT INT TERM
@@ -101,7 +101,7 @@ trap _cleanup EXIT INT TERM
 # Time to do what we came here for
 while [ $COUNT -lt $MAX ]
 do
-    echo "Mount attempt $(($COUNT + 1))/$MAX"
+    echo "[$$] Mount attempt $(($COUNT + 1))/$MAX"
     case $MNTTYPE in
         "block")
             $PMOUNT --read-only "$LABEL" "$LABEL" > /dev/null
@@ -120,10 +120,10 @@ do
             # mount but trying to ls the mountpoint will reveal the error.
             # This can be due to a file browser conflict and should not be
             # a problem in a headless environment.
-            ls "$MNTPNT" > /dev/null 2>&1 || { echo "I/O Error" 1>&2; _cleanup; }
+            ls "$MNTPNT" > /dev/null 2>&1 || { echo "[$$] I/O Error" 1>&2; _cleanup; }
             ;;
         *)
-            echo "Unrecognized mount type '$MNTTYPE', exiting" 1>&2
+            echo "[$$] Unrecognized mount type '$MNTTYPE', exiting" 1>&2
             exit 5
             ;;
     esac
@@ -136,7 +136,7 @@ do
     # Check for disconnect
     if [ $(is_connected) -eq 0 ]
     then
-        echo "Device disconnected while trying to mount" 1>&2
+        echo "[$$] Device disconnected while trying to mount" 1>&2
         exit 12
     fi
 
@@ -155,7 +155,7 @@ done
 # Check if the loop was able to mount
 if [ $(is_mounted) -ne 1 ]
 then
-    echo "Failed to mount after $COUNT attempts" 1>&2
+    echo "[$$] Failed to mount after $COUNT attempts" 1>&2
     exit 7
 fi
 
@@ -173,7 +173,7 @@ $MKDIR -p "$TMPDEST"
 # Uncomment to not rely on rsync filters and only copy camera files instead
 #if [ -d "$SRC/DCIM" ]; then SRC="$SRC/DCIM"; fi
 
-echo "Starting transfer from $SRC to $TMPDEST"
+echo "[$$] Starting transfer from $SRC to $TMPDEST"
 $RSYNC                                               \
     --archive                                        \
     --no-owner                                       \
@@ -186,17 +186,17 @@ $RSYNC                                               \
 err=$?
 if [ $err -eq 23 ]
 then
-    echo "Transfer had non-fatal errors" 2>&1
+    echo "[$$] Transfer had non-fatal errors" 2>&1
 elif [ $err -ne 0 ]
 then
-    echo "Device disconnected during transfer (1)" 2>&1
+    echo "[$$] Device disconnected during transfer (1)" 2>&1
     exit 9
 fi
 # check if device looks disconnected
 SRC_LS_CNT=$(ls -1 "$MNTPNT" 2>/dev/null | wc -l)
 if [ $(is_connected) -eq 0 -o $SRC_LS_CNT -eq 0 ]
 then
-    echo "Device disconnected during transfer (2)" 1>&2
+    echo "[$$] Device disconnected during transfer (2)" 1>&2
     exit 10
 fi
 
