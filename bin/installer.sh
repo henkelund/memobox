@@ -107,7 +107,7 @@ do
     program=$(echo "$line" | $CUT --delimiter=' ' --fields=1)
     package=$(echo "$line" | $CUT --only-delimited --delimiter=' ' --fields=2)
     if [ -z "$program" ]; then continue; fi # empty / invalid line
-    if [ -n "$(which ""$program"")" ]; then continue; fi # already installed
+    if [ -n "$($SUDO which ""$program"")" ]; then continue; fi # already installed
     if [ -z "$package" ]; then package="$program"; fi
 
     echo "$INST_PKGS" | \
