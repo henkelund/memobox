@@ -26,6 +26,7 @@ PMOUNT="$(which pmount)"
 IFUSE="$(which ifuse)"
 IDEVICEPAIR="$(which idevicepair)"
 GPHOTOFS="$(which gphotofs)"
+MTPFS="$(which go-mtpfs)"
 UMOUNT="$(which umount)"
 MKDIR="$(which mkdir)"
 SLEEP="$(which sleep)"
@@ -111,11 +112,28 @@ do
             $IDEVICEPAIR --uuid "$LABEL" pair > /dev/null
             $IFUSE "$MNTPNT" --uuid "$LABEL" -o nonempty > /dev/null
             ;;
+        "mtp")
+
+            if [ -n "$MTPFS" ]
+            then
+                # go-mtpfs cannot find fusermount unless we give it our $PATH
+                export PATH
+                $MTPFS "$MNTPNT" > /dev/null 2>&1 &
+                # Check w/ ls cause go-mtpfs can mount an empty fs and still return 0
+                if [ $(ls "$MNTPNT" -1 2>/dev/null | wc -l) -eq 0 ]
+                then
+                    _cleanup
+                fi
+            fi
+
+            #TODO: Handle fall-through for devices that can do both mtp & ptp
+
+            ;;
         "ptp")
             # Udev gives us a filename friendly label: {$BUSNUM}_{$DEVNUM}
             # If we replace the underscore w/ a comma we get a port number
             port="$(echo ""$LABEL"" | $SED --regexp-extended 's/[^0-9]+/,/g')"
-            $GPHOTOFS --port=usb:"$port" -o nonempty "$MNTPNT"
+            $GPHOTOFS --port=usb:"$port" -o nonempty "$MNTPNT" > /dev/null
             # If the device is busy gphotofs will still claim a successfull
             # mount but trying to ls the mountpoint will reveal the error.
             # This can be due to a file browser conflict and should not be
@@ -203,12 +221,12 @@ fi
 $FIND "$TMPDEST"    \
     -type f -print0 \
     | $XARGS        \
-        -0 $CHMOD 644
+        -0 $CHMOD 644 2>/dev/null
 
 $FIND "$TMPDEST"    \
     -type d -print0 \
     | $XARGS        \
-        -0 $CHMOD 755
+        -0 $CHMOD 755 2>/dev/null
 
 FINALDEST="$DEST/$(date +"%Y/%m/%d")"
 $MKDIR -p "$FINALDEST"

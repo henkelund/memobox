@@ -35,6 +35,19 @@ ACTION=="add",                        \
 
 
 #######
+# MTP #
+#######
+
+ACTION=="add",                      \
+        ENV{ID_MTP_DEVICE}=="1",    \
+        SUBSYSTEM=="usb",           \
+        GOTO="automount_rules_end", \
+        RUN+="#{DISPATCHER} 'mtp' '$env{BUSNUM}_$env{DEVNUM}' '$env{DEVPATH}'"
+
+
+
+
+#######
 # PTP #
 #######
 
@@ -42,6 +55,7 @@ ACTION=="add",                        \
 
 ACTION=="add",                      \
 	ENV{ID_GPHOTO2}=="1",       \
+        SUBSYSTEM=="usb",           \
         GOTO="automount_rules_end", \
 	RUN+="#{DISPATCHER} 'ptp' '$env{BUSNUM}_$env{DEVNUM}' '$env{DEVPATH}'"
 
