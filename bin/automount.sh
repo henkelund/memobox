@@ -118,8 +118,9 @@ do
             then
                 # go-mtpfs cannot find fusermount unless we give it our $PATH
                 export PATH
-                $MTPFS "$MNTPNT" > /dev/null 2>&1 &
-                # Check w/ ls cause go-mtpfs can mount an empty fs and still return 0
+                $MTPFS "$MNTPNT" &
+		sleep 5
+		# Check w/ ls cause go-mtpfs can mount an empty fs and still return 0
                 if [ $(ls "$MNTPNT" -1 2>/dev/null | wc -l) -eq 0 ]
                 then
                     _cleanup
@@ -190,6 +191,12 @@ $MKDIR -p "$TMPDEST"
 
 # Uncomment to not rely on rsync filters and only copy camera files instead
 #if [ -d "$SRC/DCIM" ]; then SRC="$SRC/DCIM"; fi
+#if [ -d "$SRC/Phone/DCIM" ]; then SRC="$SRC/Phone/DCIM"; fi
+DCIMDIR="$(findDCIM $MNTPNT)"
+if [ -d "$DCIMDIR/DCIM" ]; then SRC="$DCIMDIR/DCIM"; fi
+echo "$SRC"
+
+echo "[$$] DEBUG ($SRC)" 1>&2
 
 echo "[$$] Starting transfer from $SRC to $TMPDEST"
 $RSYNC                                               \
@@ -207,7 +214,7 @@ then
     echo "[$$] Transfer had non-fatal errors" 2>&1
 elif [ $err -ne 0 ]
 then
-    echo "[$$] Device disconnected during transfer (1)" 2>&1
+    echo "[$$] Device disconnected during transfer (1) [$err]" 2>&1
     exit 9
 fi
 # check if device looks disconnected
@@ -228,7 +235,7 @@ $FIND "$TMPDEST"    \
     | $XARGS        \
         -0 $CHMOD 755 2>/dev/null
 
-FINALDEST="$DEST/$(date +"%Y/%m/%d")"
+FINALDEST="$DEST/backups/$(date +"%Y/%m/%d")"
 $MKDIR -p "$FINALDEST"
 $MV "$TMPDEST" "$FINALDEST/$(date +"%H%M%S")"
 
