@@ -119,8 +119,8 @@ do
                 # go-mtpfs cannot find fusermount unless we give it our $PATH
                 export PATH
                 $MTPFS "$MNTPNT" &
-		sleep 5
-		# Check w/ ls cause go-mtpfs can mount an empty fs and still return 0
+                sleep 5
+                # Check w/ ls cause go-mtpfs can mount an empty fs and still return 0
                 if [ $(ls "$MNTPNT" -1 2>/dev/null | wc -l) -eq 0 ]
                 then
                     _cleanup
@@ -191,12 +191,6 @@ $MKDIR -p "$TMPDEST"
 
 # Uncomment to not rely on rsync filters and only copy camera files instead
 #if [ -d "$SRC/DCIM" ]; then SRC="$SRC/DCIM"; fi
-#if [ -d "$SRC/Phone/DCIM" ]; then SRC="$SRC/Phone/DCIM"; fi
-DCIMDIR="$(findDCIM $MNTPNT)"
-if [ -d "$DCIMDIR/DCIM" ]; then SRC="$DCIMDIR/DCIM"; fi
-echo "$SRC"
-
-echo "[$$] DEBUG ($SRC)" 1>&2
 
 echo "[$$] Starting transfer from $SRC to $TMPDEST"
 $RSYNC                                               \
