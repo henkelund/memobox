@@ -113,6 +113,7 @@ do
     echo "$INST_PKGS" | \
         $GREP --extended-regexp "^$package install\$" > /dev/null \
         && {
+            if [ "$program" == "-" ]; then continue; fi
             echo "$program not found but pkg $package is already installed" 1>&2
             echo "please resolve this manually" 1>&2
             exit 4
