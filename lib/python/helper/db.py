@@ -17,7 +17,8 @@ class DBHelper(object):
     def __del__(self):
         """Destructor"""
 
-        self._conn.close()
+        if self._conn is not None:
+            self._conn.close()
 
     @staticmethod
     def _row_factory(cursor, row):
@@ -27,6 +28,19 @@ class DBHelper(object):
         for key, col in enumerate(cursor.description):
             data[col[0]] = row[key]
         return data
+
+    @staticmethod
+    def quote_identifier(identifier, alias = None):
+        """Prepare a string for SQLite identifier use"""
+
+        quote = lambda string: '"%s"' % string.replace('"', '""')
+        parts = map(quote, identifier.split('.'))
+        id_str = '.'.join(parts)
+
+        if alias is not None:
+            id_str += ' AS ' + quote(alias)
+
+        return id_str
 
     def get_connection(self):
         """Retrive current SQLite connection"""
@@ -47,4 +61,8 @@ class DBHelper(object):
             self._conn.cursor().execute('PRAGMA foreign_keys = ON')
 
         return self
+
+    def query(self, sql, bind = []):
+        """Execute the given SQL and return a sqlite3.Cursor object"""
+        return self._conn.cursor().execute(sql, bind)
 
