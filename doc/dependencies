@@ -10,3 +10,5 @@ ifuse
 idevicepair     libimobiledevice-utils
 gphotofs
 parted
+python
+
