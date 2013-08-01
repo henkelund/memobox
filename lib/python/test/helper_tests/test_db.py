@@ -8,7 +8,20 @@ class TestDBHelper(unittest.TestCase):
 
     def setUp(self):
         """Initiate DBHelper singleton"""
+
         self._helper = DBHelper()
+        self._helper.query("""
+            CREATE TABLE 'test_table' (
+                col_a INTEGER PRIMARY KEY AUTOINCREMENT,
+                col_b INTEGER
+            )
+        """)
+
+    def tearDown(self):
+        """Clean up after test"""
+
+        if self._helper.get_connection() is not None:
+            self._helper.query("DROP TABLE 'test_table'")
 
     def test_set_db(self):
         """Test DBHelper.set_db"""
@@ -31,4 +44,15 @@ class TestDBHelper(unittest.TestCase):
         self.assertIsInstance(cursor, Cursor)
         self.assertIn('date', cursor.fetchone().keys())
         self.assertRaises(OperationalError, self._helper.query, 'SYNTAX ERROR')
+
+    def test_describe_table(self):
+        """Test describing a table"""
+
+        desc = self._helper.describe_table('test_table')
+        self.assertIn('col_a', desc)
+        self.assertIn('col_b', desc)
+        self.assertNotIn('col_c', desc)
+        self.assertEqual(desc['col_a']['pk'], 1)
+        self.assertEqual(desc['col_b']['pk'], 0)
+        self.assertEqual(desc['col_b']['type'], 'INTEGER')
 

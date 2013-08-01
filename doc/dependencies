@@ -12,4 +12,5 @@ idevicepair     libimobiledevice-utils
 gphotofs
 parted
 python
+-               python-werkzeug
 

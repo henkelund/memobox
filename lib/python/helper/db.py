@@ -1,17 +1,19 @@
 import sqlite3 as sqlite
+from werkzeug.contrib.cache import NullCache
 
 class DBHelper(object):
     """Helper class for SQLite DB access"""
 
     _instance = None
 
-    def __new__(cls, db=':memory:', *args, **kwargs):
+    def __new__(cls, db=':memory:', cache=NullCache(), *args, **kwargs):
         """Override __new__ to implement singleton pattern"""
 
         if not cls._instance:
             cls._instance = super(DBHelper, cls).__new__(cls, *args, **kwargs)
             cls._instance._conn = None
             cls._instance.set_db(db)
+            cls._instance._cache = cache
         return cls._instance
 
     def __del__(self):
@@ -65,4 +67,26 @@ class DBHelper(object):
     def query(self, sql, bind = []):
         """Execute the given SQL and return a sqlite3.Cursor object"""
         return self._conn.cursor().execute(sql, bind)
+
+    def describe_table(self, table, schema = None):
+        """Return a dict describing the given table"""
+
+        cache_key = 'DESCRIBE_%s.%s' % (schema or '', table)
+        cached = self._cache.get(cache_key)
+        if cached is not None:
+            return cached
+
+        sql = 'PRAGMA '
+        if schema is not None:
+            sql += self.quote_identifier(schema) + '.'
+        sql += 'table_info(%s)' % self.quote_identifier(table)
+
+        desc = {}
+        cursor = self.query(sql)
+        for row in cursor.fetchall():
+            desc[row['name']] = row
+
+        self._cache.set(cache_key, desc)
+
+        return desc
 
