@@ -90,3 +90,33 @@ class DBHelper(object):
 
         return desc
 
+    def insert(self, table, bind):
+        """Insert data into a table."""
+
+        desc = self.describe_table(table)
+        if not desc:
+            # The table doesn't seem to exist
+            raise sqlite.OperationalError
+        else:
+            desc = desc.keys()
+
+        if type(bind) is dict:
+            bind = (bind,)
+
+        ids = []
+        for row in bind:
+            data = {}
+            for key in row.keys():
+                if key in desc:
+                    data[self.quote_identifier(key)] = row[key]
+            if not data:
+                continue
+            sql = 'INSERT INTO %s (%s) VALUES (%s)' % (
+                self.quote_identifier(table),
+                ', '.join(data.keys()),
+                ', '.join('?' * len(data))
+            )
+            ids.append(self.query(sql, data.values()).lastrowid)
+
+        return ids
+

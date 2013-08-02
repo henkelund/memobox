@@ -12,8 +12,8 @@ class TestDBHelper(unittest.TestCase):
         self._helper = DBHelper()
         self._helper.query("""
             CREATE TABLE 'test_table' (
-                col_a INTEGER PRIMARY KEY AUTOINCREMENT,
-                col_b INTEGER
+                "col_a" INTEGER PRIMARY KEY AUTOINCREMENT,
+                "col_b" INTEGER
             )
         """)
 
@@ -25,6 +25,7 @@ class TestDBHelper(unittest.TestCase):
 
     def test_set_db(self):
         """Test DBHelper.set_db"""
+
         self.assertIsInstance(self._helper.get_connection(), Connection)
         self._helper.set_db(None)
         self.assertIsNone(self._helper.get_connection())
@@ -32,6 +33,7 @@ class TestDBHelper(unittest.TestCase):
 
     def test_quote_identifier(self):
         """Test DBHelper identifier quoting"""
+
         quote = DBHelper.quote_identifier
         self.assertEqual(quote('id'), '"id"')
         self.assertEqual(quote('"id"'), '"""id"""')
@@ -40,6 +42,7 @@ class TestDBHelper(unittest.TestCase):
 
     def test_query(self):
         """Test query execution"""
+
         cursor = self._helper.query('SELECT DATE() AS "date"')
         self.assertIsInstance(cursor, Cursor)
         self.assertIn('date', cursor.fetchone().keys())
@@ -55,4 +58,27 @@ class TestDBHelper(unittest.TestCase):
         self.assertEqual(desc['col_a']['pk'], 1)
         self.assertEqual(desc['col_b']['pk'], 0)
         self.assertEqual(desc['col_b']['type'], 'INTEGER')
+
+    def test_insert(self):
+        """Test helper insert method"""
+
+        ids = self._helper.insert('test_table', (
+            {'col_b': randint(0, 99)},
+            {'col_b': randint(0, 99)},
+            {'col_b': randint(0, 99)}
+        ))
+        self.assertEqual(len(ids), 3)
+        self.assertEqual(ids[0] + 1, ids[1])
+        self.assertEqual(ids[0] + 2, ids[2])
+        last = ids[2]
+        ids = self._helper.insert('test_table', {'col_b': randint(0, 99)})
+        self.assertEqual(ids[0], last + 1)
+        self.assertRaises(
+            OperationalError,
+            self._helper.insert,
+            'missing_table',
+            {'col_b': 0}
+        )
+        ids = self._helper.insert('test_table', {})
+        self.assertEqual(len(ids), 0)
 
