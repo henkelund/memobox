@@ -196,6 +196,34 @@ class DBSelect(object):
         """Specify the FROM directive for this SELECT"""
         return self._join('FROM', name, None, cols, schema)
 
+    def join(self, name, cond, cols = '*', schema = None):
+        """Join a table"""
+        return self.inner_join(name, cond, cols, schema)
+
+    def inner_join(self, name, cond, cols = '*', schema = None):
+        """Inner join a table"""
+        return self._join('INNER JOIN', name, cond, cols, schema)
+
+    def left_join(self, name, cond, cols = '*', schema = None):
+        """Left join a table"""
+        return self._join('LEFT JOIN', name, cond, cols, schema)
+
+    def right_join(self, name, cond, cols = '*', schema = None):
+        """Right join a table"""
+        return self._join('RIGHT JOIN', name, cond, cols, schema)
+
+    def full_join(self, name, cond, cols = '*', schema = None):
+        """Full join a table"""
+        return self._join('FULL JOIN', name, cond, cols, schema)
+
+    def cross_join(self, name, cond, cols = '*', schema = None):
+        """Cross join a table"""
+        return self._join('CROSS JOIN', name, cond, cols, schema)
+
+    def natural_join(self, name, cond, cols = '*', schema = None):
+        """Natural join a table"""
+        return self._join('NATURAL JOIN', name, cond, cols, schema)
+
     def _render_columns(self):
         """Render the columns part of this SELECT string"""
 

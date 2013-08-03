@@ -108,3 +108,20 @@ class TestDBHelper(unittest.TestCase):
         self.assertTrue(type(count['count']) == int)
         self.assertTrue(count['count'] >= 0)
 
+    def test_select_join(self):
+        """Test the DBSelects' *_join mehtods"""
+
+        self._helper.query('CREATE TABLE a (x INTEGER)')
+        self._helper.query('CREATE TABLE b (y INTEGER)')
+        self._helper.insert('a', ({'x': 1}, {'x': 2}, {'x': 3}))
+        self._helper.insert('b', ({'y': 2}, {'y': 3}, {'y': 4}))
+        sql = DBSelect('a', {'n': 'COUNT(*)'}).inner_join('b', 'a.x = b.y', ())
+        self.assertTrue(self._helper.query(sql.render()).fetchone()['n'] == 2)
+        sql = DBSelect('a', {'n': 'COUNT(*)'}).left_join('b', 'a.x = b.y', ())
+        self.assertTrue(self._helper.query(sql.render()).fetchone()['n'] == 3)
+        # Right and outer joins are currently not supported by SQLite
+        #sql = DBSelect('a', {'n': 'COUNT(*)'}).right_join('b', 'a.x = b.y', ())
+        #self.assertTrue(self._helper.query(sql.render()).fetchone()['n'] == 3)
+        #sql = DBSelect('a', {'n': 'COUNT(*)'}).full_join('b', 'a.x = b.y', ())
+        #self.assertTrue(self._helper.query(sql.render()).fetchone()['n'] == 4)
+
