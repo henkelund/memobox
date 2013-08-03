@@ -1,7 +1,8 @@
 import unittest
 from sqlite3 import Connection, OperationalError, Cursor
 from random import randint
-from helper.db import DBHelper
+from helper.db import DBHelper, DBSelect
+import re
 
 class TestDBHelper(unittest.TestCase):
     """DBHelper test case class"""
@@ -81,4 +82,29 @@ class TestDBHelper(unittest.TestCase):
         )
         ids = self._helper.insert('test_table', {})
         self.assertEqual(len(ids), 0)
+
+    def test_select_from(self):
+        """Test the SELECT <columns> FROM part of DBSelect"""
+
+        select = DBSelect('a')
+        sql = re.sub(r'\s+', ' ', select.render())
+        self.assertEqual(sql, 'SELECT "a".* FROM "a"')
+
+        select.set_from('b', ())
+        sql = re.sub(r'\s+', ' ', select.render())
+        self.assertEqual(sql, 'SELECT "a".* FROM "b" INNER JOIN "a"')
+
+        select.set_from('c', ('d', 'e'))
+        sql = re.sub(r'\s+', ' ', select.render())
+        self.assertEqual(
+            sql,
+            'SELECT "a".*, "c"."d", "c"."e" ' +
+                'FROM "c" INNER JOIN "b" INNER JOIN "a"'
+        )
+
+        count = self._helper.query(
+            DBSelect('test_table', {'count': 'COUNT(*)'}).render()
+        ).fetchone()
+        self.assertTrue(type(count['count']) == int)
+        self.assertTrue(count['count'] >= 0)
 
