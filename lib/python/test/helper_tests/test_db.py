@@ -28,7 +28,9 @@ class TestDBHelper(unittest.TestCase):
         """Clean up after test"""
 
         if self._helper.get_connection() is not None:
-            self._helper.query("DROP TABLE 'test_table'")
+            self._helper.query('DROP TABLE "test_table"')
+            self._helper.query('DROP TABLE IF EXISTS "a"')
+            self._helper.query('DROP TABLE IF EXISTS "b"')
 
     def test_set_db(self):
         """Test DBHelper.set_db"""
@@ -158,4 +160,59 @@ class TestDBHelper(unittest.TestCase):
                         'AND ("col_a" IN (?, ?, ?))'
         )
         self.assertEqual(len(select.query().fetchall()), 1)
+
+    def test_select_distinct(self):
+        """Test the DISTINCT directive"""
+
+        select = DBSelect('a')
+        select.distinct()
+        self.assertEqual(
+            re.sub(r'\s+', ' ', str(select)),
+            'SELECT DISTINCT "a".* FROM "a"'
+        )
+        select.distinct(False)
+        self.assertEqual(
+            re.sub(r'\s+', ' ', str(select)),
+            'SELECT "a".* FROM "a"'
+        )
+
+    def test_select_limit(self):
+        """Test LIMIT and OFFSET parts"""
+
+        select = DBSelect('test_table')
+        select.limit(10)
+        self.assertEqual(
+            re.sub(r'\s+', ' ', str(select)),
+            'SELECT "test_table".* FROM "test_table" LIMIT 10'
+        )
+        self.assertEqual(len(select.query().fetchall()), 10)
+        select.limit(10, self._num_rows - 5)
+        self.assertEqual(
+            re.sub(r'\s+', ' ', str(select)),
+            'SELECT "test_table".* FROM "test_table" LIMIT %d, 10'
+                % (self._num_rows - 5,)
+        )
+        self.assertEqual(len(select.query().fetchall()), 5)
+
+    def test_select_order(self):
+        """Test the ORDER BY part of DBSelect"""
+
+        self._helper.query('CREATE TABLE a (x INTEGER, y INTEGER)')
+        self._helper.insert('a', (
+            {'x': 1, 'y': 1},
+            {'x': 2, 'y': 2},
+            {'x': 3, 'y': 2},
+        ))
+        select = DBSelect('a').order('x')
+        self.assertEqual(
+            re.sub(r'\s+', ' ', str(select)),
+            'SELECT "a".* FROM "a" ORDER BY "x" ASC'
+        )
+        self.assertEqual(select.query().fetchone()['x'], 1)
+        select = DBSelect('a').order('y', 'DESC').order('x')
+        self.assertEqual(
+            re.sub(r'\s+', ' ', str(select)),
+            'SELECT "a".* FROM "a" ORDER BY "y" DESC, "x" ASC'
+        )
+        self.assertEqual(select.query().fetchone()['x'], 2)
 

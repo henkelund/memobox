@@ -127,9 +127,13 @@ class DBSelect(object):
     def __init__(self, table, cols='*'):
         """Constructor"""
 
+        self._distinct = False
         self._tables = []
         self._columns = []
         self._wheres = []
+        self._orders = []
+        self._limit = None
+        self._offset = None
         self._bind = []
         self.set_from(table, cols)
 
@@ -218,6 +222,11 @@ class DBSelect(object):
 
         return self
 
+    def distinct(self, flag=True):
+        """Add a DISTINCT directive to this SELECT statement"""
+        self._distinct = flag
+        return self
+
     def where(self, condition, value=None):
         """Add an AND WHERE condition"""
         return self._where(condition, value, 'AND')
@@ -257,6 +266,31 @@ class DBSelect(object):
     def natural_join(self, name, cond, cols='*', schema=None):
         """Natural join a table"""
         return self._join('NATURAL JOIN', name, cond, cols, schema)
+
+    def order(self, field, direction='ASC'):
+        """Add an ORDER to this SELECT"""
+
+        self._orders.append((
+            field,
+            'ASC' if direction.upper() == 'ASC' else 'DESC'
+        ))
+        return self
+
+    def limit(self, limit, offset=None):
+        """Add a LIMIT and OFFSET"""
+
+        self._limit = limit
+        self._offset = offset
+        return self
+
+    def _render_distinct(self):
+        """Render the DISTINCT part of this SELECT"""
+
+        sql = ''
+        if self._distinct:
+            sql = ' DISTINCT'
+
+        return sql
 
     def _render_columns(self):
         """Render the columns part of this SELECT string"""
@@ -329,13 +363,42 @@ class DBSelect(object):
 
         return sql
 
+    def _render_order(self):
+        """Render the ORDER BY part of this SELECT"""
+
+        sql = ''
+        if len(self._orders) > 0:
+            q = DBHelper.quote_identifier
+            orders = []
+            for order in self._orders:
+                orders.append('%s %s' % (q(order[0]), order[1]))
+
+            sql = ' ORDER BY %s' % ', '.join(orders)
+
+        return sql
+
+    def _render_limit(self):
+        """Render the LIMIT and OFFSET parts of this SELECT"""
+
+        sql = ''
+        if self._limit is not None:
+            sql = ' LIMIT'
+            if self._offset is not None:
+                sql += ' %d,' % self._offset
+            sql += ' %d' % self._limit
+
+        return sql
+
     def render(self):
         """Render a SQLite SELECT string"""
 
         sql = 'SELECT'
+        sql += self._render_distinct()
         sql += self._render_columns()
         sql += self._render_from()
         sql += self._render_where()
+        sql += self._render_order()
+        sql += self._render_limit()
         return sql
 
     def query(self):
