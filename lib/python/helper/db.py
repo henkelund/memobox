@@ -431,3 +431,15 @@ class DBSelect(object):
         cursor = DBHelper().query(sql, values)
         return cursor.rowcount
 
+    def query_delete(self):
+        """Issue a DELETE query based on this SELECT"""
+
+        sql = 'DELETE FROM'
+        if self._tables:
+            sql = '%s %s' % (sql, self._table_to_string(self._tables[0]))
+        sql += self._render_where()
+        sql += self._render_order()
+        sql += self._render_limit()
+        cursor = DBHelper().query(sql, self._bind)
+        return cursor.rowcount
+

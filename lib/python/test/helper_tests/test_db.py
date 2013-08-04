@@ -226,3 +226,15 @@ class TestDBHelper(unittest.TestCase):
         select = DBSelect('test_table').where('col_b = ?', 512)
         self.assertEqual(select.query_update({'col_b': 1024}), 4)
 
+    def test_select_delete(self):
+        """Test executing DELETEs based on SELECTs"""
+
+        select = (DBSelect('test_table')
+                    .order('col_a', 'DESC')
+                    .limit(self._num_rows - 10))
+        self.assertEqual(select.query_delete(), self._num_rows - 10)
+        select = DBSelect('test_table').where('col_a = ?', 1)
+        self.assertEqual(select.query_delete(), 1)
+        select = DBSelect('test_table').where('col_a IN (?)', (1, 2, 3, 4))
+        self.assertEqual(select.query_delete(), 3)
+
