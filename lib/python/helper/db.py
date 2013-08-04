@@ -124,12 +124,18 @@ class DBHelper(object):
 class DBSelect(object):
     """Helper for building SQLite SELECT queries"""
 
-    def __init__(self, table, cols = '*'):
+    def __init__(self, table, cols='*'):
         """Constructor"""
 
         self._tables = []
         self._columns = []
+        self._wheres = []
+        self._bind = []
         self.set_from(table, cols)
+
+    def __str__(self):
+        """String representation of this SELECT object"""
+        return self.render()
 
     def _unique_alias(self, name):
         """Create a unique table alias within this select"""
@@ -164,7 +170,7 @@ class DBSelect(object):
 
         return self
 
-    def _join(self, join_type, name, cond, cols, schema = None):
+    def _join(self, join_type, name, cond, cols, schema=None):
         """Join an additional table"""
 
         alias = table_name = ''
@@ -192,35 +198,63 @@ class DBSelect(object):
 
         return self
 
-    def set_from(self, name, cols = '*', schema = None):
+    def _where(self, condition, value, andor):
+        """Add a WHERE condition"""
+
+        cond = ''
+        if len(self._wheres) > 0:
+            cond = '%s ' % andor
+
+        if value is not None:
+            if isinstance(value, (basestring, int, float, bool)):
+                self._bind += (value,)
+            else:
+                self._bind += value
+                if len(value) > 1 and condition.count('?') == 1:
+                    condition = condition.replace(
+                                    '?', ', '.join('?' * len(value)))
+
+        self._wheres.append('%s(%s)' % (cond, condition))
+
+        return self
+
+    def where(self, condition, value=None):
+        """Add an AND WHERE condition"""
+        return self._where(condition, value, 'AND')
+
+    def or_where(self, condition, value=None):
+        """Add an OR WHERE condition"""
+        return self._where(condition, value, 'OR')
+
+    def set_from(self, name, cols='*', schema=None):
         """Specify the FROM directive for this SELECT"""
         return self._join('FROM', name, None, cols, schema)
 
-    def join(self, name, cond, cols = '*', schema = None):
+    def join(self, name, cond, cols='*', schema=None):
         """Join a table"""
         return self.inner_join(name, cond, cols, schema)
 
-    def inner_join(self, name, cond, cols = '*', schema = None):
+    def inner_join(self, name, cond, cols='*', schema=None):
         """Inner join a table"""
         return self._join('INNER JOIN', name, cond, cols, schema)
 
-    def left_join(self, name, cond, cols = '*', schema = None):
+    def left_join(self, name, cond, cols='*', schema=None):
         """Left join a table"""
         return self._join('LEFT JOIN', name, cond, cols, schema)
 
-    def right_join(self, name, cond, cols = '*', schema = None):
+    def right_join(self, name, cond, cols='*', schema=None):
         """Right join a table"""
         return self._join('RIGHT JOIN', name, cond, cols, schema)
 
-    def full_join(self, name, cond, cols = '*', schema = None):
+    def full_join(self, name, cond, cols='*', schema=None):
         """Full join a table"""
         return self._join('FULL JOIN', name, cond, cols, schema)
 
-    def cross_join(self, name, cond, cols = '*', schema = None):
+    def cross_join(self, name, cond, cols='*', schema=None):
         """Cross join a table"""
         return self._join('CROSS JOIN', name, cond, cols, schema)
 
-    def natural_join(self, name, cond, cols = '*', schema = None):
+    def natural_join(self, name, cond, cols='*', schema=None):
         """Natural join a table"""
         return self._join('NATURAL JOIN', name, cond, cols, schema)
 
@@ -284,7 +318,16 @@ class DBSelect(object):
 
             froms.append(sql)
 
-        return ' FROM %s' % ''.join(froms)
+        return ' FROM %s' % '\n'.join(froms)
+
+    def _render_where(self):
+        """Render the WHERE part of this SELECT string"""
+
+        sql = ''
+        if len(self._wheres) > 0:
+            sql = ' WHERE %s' % '\n\t'.join(self._wheres)
+
+        return sql
 
     def render(self):
         """Render a SQLite SELECT string"""
@@ -292,5 +335,10 @@ class DBSelect(object):
         sql = 'SELECT'
         sql += self._render_columns()
         sql += self._render_from()
+        sql += self._render_where()
         return sql
+
+    def query(self):
+        """Execute this SELECT statement and return a sqlite3.Cursor"""
+        return DBHelper().query(self.render(), self._bind)
 

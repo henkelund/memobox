@@ -12,11 +12,17 @@ class TestDBHelper(unittest.TestCase):
 
         self._helper = DBHelper()
         self._helper.query("""
-            CREATE TABLE 'test_table' (
+            CREATE TABLE "test_table" (
                 "col_a" INTEGER PRIMARY KEY AUTOINCREMENT,
                 "col_b" INTEGER
             )
         """)
+        self._num_rows = randint(128, 255)
+        for i in range(self._num_rows):
+            self._helper.query(
+                'INSERT INTO "test_table" ("col_b") VALUES (?)',
+                [randint(0, 99)]
+            )
 
     def tearDown(self):
         """Clean up after test"""
@@ -124,4 +130,32 @@ class TestDBHelper(unittest.TestCase):
         #self.assertTrue(self._helper.query(sql.render()).fetchone()['n'] == 3)
         #sql = DBSelect('a', {'n': 'COUNT(*)'}).full_join('b', 'a.x = b.y', ())
         #self.assertTrue(self._helper.query(sql.render()).fetchone()['n'] == 4)
+
+    def test_select_where(self):
+        """Test the WHERE part of DBSelect"""
+
+        select = DBSelect('test_table')
+        select.where('"col_a" = ?', 1)
+        self.assertEqual(
+            re.sub(r'\s+', ' ', str(select)),
+            'SELECT "test_table".* FROM "test_table" WHERE ("col_a" = ?)'
+        )
+        self.assertEqual(len(select.query().fetchall()), 1)
+        select.or_where('"col_a" = ?', 2)
+        self.assertEqual(
+            re.sub(r'\s+', ' ', str(select)),
+            'SELECT "test_table".* FROM "test_table" ' +
+                'WHERE ("col_a" = ?) OR ("col_a" = ?)'
+        )
+        self.assertEqual(len(select.query().fetchall()), 2)
+        select.where('"col_a" IN (?)', (3, 4, 5))
+        self.assertEqual(
+            re.sub(r'\s+', ' ', str(select)),
+            'SELECT "test_table".* ' +
+                'FROM "test_table" ' +
+                    'WHERE ("col_a" = ?) ' +
+                        'OR ("col_a" = ?) ' +
+                        'AND ("col_a" IN (?, ?, ?))'
+        )
+        self.assertEqual(len(select.query().fetchall()), 1)
 
