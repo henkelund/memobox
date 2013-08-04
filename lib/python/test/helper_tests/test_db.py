@@ -216,3 +216,13 @@ class TestDBHelper(unittest.TestCase):
         )
         self.assertEqual(select.query().fetchone()['x'], 2)
 
+    def test_select_update(self):
+        """Test executing UPDATEs based on SELECTs"""
+
+        select = DBSelect('test_table').where('col_a = ?', 1)
+        self.assertEqual(select.query_update({'col_b': 512}), 1)
+        select = DBSelect('test_table').order('col_a').limit(3, 1)
+        self.assertEqual(select.query_update({'col_b': 512}), 3)
+        select = DBSelect('test_table').where('col_b = ?', 512)
+        self.assertEqual(select.query_update({'col_b': 1024}), 4)
+

@@ -320,6 +320,22 @@ class DBSelect(object):
 
         return ' %s' % ', '.join(columns)
 
+    def _table_to_string(self, table):
+        """Convert the internal table representation to a string"""
+
+        name = table['table_name']
+        if table['schema'] is not None:
+            name = '%.%' % (table['schema'], name)
+        name = DBHelper.quote_identifier(name)
+
+        if table['alias'] != table['table_name']:
+            name = '%s AS %s' % (
+                name,
+                DBHelper.quote_identifier(table['alias'])
+            )
+
+        return name
+
     def _render_from(self):
         """Render the FROM part of this SELECT string"""
 
@@ -335,18 +351,7 @@ class DBSelect(object):
             if len(froms) > 0:
                 sql += ' %s ' % join_type
 
-            name = table['table_name']
-            if table['schema'] is not None:
-                name = '%.%' % (table['schema'], name)
-            name = DBHelper.quote_identifier(name)
-
-            if table['alias'] != table['table_name']:
-                name = '%s AS %s' % (
-                    name,
-                    DBHelper.quote_identifier(table['alias'])
-                )
-
-            sql += name
+            sql += self._table_to_string(table)
             if len(froms) > 0 and table['join_condition']:
                 sql += ' ON %s' % table['join_condition']
 
@@ -404,4 +409,25 @@ class DBSelect(object):
     def query(self):
         """Execute this SELECT statement and return a sqlite3.Cursor"""
         return DBHelper().query(self.render(), self._bind)
+
+    def query_update(self, bind):
+        """Issue an UPDATE query based on this SELECT"""
+
+        sql = 'UPDATE'
+        values = []
+        if self._tables:
+            sql = '%s %s' % (sql, self._table_to_string(self._tables[0]))
+        if type(bind) == dict and dict:
+            sql += ' SET '
+            fields = []
+            for key in bind:
+                values += (bind[key],)
+                fields.append('%s = ?' % (DBHelper.quote_identifier(key),))
+            sql += ', '.join(fields)
+        sql += self._render_where()
+        sql += self._render_order()
+        sql += self._render_limit()
+        values += self._bind
+        cursor = DBHelper().query(sql, values)
+        return cursor.rowcount
 
