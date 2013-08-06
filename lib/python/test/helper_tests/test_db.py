@@ -27,10 +27,9 @@ class TestDBHelper(unittest.TestCase):
     def tearDown(self):
         """Clean up after test"""
 
-        if self._helper.get_connection() is not None:
-            self._helper.query('DROP TABLE "test_table"')
-            self._helper.query('DROP TABLE IF EXISTS "a"')
-            self._helper.query('DROP TABLE IF EXISTS "b"')
+        self._helper.query('DROP TABLE IF EXISTS "test_table"')
+        self._helper.query('DROP TABLE IF EXISTS "a"')
+        self._helper.query('DROP TABLE IF EXISTS "b"')
 
     def test_set_db(self):
         """Test DBHelper.set_db"""
@@ -39,6 +38,8 @@ class TestDBHelper(unittest.TestCase):
         self._helper.set_db(None)
         self.assertIsNone(self._helper.get_connection())
         self.assertRaises(OperationalError, self._helper.set_db, '.')
+        self._helper.set_db(':memory:')
+        self.assertIsInstance(self._helper.get_connection(), Connection)
 
     def test_quote_identifier(self):
         """Test DBHelper identifier quoting"""

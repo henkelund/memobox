@@ -1,5 +1,4 @@
 import sqlite3 as sqlite
-from werkzeug.contrib.cache import NullCache
 import re
 
 class DBHelper(object):
@@ -7,14 +6,13 @@ class DBHelper(object):
 
     _instance = None
 
-    def __new__(cls, db=':memory:', cache=NullCache(), *args, **kwargs):
+    def __new__(cls, db=':memory:', *args, **kwargs):
         """Override __new__ to implement singleton pattern"""
 
         if not cls._instance:
             cls._instance = super(DBHelper, cls).__new__(cls, *args, **kwargs)
             cls._instance._conn = None
             cls._instance.set_db(db)
-            cls._instance._cache = cache
         return cls._instance
 
     def __del__(self):
@@ -69,55 +67,34 @@ class DBHelper(object):
         """Execute the given SQL and return a sqlite3.Cursor object"""
         return self._conn.cursor().execute(sql, bind)
 
-    def describe_table(self, table, schema = None):
+    def describe_table(self, table):
         """Return a dict describing the given table"""
 
-        cache_key = 'DESCRIBE_%s.%s' % (schema or '', table)
-        cached = self._cache.get(cache_key)
-        if cached is not None:
-            return cached
-
-        sql = 'PRAGMA '
-        if schema is not None:
-            sql += self.quote_identifier(schema) + '.'
-        sql += 'table_info(%s)' % self.quote_identifier(table)
-
         desc = {}
-        cursor = self.query(sql)
+        cursor = self.query('PRAGMA table_info(%s)'
+                                % self.quote_identifier(table))
         for row in cursor.fetchall():
             desc[row['name']] = row
-
-        self._cache.set(cache_key, desc)
 
         return desc
 
     def insert(self, table, bind):
         """Insert data into a table."""
 
-        desc = self.describe_table(table)
-        if not desc:
-            # The table doesn't seem to exist
-            raise sqlite.OperationalError
-        else:
-            desc = desc.keys()
-
         if type(bind) is dict:
             bind = (bind,)
 
         ids = []
         for row in bind:
-            data = {}
-            for key in row.keys():
-                if key in desc:
-                    data[self.quote_identifier(key)] = row[key]
-            if not data:
+            if not row:
                 continue
+            cols = [self.quote_identifier(key) for key in row.keys()]
             sql = 'INSERT INTO %s (%s) VALUES (%s)' % (
                 self.quote_identifier(table),
-                ', '.join(data.keys()),
-                ', '.join('?' * len(data))
+                ', '.join(cols),
+                ', '.join('?' * len(row))
             )
-            ids.append(self.query(sql, data.values()).lastrowid)
+            ids.append(self.query(sql, row.values()).lastrowid)
 
         return ids
 
