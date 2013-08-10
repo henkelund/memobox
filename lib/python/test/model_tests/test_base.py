@@ -122,6 +122,10 @@ class TestBaseModel(unittest.TestCase):
         self.assertEqual(len(SampleModel.all()), count)
         self.assertEqual(len(SampleModel.all().limit(1)), 1)
         self.assertEqual(len(SampleModel.all().limit(0)), 0)
+        models = SampleModel.all().limit(1)
+        self.assertEqual(len(models), 1)
+        self.assertEqual(models.total_size(False), count)
+        self.assertEqual(models.total_size(True), count)
 
     def test_modelset_iteration(self):
         """Test BaseModelSet for loop"""

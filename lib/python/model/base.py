@@ -147,8 +147,9 @@ class BaseModelSet(DBSelect):
         """Initialize"""
 
         self._model_class = model_class
+        self._total_size = None
         self.reset()
-        super(BaseModelSet, self).__init__(model_class._table)
+        super(BaseModelSet, self).__init__((model_class._table, 'm'))
 
     def __iter__(self):
         """Rewind internal pointer"""
@@ -160,9 +161,7 @@ class BaseModelSet(DBSelect):
 
     def __len__(self):
         """Implements len(self)"""
-
-        self.load()
-        return len(self._items)
+        return self.size()
 
     def __delitem__(self, key):
         """Implements array access deletion"""
@@ -188,7 +187,7 @@ class BaseModelSet(DBSelect):
         self._cursor = None
         self._current = None
         self._items = None
-        #TODO: reset select
+        self.unset(self.WHERE | self.ORDER | self.LIMIT | self.OFFSET)
 
         return self
 
@@ -225,4 +224,20 @@ class BaseModelSet(DBSelect):
                 pass
 
         return self
+
+    def size(self):
+        """Count the number of models in this set"""
+
+        self.load()
+        return len(self._items)
+
+    def total_size(self, cache=True):
+        """Retrieve the total number of stored objects"""
+
+        if not cache or self._total_size is None:
+            select = self.clone().unset(
+                    self.ORDER | self.LIMIT | self.OFFSET | self.COLUMNS
+                ).columns({'c': 'COUNT(*)'})
+            self._total_size = select.query().fetchone()['c']
+        return self._total_size
 
