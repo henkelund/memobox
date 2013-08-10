@@ -1,5 +1,6 @@
 import sqlite3 as sqlite
 import re
+from copy import deepcopy
 
 class DBHelper(object):
     """Helper class for SQLite DB access"""
@@ -139,6 +140,20 @@ class DBSelect(object):
             self._offset = None
 
         return self
+
+    def clone(self):
+        """Create a copy of this SELECT"""
+
+        clone = DBSelect('')
+        clone._distinct = self._distinct
+        clone._columns = deepcopy(self._columns)
+        clone._tables = deepcopy(self._tables)
+        clone._wheres = deepcopy(self._wheres)
+        clone._bind = deepcopy(self._bind)
+        clone._orders = deepcopy(self._orders)
+        clone._limit = self._limit
+        clone._offset = self._offset
+        return clone
 
     def __str__(self):
         """String representation of this SELECT object"""

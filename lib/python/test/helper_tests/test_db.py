@@ -252,6 +252,23 @@ class TestDBHelper(unittest.TestCase):
             'SELECT "x".* FROM "x"'
         )
 
+    def test_select_clone(self):
+        """Test cloning a SELECT"""
+
+        select1 = DBSelect('a', {'c': 'col'}
+                    ).left_join('b', 'a.c = b.d', {'d': 'col'}
+                    ).where('a.col = ?', 1
+                    ).order('b.d', 'DESC'
+                    ).limit(1, 2
+                    ).distinct(True)
+        select2 = select1.clone()
+        self.assertEqual(str(select1), str(select2))
+        select2.or_where('b.col = ?', 1)
+        self.assertNotEqual(str(select1), str(select2))
+        select1.unset(select1.WHERE)
+        select2.unset(select2.WHERE)
+        self.assertEqual(str(select1), str(select2))
+
     def test_select_update(self):
         """Test executing UPDATEs based on SELECTs"""
 
