@@ -101,18 +101,44 @@ class DBHelper(object):
 class DBSelect(object):
     """Helper for building SQLite SELECT queries"""
 
+    DISTINCT = 1 << 0
+    COLUMNS = 1 << 1
+    FROM = 1 << 2
+    WHERE = 1 << 3
+    ORDER = 1 << 4
+    LIMIT = 1 << 5
+    OFFSET = 1 << 6
+    ALL = DISTINCT | COLUMNS | FROM | WHERE | ORDER | LIMIT | OFFSET
+
     def __init__(self, table, cols='*'):
         """Constructor"""
 
-        self._distinct = False
-        self._tables = []
-        self._columns = []
-        self._wheres = []
-        self._orders = []
-        self._limit = None
-        self._offset = None
-        self._bind = []
+        self.unset(self.ALL)
         self.set_from(table, cols)
+
+    def unset(self, parts=None):
+        """Reset parts or all of this SELECT"""
+
+        if parts is None:
+            parts = self.ALL
+
+        if parts & self.DISTINCT:
+            self._distinct = False
+        if parts & self.COLUMNS:
+            self._columns = []
+        if parts & self.FROM:
+            self._tables = []
+        if parts & self.WHERE:
+            self._wheres = []
+            self._bind = []
+        if parts & self.ORDER:
+            self._orders = []
+        if parts & self.LIMIT:
+            self._limit = None
+        if parts & self.OFFSET:
+            self._offset = None
+
+        return self
 
     def __str__(self):
         """String representation of this SELECT object"""

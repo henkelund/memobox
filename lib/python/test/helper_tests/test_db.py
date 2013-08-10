@@ -217,6 +217,41 @@ class TestDBHelper(unittest.TestCase):
         )
         self.assertEqual(select.query().fetchone()['x'], 2)
 
+    def test_select_unset(self):
+        """Test unsetting parts of SELECT"""
+
+        select = DBSelect('a', {'c': 'col'}
+                    ).left_join('b', 'a.c = b.d', {'d': 'col'}
+                    ).where('a.col = ?', 1
+                    ).order('b.d', 'DESC'
+                    ).limit(1, 2
+                    ).distinct(True)
+        self.assertEqual(
+            re.sub(r'\s+', ' ', str(select)),
+            'SELECT DISTINCT "a"."col" AS "c", "b"."col" AS "d" ' +
+                'FROM "a" LEFT JOIN "b" ON a.c = b.d ' +
+                'WHERE (a.col = ?) ' +
+                'ORDER BY "b"."d" DESC ' +
+                'LIMIT 2, 1'
+        )
+        select.unset(select.FROM | select.COLUMNS).set_from('x')
+        self.assertEqual(
+            re.sub(r'\s+', ' ', str(select)),
+            'SELECT DISTINCT "x".* ' +
+                'FROM "x" WHERE (a.col = ?) ORDER BY "b"."d" DESC LIMIT 2, 1'
+        )
+        select.unset(select.WHERE)
+        self.assertEqual(
+            re.sub(r'\s+', ' ', str(select)),
+            'SELECT DISTINCT "x".* ' +
+                'FROM "x" ORDER BY "b"."d" DESC LIMIT 2, 1'
+        )
+        select.unset(select.DISTINCT | select.ORDER | select.LIMIT)
+        self.assertEqual(
+            re.sub(r'\s+', ' ', str(select)),
+            'SELECT "x".* FROM "x"'
+        )
+
     def test_select_update(self):
         """Test executing UPDATEs based on SELECTs"""
 
