@@ -1,7 +1,7 @@
 import unittest
 from werkzeug.contrib.cache import FileSystemCache, NullCache
-from model.base import BaseModel
-from helper.db import DBHelper
+from model.base import BaseModel, BaseModelSet
+from helper.db import DBHelper, DBSelect
 
 class SampleModel(BaseModel):
     _table = 'sample_model'
@@ -105,4 +105,53 @@ class TestBaseModel(unittest.TestCase):
         self.assertIsNone(model.id())
         model2 = SampleModel().load(3)
         self.assertEqual(model2.get_data(), {})
+
+    def test_model_all(self):
+        """Test BaseModel.all"""
+
+        modelset = SampleModel.all()
+        self.assertIsInstance(modelset, BaseModelSet)
+
+    def test_modelset_len(self):
+        """Test len(BaseModelSet)"""
+
+        count = DBSelect(
+                    SampleModel._table,
+                    'COUNT(*) as "c"'
+                ).query().fetchone()['c']
+        self.assertEqual(len(SampleModel.all()), count)
+        self.assertEqual(len(SampleModel.all().limit(1)), 1)
+        self.assertEqual(len(SampleModel.all().limit(0)), 0)
+
+    def test_modelset_iteration(self):
+        """Test BaseModelSet for loop"""
+
+        models = SampleModel.all()
+        c = len(models) # loads all models
+        i = 0
+        for model in models: # w/o resetting
+            self.assertIsInstance(model, BaseModel)
+            i = i + 1
+        self.assertEqual(c, i)
+        i = 0
+        for model in models.reset():
+            self.assertIsInstance(model, BaseModel)
+            i = i + 1
+        self.assertEqual(c, i)
+
+    def test_modelset_array_access(self):
+        """Test BaseModelSet array access"""
+
+        models = SampleModel.all()
+        for i in range(len(models)):
+            self.assertIsInstance(models[i], BaseModel)
+            models[i] = None
+            self.assertIsNone(models[i])
+        self.assertGreater(len(models), 0)
+        for i in reversed(range(len(models))):
+            del models[i]
+        self.assertEqual(len(models), 0)
+        self.assertRaises(IndexError, models.__getitem__, 0)
+        self.assertRaises(IndexError, models.__setitem__, 0, None)
+        self.assertRaises(IndexError, models.__delitem__, 0)
 

@@ -135,3 +135,94 @@ class BaseModel(object):
 
         return self
 
+    @classmethod
+    def all(cls):
+        """Get a model collection"""
+        return BaseModelSet(cls)
+
+class BaseModelSet(DBSelect):
+    """Base class for model collections"""
+
+    def __init__(self, model_class):
+        """Initialize"""
+
+        self._model_class = model_class
+        self.reset()
+        super(BaseModelSet, self).__init__(model_class._table)
+
+    def __iter__(self):
+        """Rewind internal pointer"""
+
+        if self._current is not None:
+            self._current = 0
+
+        return self
+
+    def __len__(self):
+        """Implements len(self)"""
+
+        self.load()
+        return len(self._items)
+
+    def __delitem__(self, key):
+        """Implements array access deletion"""
+
+        self.load()
+        del self._items[key]
+
+    def __getitem__(self, key):
+        """Implements array access retrieval"""
+
+        self.load()
+        return self._items[key]
+
+    def __setitem__(self, key, value):
+        """Implements array access assignment"""
+
+        self.load()
+        self._items[key] = value
+
+    def reset(self):
+        """Clear this set to its initial state"""
+
+        self._cursor = None
+        self._current = None
+        self._items = None
+        #TODO: reset select
+
+        return self
+
+    def next(self):
+        """Implements iteration"""
+
+        if self._cursor is None:
+            self._cursor = self.query()
+            self._items = []
+
+        if self._current is None:
+            data = self._cursor.fetchone()
+
+            if type(data) is dict:
+                model = self._model_class(data)
+                self._items.append(model)
+                return model
+
+            self._current = len(self._items)
+            raise StopIteration
+        else:
+            if self._current < len(self._items):
+                model = self._items[self._current]
+                self._current += 1
+                return model
+            else:
+                raise StopIteration
+
+    def load(self):
+        """Load all pending data into this model set"""
+
+        if self._current is None:
+            for model in self: # drains self._cursor
+                pass
+
+        return self
+
