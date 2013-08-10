@@ -2,10 +2,32 @@ import unittest
 from werkzeug.contrib.cache import FileSystemCache, NullCache
 from model.base import BaseModel, BaseModelSet
 from helper.db import DBHelper, DBSelect
+from helper.install import InstallHelper
 
 class SampleModel(BaseModel):
     _table = 'sample_model'
     _pk = '_id'
+
+    @classmethod
+    def _install(cls):
+        return (
+            # "Version #1" routine
+            """
+            CREATE TABLE %s (
+                "_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+                "some_attribute" INTEGER,
+                "another_attribute" TEXT
+            )
+            """ % DBHelper.quote_identifier(cls._table),
+
+            # "Version #2" routine
+            lambda: DBHelper().insert(SampleModel._table, (
+                {'_id': 1, 'some_attribute': 10, 'another_attribute': 'ten'},
+                {'_id': 2, 'some_attribute': 20, 'another_attribute': 'twenty'},
+                {'_id': 3, 'some_attribute': 30, 'another_attribute': 'thirty'}
+            )
+        )
+)
 
 class TestBaseModel(unittest.TestCase):
     """BaseModel test case class"""
@@ -16,23 +38,14 @@ class TestBaseModel(unittest.TestCase):
         cache = FileSystemCache('/tmp/werkzeug')
         cache.clear()
         BaseModel.set_cache(cache)
-        self._db = DBHelper()
-        self._db.query("""
-            CREATE TABLE "sample_model" (
-                "_id" INTEGER PRIMARY KEY AUTOINCREMENT,
-                "some_attribute" INTEGER,
-                "another_attribute" TEXT
-            )
-        """)
-        self._db.insert(SampleModel._table, (
-            {'_id': 1, 'some_attribute': 10, 'another_attribute': 'ten'},
-            {'_id': 2, 'some_attribute': 20, 'another_attribute': 'twenty'},
-            {'_id': 3, 'some_attribute': 30, 'another_attribute': 'thirty'}
-        ))
+        InstallHelper.reset()
+        SampleModel.install()
 
     def tearDown(self):
         """Clean up after test"""
-        self._db.query('DROP TABLE IF EXISTS "sample_model"')
+        DBHelper().query('DROP TABLE IF EXISTS %s'
+                            % DBHelper.quote_identifier(SampleModel._table))
+        InstallHelper.reset()
 
     def test_set_cache(self):
         """Test BaseModel.set_cache"""

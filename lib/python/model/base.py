@@ -1,5 +1,6 @@
 from werkzeug.contrib.cache import BaseCache, NullCache
 from helper.db import DBHelper, DBSelect
+from helper.install import InstallHelper
 
 class BaseModel(object):
     """Base class for models"""
@@ -134,6 +135,16 @@ class BaseModel(object):
             self.unset_data(self.__class__._pk)
 
         return self
+
+    @classmethod
+    def _install(cls):
+        """Return a list of install routines"""
+        return ()
+
+    @classmethod
+    def install(cls):
+        """Install model"""
+        InstallHelper.install(cls._table, cls._install())
 
     @classmethod
     def all(cls):
