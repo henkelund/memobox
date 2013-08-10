@@ -117,6 +117,22 @@ class TestDBHelper(unittest.TestCase):
         self.assertTrue(type(count['count']) == int)
         self.assertTrue(count['count'] >= 0)
 
+    def test_select_columns(self):
+        """Test DBSelect.columns"""
+
+        select = DBSelect('a', {})
+        select.columns({'c': 'b'})
+        self.assertEqual(
+            re.sub(r'\s+', ' ', str(select)),
+            'SELECT "a"."b" AS "c" FROM "a"'
+        )
+        select.left_join('b', 'a.b = b.a', {})
+        select.columns('*', 'b')
+        self.assertEqual(
+            re.sub(r'\s+', ' ', str(select)),
+            'SELECT "a"."b" AS "c", "b".* FROM "a" LEFT JOIN "b" ON a.b = b.a'
+        )
+
     def test_select_join(self):
         """Test the DBSelects' *_join mehtods"""
 

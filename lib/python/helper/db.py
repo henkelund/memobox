@@ -257,6 +257,15 @@ class DBSelect(object):
         """Specify the FROM directive for this SELECT"""
         return self._join('FROM', name, None, cols, schema)
 
+    def columns(self, cols='*', table=None):
+        """Add columns to SELECT"""
+
+        if table is None and self._tables:
+            table = self._tables[0]['alias']
+
+        self._table_cols(table, cols)
+        return self
+
     def join(self, name, cond, cols='*', schema=None):
         """Join a table"""
         return self.inner_join(name, cond, cols, schema)
