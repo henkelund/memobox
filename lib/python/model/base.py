@@ -119,7 +119,6 @@ class BaseModel(object):
 
         data = self.__class__.clean_data(self._data)
         if self.id():
-            del data[self.__class__._pk]
             self._db_select().query_update(data)
         else:
             ids = DBHelper().insert(self.__class__._table, data)
