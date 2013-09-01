@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 freespace () {
@@ -17,7 +18,7 @@ freespace () {
 }
 
 gatherdevices () {
-  devices=`find -L $1/data -maxdepth 2 -name manufacturer -printf '%h;'`
+	devices=`find -L $1/data -maxdepth 2 -name manufacturer -printf '%h;'`
 	arrIN=(${devices//;/ })
 	declare -a DEVICES
 	
@@ -26,19 +27,23 @@ gatherdevices () {
 	do
 	        path=(${i//// })
 	        #echo ${path[2]}
-	        manufacturer=`cat $i/manufacturer`
+		pendingbackup="false"
+	        if [ -d "$i/tmp" ]; then pendingbackup="true"; fi
+		manufacturer=`cat $i/manufacturer`
 	        product=`cat $i/product`
 	        model=`cat $i/model`
+		deviceId=`cat $i/idProduct`
 		size=`du -sch $i 2>/dev/null | sed -n '$p'`
 		size=(${size//\t/ })
 		size=${size[0]}
-	        DEVICES["$c"]="${path[2]};$manufacturer;$product;$model;$size"
+		lastbackup=`cd $i/backups > /dev/null && find . -mindepth 4 -maxdepth 4 |sort -nr |head -1`
+	        DEVICES["$c"]="serial=${path[2]};deviceId=$deviceId;manufacturer=$manufacturer;product=$product;model=$model;size=$size;lastbackup=$lastbackup;pendingbackup=$pendingbackup"
 	        let c=c+1
 	done
 	
 	tLen=${#DEVICES[@]}
 	
-	echo numdevices=$tLen&
+	echo "numdevices=$tLen&"
 	for (( i=0; i<${tLen}; i++ ));
 	do
 	  echo "device$i=${DEVICES[$i]}&"
