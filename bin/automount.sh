@@ -5,7 +5,7 @@
 # udev events. This script handles device mounting and file transfer.
 #
 
-if [ $EUID -ne 0 ]; then echo "Please run as root" 1>&2; exit 1; fi
+if [ $EUID -ne 0 ]; then echo "Please run as root" 1>&2; exitmanager 1; fi
 
 cd "$(dirname "$0")"
 
@@ -45,7 +45,7 @@ do
     if [ -z "$exe" ]
     then
         echo "Fatal: $var is not installed" 2>&1
-        exit 11
+        exitmanager 11
     fi
 done
 
@@ -53,9 +53,11 @@ done
 export DEVPATH
 source "$CWD/synchelper.sh"
 
+messagemanager PENDING
+
 # Check if data dir is a mountpoint
 #$CHKMNT -q "$DATADIR"
-#if [ $? -ne 0 ]; then echo "$DATADIR is not a mounted volume" 1>&2; exit 2; fi
+#if [ $? -ne 0 ]; then echo "$DATADIR is not a mounted volume" 1>&2; exitmanager 2; fi
 
 function is_mounted
 {
@@ -89,13 +91,13 @@ _cleanup
 if [ $? -ne 0 ]
 then
     echo "[$$] Could not complete initial cleanup, exiting" 1>&2
-    exit 3
+    exitmanager 3
 fi
 $MKDIR -p "$MNTPNT"
 if [ $? -ne 0 ]
 then
     echo "[$$] Could not create mount point" 1>&2
-    exit 4
+    exitmanager 4
 fi
 trap _cleanup EXIT INT TERM
 
@@ -112,24 +114,6 @@ do
             $IDEVICEPAIR --uuid "$LABEL" pair > /dev/null
             $IFUSE "$MNTPNT" --uuid "$LABEL" -o nonempty > /dev/null
             ;;
-        "mtp")
-
-            if [ -n "$MTPFS" ]
-            then
-                # go-mtpfs cannot find fusermount unless we give it our $PATH
-                export PATH
-                $MTPFS "$MNTPNT" &
-                sleep 5
-                # Check w/ ls cause go-mtpfs can mount an empty fs and still return 0
-                if [ $(ls "$MNTPNT" -1 2>/dev/null | wc -l) -eq 0 ]
-                then
-                    _cleanup
-                fi
-            fi
-
-            #TODO: Handle fall-through for devices that can do both mtp & ptp
-
-            ;;
         "ptp")
             # Udev gives us a filename friendly label: {$BUSNUM}_{$DEVNUM}
             # If we replace the underscore w/ a comma we get a port number
@@ -141,9 +125,36 @@ do
             # a problem in a headless environment.
             ls "$MNTPNT" > /dev/null 2>&1 || { echo "[$$] I/O Error" 1>&2; _cleanup; }
             ;;
+        "mtp")
+            echo "Try mounting PTP before MTP"
+            port="$(echo ""$LABEL"" | $SED --regexp-extended 's/[^0-9]+/,/g')"
+            $GPHOTOFS --port=usb:"$port" -o nonempty "$MNTPNT" > /dev/null
+            # a problem in a headless environment.
+            ls "$MNTPNT" > /dev/null 2>&1 || { 
+            	echo "[$$] I/O Error" 1>&2; _cleanup; 
+            	echo "Try mounting MTP instead"
+
+	            if [ -n "$MTPFS" ]
+	            then
+	                # go-mtpfs cannot find fusermount unless we give it our $PATH
+	                export PATH
+	                $MTPFS "$MNTPNT" &
+					sleep 5
+					
+					# Check w/ ls cause go-mtpfs can mount an empty fs and still return 0
+	                
+	                if [ $(ls "$MNTPNT" -1 2>/dev/null | wc -l) -eq 0 ]
+	                then
+	                    _cleanup
+	                fi
+	            fi
+	
+	            #TODO: Handle fall-through for devices that can do both mtp & ptp
+            }
+            ;;
         *)
             echo "[$$] Unrecognized mount type '$MNTTYPE', exiting" 1>&2
-            exit 5
+            exitmanager 5
             ;;
     esac
 
@@ -156,7 +167,7 @@ do
     if [ $(is_connected) -eq 0 ]
     then
         echo "[$$] Device disconnected while trying to mount" 1>&2
-        exit 12
+        exitmanager 12
     fi
 
     # Some other instance of this script could potentially
@@ -165,7 +176,7 @@ do
 #    then
 #        echo "Some other process has already mounted $MNTPNT, exit w/o cleanup" 1>&2
 #        trap - EXIT INT TERM
-#        exit 6
+#        exitmanager 6
 #    fi
 
     COUNT=$(($COUNT + 1))
@@ -175,7 +186,7 @@ done
 if [ $(is_mounted) -ne 1 ]
 then
     echo "[$$] Failed to mount after $COUNT attempts" 1>&2
-    exit 7
+    exitmanager 7
 fi
 
 # Prepare for file transfer
@@ -184,13 +195,21 @@ DEST="$(backupdir "$LABEL")"
 if [ ! -d "$DEST" -o ! -w "$DEST" ]
 then
     echo "$DEST is not a writeable directory, exiting" 1>&2
-    exit 8
+    exitmanager 8
 fi
 TMPDEST="$DEST/tmp"
 $MKDIR -p "$TMPDEST"
 
 # Uncomment to not rely on rsync filters and only copy camera files instead
 #if [ -d "$SRC/DCIM" ]; then SRC="$SRC/DCIM"; fi
+#if [ -d "$SRC/Phone/DCIM" ]; then SRC="$SRC/Phone/DCIM"; fi
+DCIMDIR="$(finddcim $MNTPNT)"
+if [ -d "$DCIMDIR/DCIM" ]; then SRC="$DCIMDIR/DCIM"; fi
+echo "$SRC"
+
+echo "[$$] DEBUG ($SRC)" 1>&2
+
+messagemanager WORKING
 
 echo "[$$] Starting transfer from $SRC to $TMPDEST"
 $RSYNC                                               \
@@ -209,14 +228,14 @@ then
 elif [ $err -ne 0 ]
 then
     echo "[$$] Device disconnected during transfer (1) [$err]" 2>&1
-    exit 9
+    exitmanager 9
 fi
 # check if device looks disconnected
 SRC_LS_CNT=$(ls -1 "$MNTPNT" 2>/dev/null | wc -l)
 if [ $(is_connected) -eq 0 -o $SRC_LS_CNT -eq 0 ]
 then
     echo "[$$] Device disconnected during transfer (2)" 1>&2
-    exit 10
+    exitmanager 10
 fi
 
 $FIND "$TMPDEST"    \
@@ -236,4 +255,4 @@ $MV "$TMPDEST" "$FINALDEST/$(date +"%H%M%S")"
 trap - EXIT INT TERM
 _cleanup
 
-exit 0
+exitmanager 0
