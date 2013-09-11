@@ -57,7 +57,7 @@ class DBHelper(object):
         if db is None:
             self._conn = None
         else:
-            self._conn = sqlite.connect(db)
+            self._conn = sqlite.connect(db, isolation_level=None) # Auto-commit
             self._conn.row_factory = DBHelper._row_factory
             self._conn.text_factory = str
             self._conn.cursor().execute('PRAGMA foreign_keys = ON')

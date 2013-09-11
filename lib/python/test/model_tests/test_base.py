@@ -62,7 +62,7 @@ class TestBaseModel(unittest.TestCase):
         """Test BaseModel.clean_data"""
 
         sample_data = {'some_attribute': 10, 'nonexistent': '...'}
-        clean_data = SampleModel.clean_data(sample_data)
+        clean_data = SampleModel().clean_data(sample_data)
         self.assertEqual(clean_data, {'some_attribute': 10})
 
     def test_id(self):

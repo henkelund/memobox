@@ -17,19 +17,18 @@ class BaseModel(object):
         if isinstance(cache, BaseCache):
             cls._cache = cache
 
-    @classmethod
-    def clean_data(cls, data):
+    def clean_data(self, data):
         """Clean the given dict from non-savable data"""
 
-        cache_key = 'DESCRIBE_%s' % cls._table
-        desc = cls._cache.get(cache_key)
+        cache_key = 'DESCRIBE_%s' % self._table
+        desc = self.__class__._cache.get(cache_key)
         if type(desc) is not dict:
-            desc = DBHelper().describe_table(cls._table)
-            cls._cache.set(cache_key, desc)
+            desc = DBHelper().describe_table(self._table)
+            self.__class__._cache.set(cache_key, desc)
 
         clean_data = {}
         for key in data.keys():
-            if key == cls._pk:
+            if key == self._pk:
                 continue
             elif key in desc:
                 #TODO: type cast?
@@ -37,9 +36,18 @@ class BaseModel(object):
 
         return clean_data
 
+    def get_table(self):
+        """"""
+        return self._table or self.__class__._table
+
     def __init__(self, data={}):
         """Initialize class instance"""
         self._data = data.copy()
+        self._init()
+
+    def _init(self):
+        """Internal constuctor"""
+        pass
 
     def id(self):
         """Return primary key value of this model instance"""
@@ -64,6 +72,10 @@ class BaseModel(object):
             self._data[key] = value
 
         return self
+
+    def has_data(self, key):
+        """Check if this model has data for a given key"""
+        return key in self._data
 
     def unset_data(self, key=None):
         """Remove attribute values from this model"""
@@ -97,7 +109,7 @@ class BaseModel(object):
         if not key:
             key = self.__class__._pk
         where = '%s = ?' % (DBHelper.quote_identifier(key),)
-        return DBSelect(self.__class__._table
+        return DBSelect(self.get_table()
                     ).where(where, self.get_data(key)).limit(1)
 
     def load(self, value, key=None):
@@ -117,11 +129,11 @@ class BaseModel(object):
     def save(self):
         """Store this models data"""
 
-        data = self.__class__.clean_data(self._data)
+        data = self.clean_data(self._data)
         if self.id():
             self._db_select().query_update(data)
         else:
-            ids = DBHelper().insert(self.__class__._table, data)
+            ids = DBHelper().insert(self.get_table(), data)
             self.set_data(self.__class__._pk, ids[0])
 
         return self
@@ -157,9 +169,10 @@ class BaseModelSet(DBSelect):
         """Initialize"""
 
         self._model_class = model_class
+        self._main_table = model_class._table
         self._total_size = None
         self.reset()
-        super(BaseModelSet, self).__init__((model_class._table, 'm'))
+        super(BaseModelSet, self).__init__((self._main_table, 'm'))
 
     def __iter__(self):
         """Rewind internal pointer"""
@@ -213,6 +226,7 @@ class BaseModelSet(DBSelect):
 
             if type(data) is dict:
                 model = self._model_class(data)
+                model._table = self._main_table
                 self._items.append(model)
                 return model
 
