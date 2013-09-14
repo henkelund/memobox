@@ -54,6 +54,8 @@ class ExtendedModel(BaseModel):
     def save(self):
         """Store this extended models data"""
 
+        #TODO: Implement transaction support in DBHelper
+
         super(ExtendedModel, self).save()
         self._load_extended_data(False)
 
@@ -164,28 +166,38 @@ class ExtendedModel(BaseModel):
     def _get_attribute_group(cls, group_id, create=False):
         """Retrieve an attribute group id"""
 
-        if group_id in cls._group_index:
-            return cls._group_index[group_id]
+        if (cls._table in cls._group_index
+                and group_id in cls._group_index[cls._table]):
+            return cls._group_index[cls._table][group_id]
 
+        group_desc = {
+            '_id': group_id,
+            'code': str(group_id).replace(' ', '_'),
+            'label': str(group_id.replace('_', ' ')).capitalize()
+        }
+
+        cls._group_index[cls._table] = {}
         for field in ('_id', 'code', 'label'):
             select = DBSelect('attribute_group').where(
-                            '%s = ?' % field, group_id).limit(1)
+                            '%s = ?' % field, group_desc[field]).where(
+                            'type = ?', cls._table).limit(1)
             group = select.query().fetchone()
             if type(group) is dict:
-                cls._group_index[group_id] = group['_id']
-                return cls._group_index[group_id]
+                cls._group_index[cls._table][group_id] = group['_id']
+                return cls._group_index[cls._table][group_id]
 
         if not create:
             return None
 
         ids = DBHelper().insert('attribute_group', {
-            'code': str(group_id).replace(' ', '_'),
-            'label': str(group_id).capitalize()
+            'code': group_desc['code'],
+            'label': group_desc['label'],
+            'type': cls._table
         })
 
         if len(ids) > 0:
-            cls._group_index[group_id] = ids[0]
-            return cls._group_index[group_id]
+            cls._group_index[cls._table][group_id] = ids[0]
+            return cls._group_index[cls._table][group_id]
 
         return None
 
@@ -266,7 +278,8 @@ class ExtendedModel(BaseModel):
                     CREATE TABLE "attribute_group" (
                         "_id"   INTEGER PRIMARY KEY AUTOINCREMENT,
                         "code"  TEXT NOT NULL DEFAULT "",
-                        "label" TEXT NOT NULL DEFAULT ""
+                        "label" TEXT NOT NULL DEFAULT "",
+                        "type"  TEXT NOT NULL DEFAULT ""
                     )
                 """),
                 DBHelper().query("""
