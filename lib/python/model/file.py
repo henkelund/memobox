@@ -2,6 +2,8 @@ from model.device import DeviceModel
 from model.extended import ExtendedModel
 from helper.db import DBHelper
 import sys, os, subprocess, re, mimetypes, hashlib, math, time
+from PIL import Image
+from PIL.ExifTags import TAGS, GPSTAGS
 
 VISIBILITY_VISIBLE = 0
 VISIBILITY_HIDDEN = (1 << 0)
@@ -202,7 +204,19 @@ class FileModel(ExtendedModel):
                         "rating"     INTEGER NOT NULL DEFAULT 0
                     )
                 """ % (table, pk)),
-                FileModel._create_attribute_tables()
+                cls._create_attribute_tables(),
+                cls._create_attribute(
+                    'width', 'Width', 'integer', 'Image'),
+                cls._create_attribute(
+                    'height', 'Height', 'integer', 'Image'),
+                cls._create_attribute(
+                    'latitude', 'Latitude', 'real', 'Image'),
+                cls._create_attribute(
+                    'longitude', 'Longitude', 'real', 'Image'),
+                cls._create_attribute(
+                    'timestamp', 'Timestamp', 'integer', 'Image'),
+                cls._create_attribute(
+                    'orientation', 'Orientation', 'integer', 'Image')
             ),
         )
 
@@ -237,5 +251,115 @@ class FileModelTypeBase(object):
 
     def _harvest(self, filename):
         """Implement in subclass"""
+        return self
+
+class FileModelTypeImage(FileModelTypeBase):
+    """Image file type specialist
+
+    EXIF to LatLng conversion courtesy of erans
+    https://gist.github.com/erans/983821
+    """
+
+    def _get_exif_data(self, image):
+        """Get exif data from 'filename'"""
+
+        data = {}
+        exif = image._getexif()
+        if not exif:
+            return data
+
+        for tag, value in exif.items():
+            decoded = TAGS.get(tag, tag)
+            if decoded == 'GPSInfo':
+                gps_info = {}
+                for t in value:
+                    gps_decoded = GPSTAGS.get(t, t)
+                    gps_info[gps_decoded] = value[t]
+
+                data[decoded] = gps_info
+            else:
+                data[decoded] = value
+
+        return data
+
+    def _latlng_to_degree(self, value):
+        """Convert EXIF coordinate value to float degree"""
+
+        d0 = value[0][0]
+        d1 = value[0][1]
+        d = float(d0) / float(d1)
+
+        m0 = value[1][0]
+        m1 = value[1][1]
+        m = float(m0) / float(m1)
+
+        s0 = value[2][0]
+        s1 = value[2][1]
+        s = float(s0) / float(s1)
+
+        return d + (m / 60.) + (s / 3600.)
+
+    def _gpsinfo_to_latlng(self, info):
+        """Convert EXIF GPSInfo to latlng degree values"""
+
+        lat_val = None
+        lng_val = None
+
+        latref = info['GPSLatitudeRef'] if 'GPSLatitudeRef' in info else None
+        lngref = info['GPSLongitudeRef'] if 'GPSLongitudeRef' in info else None
+        lat = info['GPSLatitude'] if 'GPSLatitude' in info else None
+        lng = info['GPSLongitude'] if 'GPSLongitude' in info else None
+
+        if not latref or not lngref or not lat or not lng:
+            return (lat_val, lng_val)
+
+        lat_val = self._latlng_to_degree(lat)
+        if latref != 'N':
+            lat_val = -lat_val
+
+        lng_val = self._latlng_to_degree(lng)
+        if lngref != 'E':
+            lng_val = -lng_val
+
+        return (lat_val, lng_val)
+
+    def _clean_exif_string(self, string):
+        """Clean strings from trailing null char"""
+        return re.sub(r'\0.*$', r'', string)
+
+    def _harvest(self, filename):
+        """Gather image specific data from 'filename'"""
+
+        model = self.get_file()
+        image = Image.open(filename)
+        if not image:
+            return self
+
+        size = image.size
+        if size and len(size) >= 2:
+            model.width(size[0])
+            model.height(size[1])
+
+        exif = self._get_exif_data(image)
+
+        if 'GPSInfo' in exif:
+            latlng = self._gpsinfo_to_latlng(exif['GPSInfo'])
+            if latlng[0] and latlng[1]:
+                model.latitude(latlng[0])
+                model.longitude(latlng[1])
+
+        if 'DateTime' in exif:
+            date_str = self._clean_exif_string(exif['DateTime'])
+            try:
+                time_struct = time.strptime(date_str, '%Y:%m:%d %H:%M:%S')
+                timestamp = int(time.mktime(time_struct))
+                if timestamp > 0:
+                    model.timestamp(timestamp)
+            except ValueError:
+                pass
+
+        if 'Orientation' in exif:
+            model.orientation(exif['Orientation'])
+
         return self
 

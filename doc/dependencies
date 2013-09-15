@@ -13,4 +13,5 @@ gphotofs
 parted
 python
 -               python-werkzeug
+-               python-imaging
 

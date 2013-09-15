@@ -36,6 +36,7 @@ class TestFileModel(unittest.TestCase):
                 'DROP TABLE IF EXISTS %s'
                     % DBHelper.quote_identifier(table))
         InstallHelper.reset()
+        FileModel._group_index = {} # clear cached attr groups
 
     def _get_file(self, ext):
         """Get a file by extension"""
@@ -88,4 +89,13 @@ class TestFileModel(unittest.TestCase):
         self.assertEqual(
             model.abspath(),
             os.path.dirname(os.path.abspath(filename)))
+
+    def test_image_type(self):
+        """Test image specific functionality"""
+
+        filename = self._get_file('jpg')
+        pk = FileModel.factory(filename).save().id()
+        model = FileModel().load(pk)
+        self.assertGreater(model.width(), 0)
+        self.assertGreater(model.height(), 0)
 
