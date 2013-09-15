@@ -61,6 +61,9 @@ class ExtendedModel(BaseModel):
 
         updated = False
         attrs = self.get_attributes()
+        if attrs is None:
+            return self
+
         for attr in attrs:
             code = attr['code']
             if not code in self._data:
