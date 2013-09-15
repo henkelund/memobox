@@ -71,7 +71,7 @@ class FileModel(ExtendedModel):
                     mime[0] = lookup[0]
                 if mime[1] is None and len(lookup) > 1:
                     mime[1] = (re.sub(r'^charset=|\n$', '', lookup[1]).strip())
-            except CalledProcessError:
+            except subprocess.CalledProcessError:
                 pass
 
         mime[0] = mime[0].strip('; ')
@@ -146,7 +146,7 @@ class FileModel(ExtendedModel):
 
         # determine file system properties
         name = os.path.basename(filename)
-        path = os.path.dirname(os.path.abspath(filename))        
+        path = os.path.dirname(os.path.abspath(filename))
         stat = os.stat(filename)
         visibility = FileModel.guess_visibility(filename)
 
