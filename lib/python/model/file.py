@@ -181,6 +181,7 @@ class FileModel(ExtendedModel):
     def _install(cls):
         """Install base table and attributes"""
 
+        DeviceModel.install()
         ExtendedModel.install()
         table = DBHelper.quote_identifier(cls._table)
         pk = DBHelper.quote_identifier(cls._pk)
@@ -201,9 +202,17 @@ class FileModel(ExtendedModel):
                         "created_at" INTEGER,
                         "indexed_at" INTEGER,
                         "is_hidden"  INTEGER NOT NULL DEFAULT 0,
-                        "rating"     INTEGER NOT NULL DEFAULT 0
+                        "rating"     INTEGER NOT NULL DEFAULT 0,
+                        "device"     INTEGER,
+                        "devpath"    TEXT    NOT NULL DEFAULT '',
+                        FOREIGN KEY ("device") REFERENCES "device"("_id")
+                            ON DELETE SET NULL ON UPDATE SET NULL
                     )
                 """ % (table, pk)),
+                DBHelper().query("""
+                    CREATE UNIQUE INDEX "UNQ_FILE_DUPLICATE"
+                        ON %s ("name", "devpath", "checksum")
+                """ % table),
                 cls._create_attribute_tables(),
                 cls._create_attribute(
                     'width', 'Width', 'integer', 'Image'),
@@ -340,7 +349,11 @@ class FileModelTypeImage(FileModelTypeBase):
             model.width(size[0])
             model.height(size[1])
 
-        exif = self._get_exif_data(image)
+        exif = {}
+        try:
+            exif = self._get_exif_data(image)
+        except AttributeError:
+            return self
 
         if 'GPSInfo' in exif:
             latlng = self._gpsinfo_to_latlng(exif['GPSInfo'])

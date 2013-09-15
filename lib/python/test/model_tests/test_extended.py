@@ -151,3 +151,18 @@ class TestExtendedModel(unittest.TestCase):
         self.assertEqual(sample.sample_attr_2(), 'fifty-seven')
         self.assertIsNone(sample.sample_attr_3())
 
+    def test_delete(self):
+        """Test ExtendedModel.delete"""
+
+        pk = SampleExtModel({
+            'static': 'something',
+            'sample_attr_1': 57
+        }).save().id()
+
+        # make sure model delete affects attribute tables
+        int_attrs = DBSelect('sample_attribute_integer').query().fetchall()
+        self.assertEqual(len(int_attrs), 1)
+        SampleExtModel().load(pk).delete()
+        int_attrs = DBSelect('sample_attribute_integer').query().fetchall()
+        self.assertEqual(len(int_attrs), 0)
+

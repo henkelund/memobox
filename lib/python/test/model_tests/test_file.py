@@ -29,7 +29,8 @@ class TestFileModel(unittest.TestCase):
             'file',
             'attribute_group_attribute',
             'attribute_group',
-            'attribute'
+            'attribute',
+            'device'
         ]
         for table in created_tables:
             DBHelper().query(
