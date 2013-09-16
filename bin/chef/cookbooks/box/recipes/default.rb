@@ -89,5 +89,26 @@ if ENV::has_key?('BOX_DIR') and File::directory?(ENV['BOX_DIR'])
     notifies :reload, resources(:service => 'udev'), :immediately
   end
 
+  #####################
+  # Confifure indexer #
+  #####################
+
+  # Define cron service
+  service 'cron' do
+    service_name 'cron'
+    restart_command 'service cron restart && sleep 1'
+    reload_command 'service cron reload && sleep 1'
+    action :enable
+  end
+
+  # Copy cron template and restart cron service
+  template '/etc/cron.d/box-cron' do
+    source 'box-cron.erb'
+    owner 'root'
+    group 'root'
+    mode 0644
+    notifies :reload, resources(:service => 'cron'), :immediately
+  end
+
 end
 
