@@ -1,0 +1,7 @@
+[uwsgi]
+logto = <%= ENV['BOX_DIR'] %>/log
+chdir = <%= ENV['BOX_DIR'] %>/www
+pythonpath = <%= ENV['BOX_DIR'] %>/lib/python
+wsgi-file = <%= ENV['BOX_DIR'] %>/www/wsgi.py
+callable = app
+

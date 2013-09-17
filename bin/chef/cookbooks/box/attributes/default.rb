@@ -6,4 +6,8 @@ set[:parted][:package] = 'parted'
 set[:python][:package] = 'python'
 set[:werkzeug][:package] = 'python-werkzeug'
 set[:pil][:package] = 'python-imaging'
+set[:flask][:package] = 'python-flask'
+set[:uwsgi][:package] = 'uwsgi'
+set[:uwsgi_python][:package] = 'uwsgi-plugin-python'
+set[:nginx][:package] = 'nginx'
 

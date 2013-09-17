@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8' />
+        <title>Box</title>
+    </head>
+    <body>
+        <ul>
+        {% for device in devices %}
+            <li>{{ device.product_name }}</li>
+        {% endfor %}
+        </ul>
+    </body>
+</html>
+

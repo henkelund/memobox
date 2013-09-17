@@ -50,6 +50,42 @@ package 'pil' do
   action :install
 end
 
+# Tiny python web application framework
+package 'flask' do
+  package_name node[:flask][:package]
+  action :install
+end
+
+# Install python web application container
+package 'uwsgi' do
+  package_name node[:uwsgi][:package]
+  action :install
+end
+package 'uwsgi_python' do
+  package_name node[:uwsgi_python][:package]
+  action :install
+end
+
+# Frontend proxy for uwsgi
+package 'nginx' do
+  package_name node[:nginx][:package]
+  action :install
+end
+
+###################
+# Define services #
+###################
+
+services = %w{ udev cron uwsgi nginx }
+services.each do |service|
+  service service do
+    service_name service
+    restart_command "service #{service} restart && sleep 1"
+    reload_command "service #{service} reload && sleep 1"
+    action :enable
+  end
+end
+
 if ENV::has_key?('BOX_DIR') and File::directory?(ENV['BOX_DIR'])
 
   ##############################
@@ -57,9 +93,9 @@ if ENV::has_key?('BOX_DIR') and File::directory?(ENV['BOX_DIR'])
   ##############################
 
   # Create non-versioned directories
-  dirs = %W{ #{ENV['BOX_DIR']}/log #{ENV['BOX_DIR']}/data }
+  dirs = %w{ log data }
   dirs.each do |dir|
-    directory dir do
+    directory "#{ENV['BOX_DIR']}/dir" do
       owner 'root'
       group 'root'
       mode '0755'
@@ -72,34 +108,18 @@ if ENV::has_key?('BOX_DIR') and File::directory?(ENV['BOX_DIR'])
   # Install udev rules #
   ######################
 
-  # Define udev service
-  service 'udev' do
-    service_name 'udev'
-    restart_command 'service udev restart && sleep 1'
-    reload_command 'service udev reload && sleep 1'
-    action :enable
-  end
-
   # Copy rule template and restart udev service
   template '/etc/udev/rules.d/99-automount.rules' do
     source '99-automount.rules.erb'
     owner 'root'
     group 'root'
     mode 0644
-    notifies :reload, resources(:service => 'udev'), :immediately
+    notifies :reload, resources(:service => 'udev'), :immediate
   end
 
   #####################
   # Confifure indexer #
   #####################
-
-  # Define cron service
-  service 'cron' do
-    service_name 'cron'
-    restart_command 'service cron restart && sleep 1'
-    reload_command 'service cron reload && sleep 1'
-    action :enable
-  end
 
   # Copy cron template and restart cron service
   template '/etc/cron.d/box-cron' do
@@ -107,7 +127,41 @@ if ENV::has_key?('BOX_DIR') and File::directory?(ENV['BOX_DIR'])
     owner 'root'
     group 'root'
     mode 0644
-    notifies :reload, resources(:service => 'cron'), :immediately
+    notifies :reload, resources(:service => 'cron'), :immediate
+  end
+
+  ###################################
+  # Configure web application stack #
+  ###################################
+
+  template '/etc/uwsgi/apps-available/box.ini' do
+    source 'uwsgi.ini.erb'
+    owner 'root'
+    group 'root'
+    mode 0644
+    notifies :restart, resources(:service => 'uwsgi'), :immediate
+  end
+
+  template '/etc/nginx/sites-available/box-uwsgi' do
+    source 'box-nginx.erb'
+    owner 'root'
+    group 'root'
+    mode 0644
+    notifies :restart, resources(:service => 'nginx'), :immediate
+  end
+
+  # Enable the uwsgi configuration and disable the default site
+  link '/etc/uwsgi/apps-enabled/box.ini' do
+    to '/etc/uwsgi/apps-available/box.ini'
+    notifies :restart, resources(:service => 'uwsgi'), :immediate
+  end
+  link '/etc/nginx/sites-enabled/box-uwsgi' do
+    to '/etc/nginx/sites-available/box-uwsgi'
+    notifies :restart, resources(:service => 'nginx'), :immediate
+  end
+  link '/etc/nginx/sites-enabled/default' do
+    action :delete
+    only_if 'test -L /etc/nginx/sites-enabled/default'
   end
 
 end
