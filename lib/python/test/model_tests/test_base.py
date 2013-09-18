@@ -172,3 +172,58 @@ class TestBaseModel(unittest.TestCase):
         self.assertRaises(IndexError, models.__setitem__, 0, None)
         self.assertRaises(IndexError, models.__delitem__, 0)
 
+    def test_modelset_add_filter(self):
+        """Test BaseModelSet filter function"""
+
+        test_eq = SampleModel.all().add_filter(
+                        'some_attribute', {'eq': 10})
+        self.assertEqual(len(test_eq), 1)
+        self.assertEqual(test_eq[0].id(), 1)
+        test_ne = SampleModel.all().add_filter(
+                        'some_attribute', {'ne': 10})
+        self.assertEqual(len(test_ne), 2)
+        self.assertIn(test_ne[0].id(), (2, 3))
+        self.assertIn(test_ne[1].id(), (2, 3))
+        test_gt = SampleModel.all().add_filter(
+                        'some_attribute', {'gt': 20})
+        self.assertEqual(len(test_gt), 1)
+        self.assertEqual(test_gt[0].id(), 3)
+        test_lt = SampleModel.all().add_filter(
+                        'some_attribute', {'lt': 20})
+        self.assertEqual(len(test_lt), 1)
+        self.assertEqual(test_lt[0].id(), 1)
+        test_ge = SampleModel.all().add_filter(
+                        'some_attribute', {'ge': 20})
+        self.assertEqual(len(test_ge), 2)
+        self.assertIn(test_ge[0].id(), (2, 3))
+        self.assertIn(test_ge[1].id(), (2, 3))
+        test_le = SampleModel.all().add_filter(
+                        'some_attribute', {'le': 20})
+        self.assertEqual(len(test_le), 2)
+        self.assertIn(test_le[0].id(), (1, 2))
+        self.assertIn(test_le[1].id(), (1, 2))
+        test_in = SampleModel.all().add_filter(
+                        'some_attribute', {'in': (10, 30)})
+        self.assertEqual(len(test_in), 2)
+        self.assertIn(test_in[0].id(), (1, 3))
+        self.assertIn(test_in[1].id(), (1, 3))
+        test_null = SampleModel.all().add_filter(
+                        'some_attribute', {'null': True})
+        self.assertEqual(len(test_null), 0)
+        test_like = SampleModel.all().add_filter(
+                        'another_attribute', {'like': '%en%'})
+        self.assertEqual(len(test_like), 2)
+        self.assertIn(test_like[0].id(), (1, 2))
+        self.assertIn(test_like[1].id(), (1, 2))
+        test_between = SampleModel.all().add_filter(
+                        'some_attribute', {'between': (15, 25)})
+        self.assertEqual(len(test_between), 1)
+        self.assertEqual(test_between[0].id(), 2)
+        test_or = SampleModel.all().add_filter(
+            ('some_attribute', 'another_attribute'),
+            (10,               {'thirty'})
+        )
+        self.assertEqual(len(test_or), 2)
+        self.assertIn(test_or[0].id(), (1, 3))
+        self.assertIn(test_or[1].id(), (1, 3))
+

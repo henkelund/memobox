@@ -265,3 +265,71 @@ class BaseModelSet(DBSelect):
             self._total_size = select.query().fetchone()['c']
         return self._total_size
 
+    def _prepare_filter_condition(self, spec):
+        """Filter helper to determine condition based on value"""
+
+        cond = '= ?'
+        value = spec
+
+        if type(spec) is dict:
+            for key in spec.keys():
+                lower = key.lower()
+                if lower in ('eq', '=', '=='):
+                    value = spec[key]
+                elif lower in ('ne', 'neq', '!', '!=', '<>'):
+                    cond = '!= ?'
+                    value = spec[key]
+                elif lower in ('gt', '>'):
+                    cond = '> ?'
+                    value = spec[key]
+                elif lower in ('lt', '<'):
+                    cond = '< ?'
+                    value = spec[key]
+                elif lower in ('ge', 'gte', '>='):
+                    cond = '>= ?'
+                    value = spec[key]
+                elif lower in ('le', 'lte', '<='):
+                    cond = '<= ?'
+                    value = spec[key]
+                elif lower == 'in':
+                    cond = 'IN (?)'
+                    value = spec[key]
+                elif lower == 'null':
+                    cond = 'IS NULL' if spec[key] else 'IS NOT NULL'
+                    value = None
+                elif lower == 'like':
+                    cond = 'LIKE ?'
+                    value = spec[key]
+                elif lower in ('between', '><'):
+                    cond = 'BETWEEN ? AND ?'
+                    value = spec[key]
+
+        return (cond, value)
+
+    def _prepare_filter_attribute(self, attribute):
+        """Prepare attribute for use in WHERE"""
+        #TODO: check attribute against describe table?
+        return DBHelper.quote_identifier(attribute)
+
+    def add_filter(self, attribute, value):
+        """Add a filter to this set"""
+
+        if type(attribute) not in (list, tuple):
+            attribute = (attribute,)
+            value = (value,)
+
+        for i in range(len(attribute)):
+            op = ''
+            cp = ''
+            if len(attribute) > 1:
+                if i == 0:
+                    op = '('
+                elif i == len(attribute) - 1:
+                    cp = ')'
+            attr = self._prepare_filter_attribute(attribute[i])
+            cond = self._prepare_filter_condition(value[i])
+            where = self.where if i == 0 else self.or_where
+            where('%s%s %s%s' % (op, attr, cond[0], cp), cond[1])
+
+        return self
+
