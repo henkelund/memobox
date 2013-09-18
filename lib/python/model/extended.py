@@ -132,15 +132,25 @@ class ExtendedModel(BaseModel):
 
     def get_attributes(self):
         """Get attributes related to this model and group"""
+        return self.get_all_attributes(self.get_attribute_group())
 
-        group = self._get_attribute_group(self.get_attribute_group())
-        parent = self._table
+    @classmethod
+    def get_all_attributes(cls, group=None):
+        """Get attributes related to this model class"""
 
-        if not group or not parent:
+        parent = cls._table
+
+        if not parent:
             return None
 
-        cache_key = 'ATTRIBUTES_%s_%d' % (parent, group)
-        attributes = self.__class__._cache.get(cache_key)
+        cache_key = 'ATTRIBUTES_%s' % parent
+        if group is not None:
+            group = cls._get_attribute_group(group)
+            if group is None:
+                return None
+            cache_key = '%s_%d' % (cache_key, group)
+
+        attributes = cls._cache.get(cache_key)
         if type(attributes) is list:
             return attributes
 
@@ -151,12 +161,14 @@ class ExtendedModel(BaseModel):
                     ).inner_join(
                         ('attribute', 'a'),
                         '"ga"."attribute" = "a"."_id"'
-                    ).where('"g"."_id" = ?', group
                     ).where('"a"."parent" = ?', parent)
+
+        if group is not None:
+            select.where('"g"."_id" = ?', group)
 
         attributes = select.query().fetchall()
         if type(attributes) is list:
-            self.__class__._cache.set(cache_key, attributes)
+            cls._cache.set(cache_key, attributes)
 
         return attributes
 
@@ -298,4 +310,56 @@ class ExtendedModel(BaseModel):
                 """)
             ),
         )
+
+    @classmethod
+    def all(cls):
+        """Get an extended model collection"""
+        return ExtendedModelSet(cls)
+
+class ExtendedModelSet(BaseModelSet):
+    """Base class for extended model set"""
+
+    def _prepare_filter_attribute(self, attribute):
+        """Prepare attribute for use in WHERE"""
+
+        if not hasattr(self, '_attrs'):
+            self._attrs = self._model_class.get_all_attributes()
+
+        if not hasattr(self, '_joined_attrs'):
+            self._joined_attrs = {}
+
+        # if this attributes value table hasn't already been joined
+        if attribute not in self._joined_attrs.keys():
+
+            attr_model = None
+            for attr in self._attrs:
+                if attr['code'] == attribute:
+                    attr_model = attr
+                    break
+
+            # attribute not found, check if it could be a static column
+            if attr_model is None:
+                return super(ExtendedModelSet, self
+                                )._prepare_filter_attribute(attribute)
+
+            q = DBHelper.quote_identifier
+            alias = '_%s_tbl' % attribute
+            table = (
+                self._model_class._get_attribute_table(attr_model['type']),
+                alias
+            )
+            conds = (
+                # match main table pk against attribute value table parent
+                '%s = %s' % (
+                    q('m.%s' % self._model_class._pk), q('%s.parent' % alias)
+                ),
+                # match value attribute id against attribute id
+                '%s = %d' % (
+                    q('%s.attribute' % alias), attr_model[AttributeModel._pk]
+                )
+            )
+            self.left_join(table, ' AND '.join(conds), {attribute: 'value'})
+            self._joined_attrs[attribute] = q('%s.value' % alias)
+
+        return self._joined_attrs[attribute]
 

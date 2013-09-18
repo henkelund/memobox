@@ -166,3 +166,39 @@ class TestExtendedModel(unittest.TestCase):
         int_attrs = DBSelect('sample_attribute_integer').query().fetchall()
         self.assertEqual(len(int_attrs), 0)
 
+    def test_modelset_add_filter(self):
+        """Test ExtendedModelSet filter function"""
+
+        pk10 = SampleExtModel({
+            'static': 'static_10',
+            'sample_attr_1': 10,
+            'sample_attr_2': 'ten'
+        }).save().id()
+
+        pk20 = SampleExtModel({
+            'static': 'static_20',
+            'sample_attr_1': 20,
+            'sample_attr_2': 'twenty'
+        }).save().id()
+
+        pk30 = SampleExtModel({
+            'static': 'static_30',
+            'sample_attr_2': 'thirty'
+        }).save().id()
+
+        test_null = SampleExtModel.all().add_filter(
+                        'sample_attr_1', {'null': True})
+        self.assertEqual(len(test_null), 1)
+        self.assertEqual(test_null[0].id(), pk30)
+        test_or = SampleExtModel.all().add_filter(
+            ('sample_attr_1', 'sample_attr_2'),
+            (10,              {'like': '%ty%'})
+        )
+        self.assertEqual(len(test_or), 3)
+        test_and = SampleExtModel.all(
+                        ).add_filter('sample_attr_1', {'><': (5, 25)}
+                        ).add_filter('sample_attr_2', {'like': '%en%'})
+        self.assertEqual(len(test_and), 2)
+        self.assertIn(test_and[0].id(), (pk10, pk20))
+        self.assertIn(test_and[1].id(), (pk10, pk20))
+
