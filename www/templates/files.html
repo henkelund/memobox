@@ -1,0 +1,28 @@
+<div class="btn-toolbar">
+    <div class="btn-group" ng-repeat="filter in FileCtrl.fileService.filters">
+        <button class="btn"
+                ng-class="{active: FileCtrl.isFilterActive(filter, value)}"
+                ng-repeat="(value, label) in filter.options"
+                ng-click="FileCtrl.filterClicked(filter, value)">
+            {{label}}
+        </button>
+    </div>
+</div>
+
+<div class="file-list">
+    <table class="table table-bordered table-striped table-condensed">
+        <thead>
+            <th>Name</th>
+            <th>Path</th>
+            <th>Size</th>
+        </thead>
+        <tbody>
+            <tr ng-repeat="file in FileCtrl.fileService.files">
+                <td>{{file.name}}</td>
+                <td>{{file.devpath}}</td>
+                <td>{{file.size / 1000 | number:0}} Kb</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+

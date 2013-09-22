@@ -2,14 +2,36 @@
 <html>
     <head>
         <meta charset='utf-8' />
-        <title>Box</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cubiebox</title>
+        <link href="/static/css/bootstrap/bootstrap.css" rel="stylesheet">
+        <link href="/static/css/bootstrap/bootstrap-responsive.css" rel="stylesheet">
+        <style type="text/css">
+            body {
+                padding-top: 60px;
+            }
+        </style>
     </head>
     <body>
-        <ul>
-        {% for device in devices %}
-            <li>{{ device.product_name }}</li>
-        {% endfor %}
-        </ul>
+        {% raw %}
+        <div ng-app="box">
+
+            <div class="navbar navbar-inverse navbar-fixed-top">
+                <div class="navbar-inner">
+                    <div class="container">
+                        <a class="brand" href="/">Cubiebox</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <ng-view></ngview>
+            </div>
+        </div>
+        {% endraw %}
+        <script type="text/javascript" src="/static/js/angular/angular.js"></script>
+        <script type="text/javascript" src="/static/js/angular/angular-resource.js"></script>
+        <script type="text/javascript" src="/static/js/box.js"></script>
     </body>
 </html>
 

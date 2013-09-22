@@ -2,16 +2,24 @@ server {
     listen 80;
     server_name localhost;
 
+    root <%= ENV['BOX_DIR'] %>/www;
+
     access_log <%= ENV['BOX_DIR'] %>/log/nginx-access.log;
     error_log <%= ENV['BOX_DIR'] %>/log/nginx-error.log;
+
+    error_page 404 /404.html;
 
     location / {
         include uwsgi_params;
         uwsgi_pass unix:///run/uwsgi/app/box/socket;
     }
 
-    location /static {
-        alias <%= ENV['BOX_DIR'] %>/www/static;
+    location /404.html {
+        internal;
+    }
+
+    location ~ ^/(static|templates)(/|$) {
+        try_files $uri /404.html;
         expires 1y;
         add_header Cache-Control "public";
     }
