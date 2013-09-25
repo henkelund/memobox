@@ -61,9 +61,10 @@
             /**
              * Load files passing 'filter'
              */
-            loadFiles: function(filter)
+            loadFiles: function(filter, complete)
             {
-                var args = {}, fk, vk; // arguments, filter key, value key
+                var that = this,
+                    args = {}, fk, vk; // arguments, filter key, value key
 
                 if (typeof filter == 'object') {
                     for (fk in filter) {
@@ -77,8 +78,18 @@
 
                 this.filesResource.get(
                     args,
-                    this.loadFilesSuccess.bind(this),
-                    this.loadError.bind(this)
+                    function(data) {
+                        that.loadFilesSuccess(data);
+                        if (typeof complete == 'function') {
+                            complete(data);
+                        }
+                    },
+                    function(data) {
+                        that.loadError(data);
+                        if (typeof complete == 'function') {
+                            complete(data);
+                        }
+                    }
                 );
                 return this;
             },
@@ -108,6 +119,7 @@
         var that = this;
         this.fileService = FileService.loadFilters().loadFiles();
         this.filterState = {};
+        this.isFilterPending = false;
 
         /**
          * Check if a given filter option is active
@@ -133,7 +145,10 @@
                 }
                 state.push(value);
             }
-            that.fileService.loadFiles(that.filterState);
+            that.isFilterPending = true;
+            that.fileService.loadFiles(that.filterState, function() {
+                that.isFilterPending = false;
+            });
         };
 
         return $scope.FileCtrl = this;

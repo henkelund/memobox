@@ -2,6 +2,7 @@
     <div class="btn-group" ng-repeat="filter in FileCtrl.fileService.filters">
         <button class="btn"
                 ng-class="{active: FileCtrl.isFilterActive(filter, value)}"
+                ng-disabled="FileCtrl.isFilterPending"
                 ng-repeat="(value, label) in filter.options"
                 ng-click="FileCtrl.filterClicked(filter, value)">
             {{label}}
