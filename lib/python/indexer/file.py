@@ -59,13 +59,20 @@ class FileIndexer(object):
                                 != file_model.abspath()):
                             # the new file is identical to an old one but not
                             # the same file, lets unlik it.
+                            duplicate = os.path.join(
+                                                file_model.abspath(),
+                                                file_model.name())
                             try:
-                                os.unlink(file_model.abspath())
+                                os.unlink(duplicate)
                                 print '[%s] Removed duplicate %s' % (
-                                                log_time, file_model.abspath())
+                                                log_time, duplicate)
+                                try:
+                                    os.rmdir(file_model.abspath())
+                                except OSError:
+                                    pass # dir is not empty
                             except OSError:
                                 print '[%s] Unable to remove duplicate %s' % (
-                                                log_time, file_model.abspath())
+                                                log_time, duplicate)
 
                         print '[%s] %s already exists, skipping..' % (
                                     log_time,
