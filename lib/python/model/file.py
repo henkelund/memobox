@@ -273,7 +273,13 @@ class FileModelTypeImage(FileModelTypeBase):
         """Get exif data from 'filename'"""
 
         data = {}
-        exif = image._getexif()
+        exif = None
+
+        try:
+            exif = image._getexif()
+        except IOError:
+            pass #TODO: Log
+
         if not exif:
             return data
 
