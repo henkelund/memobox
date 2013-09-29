@@ -1,6 +1,7 @@
 from model.device import DeviceModel
 from model.extended import ExtendedModel
 from helper.db import DBHelper
+from helper.log import LogHelper as logger
 import sys, os, subprocess, re, mimetypes, hashlib, math, time
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
@@ -273,12 +274,7 @@ class FileModelTypeImage(FileModelTypeBase):
         """Get exif data from 'filename'"""
 
         data = {}
-        exif = None
-
-        try:
-            exif = image._getexif()
-        except IOError:
-            pass #TODO: Log
+        exif = image._getexif()
 
         if not exif:
             return data
@@ -358,7 +354,8 @@ class FileModelTypeImage(FileModelTypeBase):
         exif = {}
         try:
             exif = self._get_exif_data(image)
-        except AttributeError:
+        except (IOError, AttributeError) as e:
+            logger.notice('Could not read EXIF-data from %s' % filename)
             return self
 
         if 'GPSInfo' in exif:
@@ -375,7 +372,9 @@ class FileModelTypeImage(FileModelTypeBase):
                 if timestamp > 0:
                     model.timestamp(timestamp)
             except ValueError:
-                pass
+                logger.notice(
+                    'Could not parse DateTime string "%s" from %s' %
+                        (date_str, filename))
 
         if 'Orientation' in exif:
             model.orientation(exif['Orientation'])

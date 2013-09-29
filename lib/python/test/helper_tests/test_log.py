@@ -11,6 +11,7 @@ class TestLogHelper(unittest.TestCase):
         """LogHelper test set up"""
 
         InstallHelper.reset()
+        LogHelper._model_installed = False
 
     def tearDown(self):
         """Clean up after test"""
@@ -19,6 +20,7 @@ class TestLogHelper(unittest.TestCase):
             'DROP TABLE IF EXISTS %s'
                 % DBHelper.quote_identifier(LogModel._table))
         InstallHelper.reset()
+        LogHelper._model_installed = False
 
     def test_log(self):
         """Test LogHelper functions"""

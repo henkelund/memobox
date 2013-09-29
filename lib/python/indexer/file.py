@@ -1,5 +1,6 @@
 import sys, os, re, sqlite3
 from helper.db import DBHelper
+from helper.log import LogHelper as logger
 from model.device import DeviceModel
 from model.file import FileModel
 from datetime import datetime
@@ -46,7 +47,6 @@ class FileIndexer(object):
                     try:
                         file_model.save()
                     except sqlite3.IntegrityError:
-                        log_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
                         # unique index on "name", "devpath" and "checksum"
                         duplicates = FileModel.all().where(
@@ -64,19 +64,18 @@ class FileIndexer(object):
                                                 file_model.name())
                             try:
                                 os.unlink(duplicate)
-                                print '[%s] Removed duplicate %s' % (
-                                                log_time, duplicate)
+                                logger.notice('Removed duplicate %s'
+                                                % duplicate)
                                 try:
                                     os.rmdir(file_model.abspath())
                                 except OSError:
                                     pass # dir is not empty
                             except OSError:
-                                print '[%s] Unable to remove duplicate %s' % (
-                                                log_time, duplicate)
+                                logger.error('Unable to remove duplicate %s'
+                                                % duplicate)
 
-                        print '[%s] %s already exists, skipping..' % (
-                                    log_time,
-                                    os.path.join(devpath, filename))
+                        logger.info('%s already exists, skipping..'
+                                        % os.path.join(devpath, filename))
 
             open(flagfile, 'w').close() # touch indexed flag
 
