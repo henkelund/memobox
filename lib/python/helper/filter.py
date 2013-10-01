@@ -131,7 +131,7 @@ class FilterHelper(object):
         file_table = q(FileModel._table)
         file_table_pk = q(FileModel._pk)
 
-        InstallHelper.install('filetime', (
+        InstallHelper.install('filter', (
             lambda: (
                 DBHelper().query("""
                     CREATE TABLE %s (
