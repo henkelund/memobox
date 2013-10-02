@@ -79,7 +79,7 @@ class DBHelper(object):
 
         return desc
 
-    def insert(self, table, bind):
+    def insert(self, table, bind, ignore=False):
         """Insert data into a table."""
 
         if type(bind) is dict:
@@ -90,7 +90,9 @@ class DBHelper(object):
             if not row:
                 continue
             cols = [self.quote_identifier(key) for key in row.keys()]
-            sql = 'INSERT INTO %s (%s) VALUES (%s)' % (
+            ign = ' OR IGNORE ' if ignore else ' '
+            sql = 'INSERT%sINTO %s (%s) VALUES (%s)' % (
+                ign,
                 self.quote_identifier(table),
                 ', '.join(cols),
                 ', '.join('?' * len(row))

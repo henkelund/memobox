@@ -54,10 +54,31 @@ class FilterHelper(object):
 
         ids = DBHelper().insert(
             cls._filter_table,
-            {'code': code, 'label': label}
+            {'code': code, 'label': label},
+            True # ignore
         )
 
         return ids[0] if len(ids) > 0 else None
+
+    @classmethod
+    def get_all_filters(cls):
+        """Present filters and options in a json encodable structure"""
+
+        filters = []
+        for row in DBSelect(cls._filter_table).query().fetchall():
+            filter_object = {
+                'param': row['code'],
+                'label': row['label'],
+                'multi': True,
+                'options': {}
+            }
+            opt_select = DBSelect(cls._filter_option_table)
+            opt_select.where('filter = ?', row['_id'])
+            for opt in opt_select.query().fetchall():
+                filter_object['options'][opt['value']] = opt['label']
+            filters.append(filter_object)
+
+        return filters
 
     @classmethod
     def add_filter_option(cls, filter_id, value, label=None):
@@ -76,6 +97,30 @@ class FilterHelper(object):
         )
 
     @classmethod
+    def get_filter_values_select(cls, filter_id):
+        """Return a DBSelect object with values for the given filter"""
+
+        filter_id = cls.get_filter_id(filter_id)
+        return DBSelect(
+                    (cls._filter_value_table, 'fv')
+                ).where('filter = ?', filter_id)
+
+    @classmethod
+    def join_filter_values(cls, select, filter_id, file_field, columns=()):
+        """Support method for indexers needed since
+        sqlite does not implement right join
+        """
+
+        filter_id = cls.get_filter_id(filter_id)
+        file_field = DBHelper.quote_identifier(file_field)
+        select.left_join(
+            (cls._filter_value_table, 'fv'),
+            'fv.filter = %d AND %s = fv.file' % (filter_id, file_field),
+            columns
+        )
+        return select
+
+    @classmethod
     def set_filter_values(cls, file_id, filter_id, values=None):
         """Set the values for the given file and filter"""
 
@@ -89,7 +134,7 @@ class FilterHelper(object):
             ).where('filter = ?', filter_id
             ).query_delete()
 
-        if not values:
+        if values is None:
             return
         elif type(values) not in (list, tuple):
             values = (values,)
