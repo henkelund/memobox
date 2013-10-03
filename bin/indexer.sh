@@ -12,16 +12,19 @@ CWD="$(pwd)"
 DATADIR="$CWD/data"
 DATABASE="$DATADIR/index.db"
 PYTHONDIR="$CWD/lib/python"
-INDEXER="$PYTHONDIR/indexer/file.py"
+INDEXDIR="$PYTHONDIR/indexer"
 PYTHONPATH="$PYTHONPATH:$PYTHONDIR"
 PYTHON="$(which python)"
 DATETIME=$(date "+%Y-%m-%d %H:%M:%S")
 
-if ps auxwww | grep "$INDEXER" | grep -v grep > /dev/null 2>&1
+if ps auxwww | grep "$INDEXDIR" | grep -v grep > /dev/null 2>&1
 then
     echo "[$DATETIME] An index process is already running, exiting.."
 else
     export PYTHONPATH
-    "$PYTHON" "$INDEXER" "$DATADIR" "$DATABASE" &
+    for indexer in "file" "filetime"
+    do
+        "$PYTHON" "$INDEXDIR/$indexer.py" "$DATABASE" "$DATADIR" &
+    done
 fi
 

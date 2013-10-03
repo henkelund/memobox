@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from helper.db import DBHelper, DBSelect
+from helper.filter import FilterHelper
 from model.device import DeviceModel
 from model.file import FileModel
 import json
@@ -7,6 +8,9 @@ app = Flask(__name__)
 app.debug = True
 
 DBHelper('../data/index.db')
+DeviceModel.install()
+FileModel.install()
+FilterHelper.install()
 
 # Start page route
 @app.route('/')
@@ -21,9 +25,12 @@ def files_action():
     models = FileModel.all().limit(48)
 
     for arg in args.keys():
-        models.add_filter(arg, {
-            'in': args.get(arg).split(',')
-        })
+        if arg == 'device':
+            models.add_filter(arg, {
+                'in': args.get(arg).split(',')
+            })
+        else:
+            FilterHelper.apply_filter(arg, args.get(arg).split(','), models)
 
     for model in models:
         try:
@@ -37,29 +44,17 @@ def files_action():
 @app.route('/files/filters')
 def file_filters_action():
 
-    filters = []
+    filters = FilterHelper.get_all_filters()
 
     device_opts = {}
     for device in DeviceModel.all():
         device_opts[device.id()] = device.product_name()
     if len(device_opts) > 1:
-        filters.append({
+        filters.insert(0, {
             'label': 'Device',
             'multi': True,
             'param': 'device',
             'options': device_opts
-        })
-
-    type_opts = {}
-    type_select = DBSelect(FileModel().get_table(), ('type')).distinct(True);
-    for file_type in type_select.query().fetchall():
-        type_opts[file_type['type']] = file_type['type'].capitalize()
-    if len(type_opts) > 1:
-        filters.append({
-            'label': 'Type',
-            'multi': True,
-            'param': 'type',
-            'options': type_opts
         })
 
     return json.dumps({'filters': filters})

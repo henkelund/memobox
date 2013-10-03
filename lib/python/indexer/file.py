@@ -82,11 +82,11 @@ class FileIndexer(object):
 if (__name__ == '__main__'):
     """~$ python file.py path/to/basedir path/to/database"""
 
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         exit(1)
 
-    basedir = sys.argv[1]
-    database = sys.argv[2]
+    database = sys.argv[1]
+    basedir = sys.argv[2]
 
     if not os.path.isdir(basedir):
         exit(2)
