@@ -1,10 +1,9 @@
 #!/bin/bash
 
 PINGFILE=/tmp/ping.txt
-BACKUPPATH=$1
 
 # Load helper functions for getting system data
-source $1/bin/pinghelper.sh
+source /backupbox/bin/pinghelper.sh
 
 # Load the public IP of the memorybox
 pip=$(curl -Ls http://ping.backupbox.se/public_ip.php)
@@ -19,7 +18,7 @@ uuid=`blkid -s UUID -o value /dev/sda1`
 echo "uuid=$uuid&" >> $PINGFILE
 
 # Calculate free and total space of the backup drive
-freespace $BACKUPPATH/data >> $PINGFILE
+freespace /HDD >> $PINGFILE
 
 # Load information of all backed up devices
-gatherdevices $BACKUPPATH >> $PINGFILE
+gatherdevices $1>> $PINGFILE

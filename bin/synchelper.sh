@@ -1,6 +1,48 @@
 #!/bin/bash
 
 BACKUP_PATH="$(cd ""$(dirname ""$0"")/../data"" && pwd)"
+LIGHT_PATH="$(dirname ""$0"")/lights.sh"
+
+function messagemanager
+{    
+	if [ "$1" = "DONE" ]; then
+		$LIGHT_PATH ORANGE OFF &
+	fi
+
+	if [ "$1" = "ERROR" ]; then
+		$LIGHT_PATH ORANGE OFF &
+	fi
+
+	if [ "$1" = "PENDING" ]; then
+		$LIGHT_PATH ORANGE BLINK &
+	fi
+
+	if [ "$1" = "WORKING" ]; then
+		$LIGHT_PATH ORANGE WORK &
+	fi
+}
+
+function exitmanager
+{
+	if [ "$1" = 0 ]; then
+		messagemanager DONE
+	else
+		messagemanager ERROR
+	fi
+	
+	exit $1
+}
+
+function finddcim
+{
+        camerapath=`find -L $1 -maxdepth 2 -name DCIM -type d -printf '%h;' 2>/dev/null`
+	arrIN=(${camerapath//;/ })
+        tLen=${#arrIN[@]}
+	if [ $tLen -eq 1 ]
+	then
+    		echo ${arrIN[0]}
+	fi
+}
 
 function upfind
 {
