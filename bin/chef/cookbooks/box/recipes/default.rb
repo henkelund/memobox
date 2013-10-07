@@ -93,7 +93,7 @@ if ENV::has_key?('BOX_DIR') and File::directory?(ENV['BOX_DIR'])
   ##############################
 
   # Create non-versioned directories
-  dirs = %w{ log data }
+  dirs = %w{ log data data/cache }
   dirs.each do |dir|
     directory "#{ENV['BOX_DIR']}/dir" do
       owner 'root'
@@ -102,6 +102,11 @@ if ENV::has_key?('BOX_DIR') and File::directory?(ENV['BOX_DIR'])
       recursive true
       action :create
     end
+  end
+
+  # Publish image cache files
+  link "#{ENV['BOX_DIR']}/www/static/images/thumbnails" do
+    to "#{ENV['BOX_DIR']}/data/cache/thumbnails"
   end
 
   ######################

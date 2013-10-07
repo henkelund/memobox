@@ -1,4 +1,6 @@
 *~
 *.pyc
+/data
 /data/
 /log/
+/www/static/images/thumbnails
