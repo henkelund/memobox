@@ -22,7 +22,7 @@ then
     echo "[$DATETIME] An index process is already running, exiting.."
 else
     export PYTHONPATH
-    for indexer in "file" "filetime"
+    for indexer in "file" "filetime" "image"
     do
         "$PYTHON" "$INDEXDIR/$indexer.py" "$DATABASE" "$DATADIR" &
     done

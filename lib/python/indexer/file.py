@@ -80,7 +80,7 @@ class FileIndexer(object):
             open(flagfile, 'w').close() # touch indexed flag
 
 if (__name__ == '__main__'):
-    """~$ python file.py path/to/basedir path/to/database"""
+    """~$ python file.py path/to/database path/to/basedir"""
 
     if len(sys.argv) < 3:
         exit(1)
