@@ -1,4 +1,4 @@
-import unittest
+import unittest, os
 from werkzeug.contrib.cache import FileSystemCache, NullCache
 from model.base import BaseModel, BaseModelSet
 from helper.db import DBHelper, DBSelect
@@ -35,17 +35,21 @@ class TestBaseModel(unittest.TestCase):
     def setUp(self):
         """BaseModel test set up"""
 
+        if os.path.isfile('/tmp/box.db'):
+            os.unlink('/tmp/box.db')
+        DBHelper().set_db('/tmp/box.db')
+        InstallHelper.reset()
         cache = FileSystemCache('/tmp/werkzeug')
         cache.clear()
         BaseModel.set_cache(cache)
-        InstallHelper.reset()
         SampleModel.install()
 
     def tearDown(self):
         """Clean up after test"""
-        DBHelper().query('DROP TABLE IF EXISTS %s'
-                            % DBHelper.quote_identifier(SampleModel._table))
+
         InstallHelper.reset()
+        DBHelper().set_db(None)
+        os.unlink('/tmp/box.db')
 
     def test_set_cache(self):
         """Test BaseModel.set_cache"""

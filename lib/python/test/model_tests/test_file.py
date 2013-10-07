@@ -15,28 +15,18 @@ class TestFileModel(unittest.TestCase):
     def setUp(self):
         """ExtendedModel test set up"""
 
+        if os.path.isfile('/tmp/box.db'):
+            os.unlink('/tmp/box.db')
+        DBHelper().set_db('/tmp/box.db')
         InstallHelper.reset()
         FileModel.install()
 
     def tearDown(self):
         """Clean up after test"""
 
-        created_tables = [
-            'file_attribute_text',
-            'file_attribute_integer',
-            'file_attribute_real',
-            'file_attribute_blob',
-            'file',
-            'attribute_group_attribute',
-            'attribute_group',
-            'attribute',
-            'device'
-        ]
-        for table in created_tables:
-            DBHelper().query(
-                'DROP TABLE IF EXISTS %s'
-                    % DBHelper.quote_identifier(table))
         InstallHelper.reset()
+        DBHelper().set_db(None)
+        os.unlink('/tmp/box.db')
         FileModel._group_index = {} # clear cached attr groups
 
     def _get_file(self, ext):

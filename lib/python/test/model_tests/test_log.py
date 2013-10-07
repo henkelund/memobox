@@ -1,4 +1,4 @@
-import unittest
+import unittest, os
 from model.log import LogModel
 from helper.install import InstallHelper
 from helper.db import DBHelper
@@ -10,16 +10,18 @@ class TestLogModel(unittest.TestCase):
     def setUp(self):
         """LogModel test set up"""
 
+        if os.path.isfile('/tmp/box.db'):
+            os.unlink('/tmp/box.db')
+        DBHelper().set_db('/tmp/box.db')
         InstallHelper.reset()
         LogModel.install()
 
     def tearDown(self):
         """Clean up after test"""
 
-        DBHelper().query(
-            'DROP TABLE IF EXISTS %s'
-                % DBHelper.quote_identifier(LogModel._table))
         InstallHelper.reset()
+        DBHelper().set_db(None)
+        os.unlink('/tmp/box.db')
 
     def test_add_entry(self):
         """Test adding a log entry"""

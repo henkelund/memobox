@@ -10,16 +10,18 @@ class TestDeviceModel(unittest.TestCase):
     def setUp(self):
         """DeviceModel test set up"""
 
+        if os.path.isfile('/tmp/box.db'):
+            os.unlink('/tmp/box.db')
+        DBHelper().set_db('/tmp/box.db')
         InstallHelper.reset()
         DeviceModel.install()
 
     def tearDown(self):
         """Clean up after test"""
 
-        DBHelper().query(
-            'DROP TABLE IF EXISTS %s'
-                % DBHelper.quote_identifier(DeviceModel._table))
         InstallHelper.reset()
+        DBHelper().set_db(None)
+        os.unlink('/tmp/box.db')
 
     def test_get_transfer_dirs(self):
         """Test DeviceModel.get_transfer_dirs"""

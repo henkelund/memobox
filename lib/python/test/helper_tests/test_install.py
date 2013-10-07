@@ -1,4 +1,4 @@
-import unittest
+import unittest, os
 from helper.install import InstallHelper
 from helper.db import DBHelper, DBSelect
 
@@ -8,6 +8,9 @@ class TestInstallHelper(unittest.TestCase):
     def test_install(self):
         """Test InstallHelper.install"""
 
+        if os.path.isfile('/tmp/box.db'):
+            os.unlink('/tmp/box.db')
+        DBHelper().set_db('/tmp/box.db')
         InstallHelper.reset()
         module = 'sample_module'
         q = DBHelper.quote_identifier
@@ -33,4 +36,6 @@ class TestInstallHelper(unittest.TestCase):
         self.assertIn('col', DBHelper().describe_table(module))
         self.assertEqual(InstallHelper.version(module), 3)
         InstallHelper.reset()
+        DBHelper().set_db(None)
+        os.unlink('/tmp/box.db')
 

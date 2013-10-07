@@ -1,4 +1,4 @@
-import unittest
+import unittest, os
 from model.extended import AttributeModel, ExtendedModel
 from helper.install import InstallHelper
 from helper.db import DBHelper, DBSelect
@@ -54,27 +54,18 @@ class TestExtendedModel(unittest.TestCase):
     def setUp(self):
         """ExtendedModel test set up"""
 
+        if os.path.isfile('/tmp/box.db'):
+            os.unlink('/tmp/box.db')
+        DBHelper().set_db('/tmp/box.db')
         InstallHelper.reset()
         SampleExtModel.install()
 
     def tearDown(self):
         """Clean up after test"""
 
-        created_tables = [
-            'sample_attribute_text',
-            'sample_attribute_integer',
-            'sample_attribute_real',
-            'sample_attribute_blob',
-            'sample',
-            'attribute_group_attribute',
-            'attribute_group',
-            'attribute'
-        ]
-        for table in created_tables:
-            DBHelper().query(
-                'DROP TABLE IF EXISTS %s'
-                    % DBHelper.quote_identifier(table))
         InstallHelper.reset()
+        DBHelper().set_db(None)
+        os.unlink('/tmp/box.db')
         SampleExtModel._group_index = {} # clear cached attr groups
 
     def test_get_attributes(self):

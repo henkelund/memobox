@@ -1,4 +1,4 @@
-import unittest
+import unittest, os
 from sqlite3 import Connection, OperationalError, Cursor
 from random import randint
 from helper.db import DBHelper, DBSelect
@@ -10,6 +10,9 @@ class TestDBHelper(unittest.TestCase):
     def setUp(self):
         """Initiate DBHelper singleton"""
 
+        if os.path.isfile('/tmp/box.db'):
+            os.unlink('/tmp/box.db')
+        DBHelper().set_db('/tmp/box.db')
         self._helper = DBHelper()
         self._helper.query("""
             CREATE TABLE "test_table" (
@@ -27,9 +30,8 @@ class TestDBHelper(unittest.TestCase):
     def tearDown(self):
         """Clean up after test"""
 
-        self._helper.query('DROP TABLE IF EXISTS "test_table"')
-        self._helper.query('DROP TABLE IF EXISTS "a"')
-        self._helper.query('DROP TABLE IF EXISTS "b"')
+        DBHelper().set_db(None)
+        os.unlink('/tmp/box.db')
 
     def test_set_db(self):
         """Test DBHelper.set_db"""
