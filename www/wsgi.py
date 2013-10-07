@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from helper.db import DBHelper, DBSelect
 from helper.filter import FilterHelper
+from helper.image import ImageHelper
 from model.device import DeviceModel
 from model.file import FileModel
 import json
@@ -8,6 +9,7 @@ app = Flask(__name__)
 app.debug = True
 
 DBHelper('../data/index.db')
+ImageHelper('static/images', 'mint')
 DeviceModel.install()
 FileModel.install()
 FilterHelper.install()
@@ -22,21 +24,33 @@ def files_action():
 
     data = []
     args = request.args
+    pixel_ratio = 1
     models = FileModel.all().limit(48)
 
     for arg in args.keys():
+        if arg == 'retina':
+            val = args.get(arg)
+            if val and val.lower() != 'false':
+                pixel_ratio = 2
+            continue
+        vals = args.get(arg).split(',')
         if arg == 'device':
-            models.add_filter(arg, {
-                'in': args.get(arg).split(',')
-            })
+            models.add_filter(arg, {'in': vals})
         else:
-            FilterHelper.apply_filter(arg, args.get(arg).split(','), models)
+            FilterHelper.apply_filter(arg, vals, models)
 
+    ImageHelper().join_file_thumbnails(
+        models,
+        'm.%s' % FileModel._pk,
+        260*pixel_ratio,
+        260*pixel_ratio
+    )
+    ImageHelper().add_file_icons(models, 48*pixel_ratio, 128*pixel_ratio)
     for model in models:
         try:
             data.append(json.dumps(model.get_data()))
         except UnicodeDecodeError:
-            pass
+            pass #TODO: convert chatset at import
 
     return '{"sql": %s, "files": [%s]}' % (
                 json.dumps(models.render()), ','.join(data))

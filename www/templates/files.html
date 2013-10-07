@@ -1,29 +1,56 @@
-<div class="btn-toolbar">
-    <div class="btn-group" ng-repeat="filter in FileCtrl.fileService.filters">
-        <button class="btn"
-                ng-class="{active: FileCtrl.isFilterActive(filter, value)}"
-                ng-disabled="FileCtrl.isFilterPending"
-                ng-repeat="(value, label) in filter.options"
-                ng-click="FileCtrl.filterClicked(filter, value)">
-            {{label}}
-        </button>
+<div class="navbar navbar-inverse navbar-static-top">
+    <div class="navbar-inner">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </a>
+        <div class="nav-collapse collapse navbar-inverse-collapse">
+            <ul class="nav">
+                <li class="dropdown"
+                    ng-repeat="filter in FileCtrl.fileService.filters | availableFilters:this"
+                    ng-class="{active: FileCtrl.isFilterPending}">
+                    <a href="javascript:void(0);"
+                       class="dropdown-toggle"
+                       data-toggle="dropdown">
+                        {{filter.label}} <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li ng-show="FileCtrl.isFilterAvailable(filter, value)"
+                            ng-repeat="(value, label) in filter.options"
+                            ng-click="FileCtrl.filterClicked(filter, value)">
+                            <a href="javascript:void(0);">{{label}}</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 
-<div class="file-list">
-    <table class="table table-bordered table-striped table-condensed">
-        <thead>
-            <th>Name</th>
-            <th>Path</th>
-            <th>Size</th>
-        </thead>
-        <tbody>
-            <tr ng-repeat="file in FileCtrl.fileService.files">
-                <td>{{file.name}}</td>
-                <td>{{file.devpath}}</td>
-                <td>{{file.size / 1000 | number:0}} Kb</td>
-            </tr>
-        </tbody>
-    </table>
+<div class="container">
+
+    <ul class="breadcrumb" ng-show="FileCtrl.isFilterActive()">
+        <li ng-repeat="filter in FileCtrl.fileService.filters | activeFilters:this">
+            <span ng-repeat="(value, label) in filter.options | activeFilterOptions:filter:this">
+                <a href="javascript:void(0);"
+                   ng-click="FileCtrl.filterClicked(filter, value)"
+                   ng-class="{active: FileCtrl.isFilterPending}">
+                    {{label}}</a><span class="divider" ng-show="! $last">,</span>
+            </span>
+            <span class="divider" ng-show="! $last">/</span>
+        </li>
+    </ul>
+
+    <ul class="thumbnails">
+        <li class="span3" ng-repeat="file in FileCtrl.fileService.files">
+            <div class="thumbnail">
+                <div class="preview" file-thumbnail>
+                    <img alt="{{file.type}}/{{file.subtype}}" title="{{file.type}}/{{file.subtype}}" />
+                </div>
+                <h3 file-tooltip>{{file.name | trimFileExtension}}</h3>
+            </div>
+        </li>
+    </ul>
 </div>
 
