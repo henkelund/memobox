@@ -9,12 +9,12 @@ blinkfile="/tmp/$1BLINK"
 workfile="/tmp/$1WORK"
 
 init() {
-       echo 41 > /sys/class/gpio/export > /dev/null
-       echo 42 > /sys/class/gpio/export > /dev/null
-       echo 43 > /sys/class/gpio/export > /dev/null
-       echo out > /sys/class/gpio/gpio41_pd7/direction > /dev/null
-       echo out > /sys/class/gpio/gpio42_pd6/direction > /dev/null
-       echo out > /sys/class/gpio/gpio43_pd5/direction > /dev/null
+       echo 41 > /sys/class/gpio/export 2>/dev/null
+       echo 42 > /sys/class/gpio/export 2>/dev/null
+       echo 43 > /sys/class/gpio/export 2>/dev/null
+       echo out > /sys/class/gpio/gpio41_pd7/direction 2>/dev/null
+       echo out > /sys/class/gpio/gpio42_pd6/direction 2>/dev/null
+       echo out > /sys/class/gpio/gpio43_pd5/direction 2>/dev/null
 }
 
 cleanup()
