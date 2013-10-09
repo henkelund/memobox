@@ -25,10 +25,10 @@ CHEF="$(which chef-solo)"
 if [ -z "$CHEF" ]
 then
     notice "Installing chef dependencies..\n"
-    apt-get install build-essential
-    apt-get install ruby-dev
+    apt-get install build-essential ruby-dev
     notice "Installing chef..\n"
     gem install chef --no-ri --no-rdoc
+    CHEF="$(which chef-solo)"
 fi
 
 notice "Running setup recipes..\n"
