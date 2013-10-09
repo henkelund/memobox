@@ -95,7 +95,7 @@ if ENV::has_key?('BOX_DIR') and File::directory?(ENV['BOX_DIR'])
   # Create non-versioned directories
   dirs = %w{ log data data/cache }
   dirs.each do |dir|
-    directory "#{ENV['BOX_DIR']}/dir" do
+    directory "#{ENV['BOX_DIR']}/#{dir}" do
       owner 'root'
       group 'root'
       mode '0755'
