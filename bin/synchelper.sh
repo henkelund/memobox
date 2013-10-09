@@ -5,21 +5,21 @@ LIGHT_PATH="$(dirname ""$0"")/lights.sh"
 
 function messagemanager
 {    
-	if [ "$1" = "DONE" ]; then
-		$LIGHT_PATH ORANGE OFF &
-	fi
+        if [ "$1" = "DONE" ]; then
+                $LIGHT_PATH BLUE OFF &
+        fi
 
-	if [ "$1" = "ERROR" ]; then
-		$LIGHT_PATH ORANGE OFF &
-	fi
+        if [ "$1" = "ERROR" ]; then
+                $LIGHT_PATH BLUE OFF &
+        fi
 
-	if [ "$1" = "PENDING" ]; then
-		$LIGHT_PATH ORANGE BLINK &
-	fi
+        if [ "$1" = "PENDING" ]; then
+                $LIGHT_PATH BLUE BLINK &
+        fi
 
-	if [ "$1" = "WORKING" ]; then
-		$LIGHT_PATH ORANGE WORK &
-	fi
+        if [ "$1" = "WORKING" ]; then
+                $LIGHT_PATH BLUE WORK &
+        fi
 }
 
 function exitmanager

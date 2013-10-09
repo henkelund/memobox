@@ -1,14 +1,25 @@
 #!/bin/bash
 
 declare -A lamps
-lamps[ORANGE]='/sys/devices/virtual/misc/sun4i-gpio/pin/pd5'
-lamps[GREEN]='/sys/devices/virtual/misc/sun4i-gpio/pin/pd6'
+lamps[RED]='/sys/class/gpio/gpio41_pd7/value'
+lamps[GREEN]='/sys/class/gpio/gpio43_pd5/value'
+lamps[BLUE]='/sys/class/gpio/gpio42_pd6/value'
 signal="0";
 blinkfile="/tmp/$1BLINK"
 workfile="/tmp/$1WORK"
 
+init() {
+       echo 41 > /sys/class/gpio/export > /dev/null
+       echo 42 > /sys/class/gpio/export > /dev/null
+       echo 43 > /sys/class/gpio/export > /dev/null
+       echo out > /sys/class/gpio/gpio41_pd7/direction > /dev/null
+       echo out > /sys/class/gpio/gpio42_pd6/direction > /dev/null
+       echo out > /sys/class/gpio/gpio43_pd5/direction > /dev/null
+}
+
 cleanup()
 {
+       init
        cleanupwork
        cleanupblink
 }
@@ -16,12 +27,14 @@ cleanup()
 
 cleanupwork()
 {
-        rm $workfile > /dev/null 2>&1
+       init
+       rm $workfile > /dev/null 2>&1
 }
 
 cleanupblink()
 {
-        rm $blinkfile > /dev/null 2>&1
+       init
+       rm $blinkfile > /dev/null 2>&1
 }
 
 
