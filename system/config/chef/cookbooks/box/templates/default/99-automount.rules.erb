@@ -16,7 +16,7 @@ ACTION=="add",                        \
 	SUBSYSTEM=="block",           \
 	KERNEL=="sd[a-h]*",           \
         GOTO="automount_rules_end",   \
-	RUN+="<%= ENV['BOX_DIR'] %>/bin/dispatcher.sh '$env{DEVTYPE}' '$kernel' '$env{DEVPATH}'"
+	RUN+="<%= node[:dirs][:system][:bin] %>/dispatcher.sh '$env{DEVTYPE}' '$kernel' '$env{DEVPATH}'"
 
 
 
@@ -29,7 +29,7 @@ ACTION=="add",                        \
         ENV{ID_VENDOR}=="Apple_Inc.", \
         SUBSYSTEM=="usb",             \
         GOTO="automount_rules_end",   \
-        RUN+="<%= ENV['BOX_DIR'] %>/bin/dispatcher.sh 'ifuse' '$env{ID_SERIAL_SHORT}' '$env{DEVPATH}'"
+        RUN+="<%= node[:dirs][:system][:bin] %>/dispatcher.sh 'ifuse' '$env{ID_SERIAL_SHORT}' '$env{DEVPATH}'"
 
 
 
@@ -42,7 +42,7 @@ ACTION=="add",                      \
         ENV{ID_MTP_DEVICE}=="1",    \
         SUBSYSTEM=="usb",           \
         GOTO="automount_rules_end", \
-        RUN+="<%= ENV['BOX_DIR'] %>/bin/dispatcher.sh 'mtp' '$env{BUSNUM}_$env{DEVNUM}' '$env{DEVPATH}'"
+        RUN+="<%= node[:dirs][:system][:bin] %>/dispatcher.sh 'mtp' '$env{BUSNUM}_$env{DEVNUM}' '$env{DEVPATH}'"
 
 
 
@@ -57,7 +57,7 @@ ACTION=="add",                      \
 	ENV{ID_GPHOTO2}=="1",       \
         SUBSYSTEM=="usb",           \
         GOTO="automount_rules_end", \
-	RUN+="<%= ENV['BOX_DIR'] %>/bin/dispatcher.sh 'ptp' '$env{BUSNUM}_$env{DEVNUM}' '$env{DEVPATH}'"
+	RUN+="<%= node[:dirs][:system][:bin] %>/dispatcher.sh 'ptp' '$env{BUSNUM}_$env{DEVNUM}' '$env{DEVPATH}'"
 
 
 

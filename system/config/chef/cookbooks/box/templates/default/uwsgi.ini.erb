@@ -1,0 +1,7 @@
+[uwsgi]
+logto = <%= node[:dirs][:data][:log] %>
+chdir = <%= node[:dirs][:system][:www] %>
+pythonpath = <%= node[:dirs][:system][:lib] %>/python
+wsgi-file = <%= node[:dirs][:system][:www] %>/wsgi.py
+callable = app
+

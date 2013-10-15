@@ -2,10 +2,10 @@ server {
     listen 80;
     server_name localhost;
 
-    root <%= ENV['BOX_DIR'] %>/www;
+    root <%= node[:dirs][:system][:www] %>;
 
-    access_log <%= ENV['BOX_DIR'] %>/log/nginx-access.log;
-    error_log <%= ENV['BOX_DIR'] %>/log/nginx-error.log;
+    access_log <%= node[:dirs][:data][:log] %>/nginx-access.log;
+    error_log <%= node[:dirs][:data][:log] %>/nginx-error.log;
 
     error_page 404 /404.html;
 
