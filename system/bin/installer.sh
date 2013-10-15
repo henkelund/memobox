@@ -22,6 +22,7 @@ source ../config/dirs.cfg
     && test -n "$LIB_DIR" \
     && test -n "$WWW_DIR" \
     && test -n "$DATA_DIR" \
+    && test -n "$DEVICE_DIR" \
     && test -n "$CACHE_DIR" \
     && test -n "$LOG_DIR" \
     && test -n "$CONFIG_DIR" \
@@ -51,6 +52,7 @@ export BIN_DIR
 export LIB_DIR
 export WWW_DIR
 export DATA_DIR
+export DEVICE_DIR
 export CACHE_DIR
 export LOG_DIR
 

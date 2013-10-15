@@ -9,7 +9,7 @@ required_system_dirs.each do |dir|
   end
 end
 
-required_data_dirs = %w{ data cache log }
+required_data_dirs = %w{ data device cache log }
 required_data_dirs.each do |dir|
   if not node[:dirs][:data][dir.to_sym]
     Chef::Application.fatal!("No \"#{dir}\" dir provided", 1)

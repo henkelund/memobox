@@ -2,5 +2,4 @@
 *.pyc
 /data
 /data/
-/log/
-/www/static/images/thumbnails
+/system/www/static/images/thumbnails

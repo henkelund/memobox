@@ -86,7 +86,7 @@ if (__name__ == '__main__'):
         exit(1)
 
     database = sys.argv[1]
-    basedir = sys.argv[2]
+    basedir = '%s/devices' % sys.argv[2] #TODO: read from config
 
     if not os.path.isdir(basedir):
         exit(2)

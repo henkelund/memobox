@@ -11,18 +11,21 @@
 {
 if [ $EUID -ne 0 ]; then echo "Please run as root" 1>&2; exit 1; fi
 
-cd "$(dirname "$0")"
+cd "$(dirname ""$0"")"
+source ../config/dirs.cfg
+(test -n "$BIN_DIR" && test -n "$LOG_DIR") || {
+        echo "The config doesn't define required variables" 1>&2; exit 2;
+    }
 
 # Define some variables for convenience and readability
-CWD="$(pwd)"
-PATH="$PATH:$CWD"
-LOGFILE="$CWD/../log/automount.log"
+PATH="$PATH:$BIN_DIR"
+LOGFILE="$LOG_DIR/automount.log"
 TYPE="$1"
 LABEL="$2"
 DEVPATH="$3"
 
 # Programs w/ default options
-AUTOMOUNT="$(which bash) ""$CWD""/automount.sh"
+AUTOMOUNT="$(which bash) ""$BIN_DIR""/automount.sh"
 PARTED="$(which parted)"
 GREP="$(which grep)"
 MKDIR="$(which mkdir)"
@@ -36,7 +39,7 @@ do
     if [ -z "$exe" ]
     then
         echo "Fatal: $var is not installed" >> "$LOGFILE" 2>&1
-        exit 1
+        exit 3
     fi
 done
 
@@ -47,7 +50,7 @@ case "$TYPE" in
         # Check if disk is partitioned, exit if so
         $PARTED --machine --script "$DEVNAME" print \
             | $GREP --extended-regexp "^[0-9]+\:" > /dev/null 2>&1
-        if [ $? -eq 0 ]; then exit 3; fi
+        if [ $? -eq 0 ]; then exit 4; fi
         ;&
     "partition")
         # Unpartitioned disks and partitions are mounted in the same way so we

@@ -5,14 +5,20 @@
 # udev events. This script handles device mounting and file transfer.
 #
 
-if [ $EUID -ne 0 ]; then echo "Please run as root" 1>&2; exitmanager 1; fi
+if [ $EUID -ne 0 ]; then echo "Please run as root" 1>&2; exit 1; fi
 
-cd "$(dirname "$0")"
+cd "$(dirname ""$0"")"
+source ../config/dirs.cfg
+
+(test -n "$BIN_DIR" \
+    && test -n "$CONFIG_DIR" \
+    && test -n "$DATA_DIR" \
+        ) || {
+        echo "The config doesn't define required variables" 1>&2; exit 13;
+    }
 
 # Define some global variables
-CWD="$(pwd)"
-PATH="$PATH:$CWD"
-DATADIR="$(cd ""$CWD/../data"" && pwd)"
+PATH="$PATH:$BIN_DIR"
 MNTTYPE="$1"
 LABEL="$2"
 MNTPNT="/media/$LABEL"
@@ -51,13 +57,13 @@ done
 
 # Include some helper functions
 export DEVPATH
-source "$CWD/synchelper.sh"
+source "$BIN_DIR/synchelper.sh"
 
 messagemanager PENDING
 
 # Check if data dir is a mountpoint
-#$CHKMNT -q "$DATADIR"
-#if [ $? -ne 0 ]; then echo "$DATADIR is not a mounted volume" 1>&2; exitmanager 2; fi
+#$CHKMNT -q "$DATA_DIR"
+#if [ $? -ne 0 ]; then echo "$DATA_DIR is not a mounted volume" 1>&2; exitmanager 2; fi
 
 function is_mounted
 {
@@ -218,7 +224,7 @@ $RSYNC                                               \
     --no-group                                       \
     --quiet                                          \
     --prune-empty-dirs                               \
-    --filter="merge $CWD/config/rsync.hidden.filter" \
+    --filter="merge $CONFIG_DIR/rsync.hidden.filter" \
     "$SRC/" "$TMPDEST/"                              \
     2>/dev/null
 err=$?

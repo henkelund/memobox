@@ -7,11 +7,14 @@
 
 if [ $EUID -ne 0 ]; then echo "Please run as root" 1>&2; exit 1; fi
 
-cd "$(dirname "$0")/.."
-CWD="$(pwd)"
-DATADIR="$CWD/data"
-DATABASE="$DATADIR/index.db"
-PYTHONDIR="$CWD/lib/python"
+source "$(dirname ""$0"")/../config/dirs.cfg"
+
+(test -n "$LIB_DIR" && test -n "$DATA_DIR") || {
+        echo "The config doesn't define required variables" 1>&2; exit 2;
+    }
+
+DATABASE="$DATA_DIR/index.db"
+PYTHONDIR="$LIB_DIR/python"
 INDEXDIR="$PYTHONDIR/indexer"
 PYTHONPATH="$PYTHONPATH:$PYTHONDIR"
 PYTHON="$(which python)"
@@ -24,7 +27,7 @@ else
     export PYTHONPATH
     for indexer in "file" "filetime" "image"
     do
-        "$PYTHON" "$INDEXDIR/$indexer.py" "$DATABASE" "$DATADIR" &
+        "$PYTHON" "$INDEXDIR/$indexer.py" "$DATABASE" "$DATA_DIR" &
     done
 fi
 

@@ -8,7 +8,7 @@ import json
 app = Flask(__name__)
 app.debug = True
 
-DBHelper('../data/index.db')
+DBHelper('../../data/index.db')
 ImageHelper('static/images', 'mint')
 DeviceModel.install()
 FileModel.install()

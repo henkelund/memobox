@@ -1,7 +1,7 @@
 #!/bin/bash
 
-BACKUP_PATH="$(cd ""$(dirname ""$0"")/../data"" && pwd)"
-LIGHT_PATH="$(dirname ""$0"")/lights.sh"
+source "$(dirname ""$BASH_SOURCE"")/../config/dirs.cfg"
+LIGHT_PATH="$BIN_DIR/lights.sh"
 
 function messagemanager
 {    
@@ -104,7 +104,7 @@ function backupdir
     serial=$(devprop "$1" serial)
     if [ "$?" -ne 0 ]; then return 1; fi
 
-    dir="$BACKUP_PATH/$serial"
+    dir="$DEVICE_DIR/$serial"
     if [ ! -d "$dir" ]
     then
         mkdir -p "$dir" > /dev/null
