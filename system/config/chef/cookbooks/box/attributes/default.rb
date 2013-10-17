@@ -6,16 +6,4 @@ set[:dirs][:data][:data] = ENV['DATA_DIR'] || nil
 set[:dirs][:data][:device] = ENV['DEVICE_DIR'] || nil
 set[:dirs][:data][:cache] = ENV['CACHE_DIR'] || nil
 set[:dirs][:data][:log] = ENV['LOG_DIR'] || nil
-set[:pmount][:package] = 'pmount'
-set[:ifuse][:package] = 'ifuse'
-set[:idevicepair][:package] = 'libimobiledevice-utils'
-set[:gphotofs][:package] = 'gphotofs'
-set[:parted][:package] = 'parted'
-set[:python][:package] = 'python'
-set[:werkzeug][:package] = 'python-werkzeug'
-set[:pil][:package] = 'python-imaging'
-set[:flask][:package] = 'python-flask'
-set[:uwsgi][:package] = 'uwsgi'
-set[:uwsgi_python][:package] = 'uwsgi-plugin-python'
-set[:nginx][:package] = 'nginx'
 

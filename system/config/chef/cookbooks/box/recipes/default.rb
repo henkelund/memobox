@@ -20,74 +20,28 @@ end
 # Install required packages #
 #############################
 
-# Used in automount script for block devices
-package 'pmount' do
-  package_name node[:pmount][:package]
-  action :install
-end
-
-# Used in automount script for i-things
-package 'ifuse' do
-  package_name node[:ifuse][:package]
-  action :install
-end
-
-# Used in automount script for i-things
-package 'idevicepair' do
-  package_name node[:idevicepair][:package]
-  action :install
-end
-
-# Used in automount for cameras and some Androids
-package 'gphotofs' do
-  package_name node[:gphotofs][:package]
-  action :install
-end
-
-# Used in dispatcher.sh
-package 'parted' do
-  package_name node[:parted][:package]
-  action :install
-end
-
-# Language for indexer and web app
-package 'python' do
-  package_name node[:python][:package]
-  action :install
-end
-
-# Python utilities. Caching etc..
-package 'werkzeug' do
-  package_name node[:werkzeug][:package]
-  action :install
-end
-
-# Used for reading EXIF data and scaling images
-package 'pil' do
-  package_name node[:pil][:package]
-  action :install
-end
-
-# Tiny python web application framework
-package 'flask' do
-  package_name node[:flask][:package]
-  action :install
-end
-
-# Install python web application container
-package 'uwsgi' do
-  package_name node[:uwsgi][:package]
-  action :install
-end
-package 'uwsgi_python' do
-  package_name node[:uwsgi_python][:package]
-  action :install
-end
-
-# Frontend proxy for uwsgi
-package 'nginx' do
-  package_name node[:nginx][:package]
-  action :install
+# pmount - Used in automount script for block devices
+# ifuse - Used in automount script for i-things
+# libimobiledevice-utils - Used in automount script for i-things
+# gphotofs - Used in automount for cameras and some Androids
+# parted - Used in dispatcher.sh
+# python - Language for indexer and web app
+# python-werkzeug - Python utilities. Caching etc..
+# python-imaging - Used for reading EXIF data and scaling images
+# python-flask - Tiny python web application framework
+# uwsgi - Install python web application container
+# uwsgi-plugin-python
+# nginx - Frontend proxy for uwsgi
+# curl - Used by upgrade / ping scripts etc.
+packages = %w{
+  pmount ifuse libimobiledevice-utils gphotofs parted python python-werkzeug
+  python-imaging python-flask uwsgi uwsgi-plugin-python nginx curl
+}
+packages.each do |package_name|
+  package package_name do
+    package_name package_name
+    action :upgrade
+  end
 end
 
 ###################
