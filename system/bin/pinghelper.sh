@@ -18,7 +18,7 @@ freespace () {
 }
 
 gatherdevices () {
-	devices=`find -L $1/data -maxdepth 2 -name manufacturer -printf '%h;'`
+	devices=`find -L $1 -maxdepth 2 -name manufacturer -printf '%h;'`
 	arrIN=(${devices//;/ })
 	declare -a DEVICES
 	

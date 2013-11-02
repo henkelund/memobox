@@ -1,9 +1,10 @@
 #!/bin/bash
 
 PINGFILE=/tmp/ping.txt
+BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Load helper functions for getting system data
-source /backupbox/bin/pinghelper.sh
+source $BIN_DIR/pinghelper.sh
 
 # Load the public IP of the memorybox
 pip=$(curl -Ls http://ping.backupbox.se/public_ip.php)

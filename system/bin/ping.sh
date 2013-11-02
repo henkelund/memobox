@@ -1,20 +1,23 @@
 #!/bin/bash
 LOGFILE=/var/log/ping.log 
-BACKUPPATH=/backupbox
+BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SYSTEM_DIR="$(dirname "$BIN_DIR")"
+BACKUP_DIR="$(dirname "$SYSTEM_DIR")/data"
+
 COMMAND="curl --connect-timeout 5 -s -X POST -d @/tmp/ping.txt http://www.backupbox.se/index.php/ping"
 
 while ! test -f /tmp/stop-my-script
 do
-	$BACKUPPATH/bin/gatherData.sh $BACKUPPATH
-	response=`$BACKUPPATH/bin/timeout.sh -t 5 $COMMAND`
+	$BIN_DIR/gatherData.sh $BACKUP_DIR
+	response=`$BIN_DIR/timeout.sh -t 5 $COMMAND`
 
 	if [ "$?" = "0" ] && [ "$response" = "ok" ]; then
 		echo "yes"
-		$BACKUPPATH/bin/lights.sh GREEN ON &
+		$BIN_DIR/lights.sh GREEN ON &
 	else
 		echo "$response"
 		cat /tmp/ping.txt
-		$BACKUPPATH/bin/lights.sh GREEN BLINK &
+		$BIN_DIR/lights.sh GREEN BLINK &
 	fi
 
 	sleep 1
