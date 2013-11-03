@@ -13,7 +13,7 @@
 
 cpufreq-set -g performance
 
-/backupbox/bin/ping.sh &
+/backupbox/system/bin/ping.sh &
 /etc/rc.local.PmM &
 
 exit 0

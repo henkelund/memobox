@@ -30,6 +30,10 @@ source ../config/dirs.cfg
         error "The config doesn't define required variables\n" 1>&2; exit 2;
     }
 
+cd $ROOT_DIR
+git pull
+cd $BIN_DIR
+
 CONFIG="$CONFIG_DIR/chef/config/solo.rb"
 JSON="$CONFIG_DIR/chef/config/node.json"
 LOGLEVEL="warn" # debug, info, warn, error, fatal
