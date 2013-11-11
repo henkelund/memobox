@@ -26,14 +26,13 @@ DEVPATH="$3"
 
 # Programs w/ default options
 AUTOMOUNT="$(which bash) ""$BIN_DIR""/automount.sh"
-PARTED="$(which parted)"
 GREP="$(which grep)"
 MKDIR="$(which mkdir)"
 
 $MKDIR -p "$(dirname ""$LOGFILE"")"
 
 # Check for required executables
-for var in PARTED GREP MKDIR
+for var in GREP MKDIR
 do
     exe="$(eval echo \$$var)"
     if [ -z "$exe" ]
@@ -48,8 +47,9 @@ ARGS=""
 case "$TYPE" in
     "disk")
         # Check if disk is partitioned, exit if so
-        $PARTED --machine --script "$DEVNAME" print \
-            | $GREP --extended-regexp "^[0-9]+\:" > /dev/null 2>&1
+        ls -1 "$DEVNAME"* \
+            | "$GREP" --extended-regexp "[0-9]+$" > /dev/null 2>&1
+
         if [ $? -eq 0 ]; then exit 4; fi
         ;&
     "partition")
