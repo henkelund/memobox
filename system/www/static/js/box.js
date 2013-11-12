@@ -4,17 +4,32 @@
     /**
      * @var Object box
      */
-    var box = ng.module('box', ['ngResource']);
+    var box = ng.module('box', ['ngResource', 'ui.router']);
     exports.box = box;
 
     /**
      * Configure the box app
      */
-    box.config(function ($routeProvider) {
-        $routeProvider.when('/', {
-            controller: 'FileCtrl',
-            templateUrl: '/templates/files.html'
-        });
+    box.config(function ($stateProvider, $urlRouterProvider) {
+
+        $urlRouterProvider.otherwise('/');
+
+        $stateProvider
+            .state('files', {
+                url: '/',
+                controller: 'FilesCtrl',
+                templateUrl: '/templates/files.html'
+            })
+            .state('files.detail', {
+                url: '^/files/:id',
+                resolve: {
+                    fileDetails: function ($stateParams, FileService) {
+                        return FileService.loadDetails($stateParams['id']);
+                    }
+                },
+                controller: 'FilesDetailCtrl',
+                templateUrl: '/templates/files.detail.html'
+            });
     });
 
     /**
@@ -42,7 +57,7 @@
     /**
      * File service
      */
-    box.factory('FileService', function ($resource, $window) {
+    box.factory('FileService', function ($resource, $window, $q) {
 
         /**
          *
@@ -50,8 +65,10 @@
         var FileService = function () {
             this.filesResource = $resource('/files');
             this.filterResource = $resource('/files/filters');
+            this.detailsResource = $resource('/files/details');
             this.files = [];
             this.filters = [];
+            this.details = [];
         };
         FileService.prototype = {
 
@@ -68,6 +85,15 @@
              */
             loadFiltersSuccess: function (data) {
                 this.filters = data.filters;
+            },
+
+            /**
+             * Successful filters load callback
+             */
+            loadDetailsSuccess: function (data) {
+                if (data['_id'] !== undefined) {
+                    this.details[data['_id']] = data;
+                }
             },
 
             /**
@@ -125,6 +151,40 @@
                     this.loadError.bind(this)
                 );
                 return this;
+            },
+
+            /**
+             * Load file by id
+             */
+            loadDetails: function (id) {
+                var that = this,
+                    deferred = $q.defer(),
+                    resource;
+
+                if (this.details[id] !== undefined) {
+                    deferred.resolve();
+                } else {
+                    resource = this.detailsResource.get(
+                        {id: id},
+                        function (data) {
+                            that.loadDetailsSuccess(data);
+                            deferred.resolve();
+                        },
+                        function (data) {
+                            that.loadError(data);
+                            deferred.resolve();
+                        }
+                    );
+                }
+
+                return deferred.promise;
+            },
+
+            /**
+             * Get laoded details
+             */
+            getDetails: function (id) {
+                return this.details[id] || false;
             }
         };
 
@@ -176,11 +236,11 @@
      */
     box.filter('availableFilters', function () {
         return function (filters, scope) {
-            if (scope.FileCtrl === undefined) {
+            if (scope.FilesCtrl === undefined) {
                 return filters;
             }
             return $.grep(filters, function (item) {
-                return scope.FileCtrl.isFilterAvailable(item);
+                return scope.FilesCtrl.isFilterAvailable(item);
             });
         };
     });
@@ -190,11 +250,11 @@
      */
     box.filter('activeFilters', function () {
         return function (filters, scope) {
-            if (scope.FileCtrl === undefined) {
+            if (scope.FilesCtrl === undefined) {
                 return filters;
             }
             return $.grep(filters, function (item) {
-                return scope.FileCtrl.isFilterActive(item);
+                return scope.FilesCtrl.isFilterActive(item);
             });
         };
     });
@@ -206,12 +266,12 @@
         return function (options, filter, scope) {
             var value,
                 result = {};
-            if (scope.FileCtrl === undefined) {
+            if (scope.FilesCtrl === undefined) {
                 return options;
             }
             for (value in options) {
                 if (options.hasOwnProperty(value) &&
-                        scope.FileCtrl.isFilterActive(filter, value)) {
+                        scope.FilesCtrl.isFilterActive(filter, value)) {
                     result[value] = options[value];
                 }
             }
@@ -233,14 +293,19 @@
     });
 
     /**
-     * File controller
+     * Files controller
      */
-    box.controller('FileCtrl', function ($scope, FileService) {
+    box.controller('FilesCtrl', function ($scope, $location, FileService) {
 
         var that = this;
         this.fileService = FileService.loadFilters().loadFiles();
         this.filterState = {};
         this.isFilterPending = false;
+        $('#filesDetailModal').modal({show: false})
+                .on('hide.bs.modal', function () {
+            $location.path('/');
+            $scope.$apply();
+        });
 
         /**
          * Check if a given filter - or option - is active
@@ -319,7 +384,22 @@
             });
         };
 
-        $scope.FileCtrl = this;
+        $scope.FilesCtrl = this;
+        return this;
+    });
+
+    /**
+     * Files detail controller
+     */
+    box.controller('FilesDetailCtrl', function ($scope, $stateParams, $filter, FileService) {
+
+        this.id = $stateParams['id'];
+        this.details = FileService.getDetails(this.id);
+
+        $('#filesDetailModalLabel').html($filter('trimFileExtension')(this.details.name));
+        $('#filesDetailModal').modal('show');
+
+        $scope.FilesDetailCtrl = this;
         return this;
     });
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="box">
     <head>
         <meta charset='utf-8' />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
@@ -7,6 +7,9 @@
         <link href="/static/css/bootstrap/bootstrap.css" rel="stylesheet">
         <link href="/static/css/bootstrap/bootstrap-responsive.css" rel="stylesheet">
         <link href="/static/css/box.css" rel="stylesheet">
+        <!--[if lte IE 8]>
+        <script src="/static/js/ie/json2.js"></script>
+        <![endif]-->
     </head>
     <body>
         <header class="jumbotron">
@@ -16,13 +19,14 @@
         </header>
         {% raw %}
         <div ng-app="box">
-            <ng-view></ngview>
+            <div ui-view></div>
         </div>
         {% endraw %}
         <script type="text/javascript" src="/static/js/jquery/jquery.js"></script>
         <script type="text/javascript" src="/static/js/bootstrap/bootstrap.js"></script>
         <script type="text/javascript" src="/static/js/angular/angular.js"></script>
         <script type="text/javascript" src="/static/js/angular/angular-resource.js"></script>
+        <script type="text/javascript" src="/static/js/angular/angular-ui-router.js"></script>
         <script type="text/javascript" src="/static/js/box.js"></script>
     </body>
 </html>

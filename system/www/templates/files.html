@@ -8,17 +8,17 @@
         <div class="nav-collapse collapse navbar-inverse-collapse">
             <ul class="nav">
                 <li class="dropdown"
-                    ng-repeat="filter in FileCtrl.fileService.filters | availableFilters:this"
-                    ng-class="{active: FileCtrl.isFilterPending}">
+                    ng-repeat="filter in FilesCtrl.fileService.filters | availableFilters:this"
+                    ng-class="{active: FilesCtrl.isFilterPending}">
                     <a href="javascript:void(0);"
                        class="dropdown-toggle"
                        data-toggle="dropdown">
                         {{filter.label}} <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li ng-show="FileCtrl.isFilterAvailable(filter, value)"
+                        <li ng-show="FilesCtrl.isFilterAvailable(filter, value)"
                             ng-repeat="(value, label) in filter.options"
-                            ng-click="FileCtrl.filterClicked(filter, value)">
+                            ng-click="FilesCtrl.filterClicked(filter, value)">
                             <a href="javascript:void(0);">{{label}}</a>
                         </li>
                     </ul>
@@ -30,12 +30,12 @@
 
 <div class="container">
 
-    <ul class="breadcrumb" ng-show="FileCtrl.isFilterActive()">
-        <li ng-repeat="filter in FileCtrl.fileService.filters | activeFilters:this">
+    <ul class="breadcrumb" ng-show="FilesCtrl.isFilterActive()">
+        <li ng-repeat="filter in FilesCtrl.fileService.filters | activeFilters:this">
             <span ng-repeat="(value, label) in filter.options | activeFilterOptions:filter:this">
                 <a href="javascript:void(0);"
-                   ng-click="FileCtrl.filterClicked(filter, value)"
-                   ng-class="{active: FileCtrl.isFilterPending}">
+                   ng-click="FilesCtrl.filterClicked(filter, value)"
+                   ng-class="{active: FilesCtrl.isFilterPending}">
                     {{label}}</a><span class="divider" ng-show="! $last">,</span>
             </span>
             <span class="divider" ng-show="! $last">/</span>
@@ -43,14 +43,32 @@
     </ul>
 
     <ul class="thumbnails">
-        <li class="span3" ng-repeat="file in FileCtrl.fileService.files">
+        <li class="span3" ng-repeat="file in FilesCtrl.fileService.files">
             <div class="thumbnail">
                 <div class="preview" file-thumbnail>
                     <img alt="{{file.type}}/{{file.subtype}}" title="{{file.type}}/{{file.subtype}}" />
                 </div>
-                <h3 file-tooltip>{{file.name | trimFileExtension}}</h3>
+                <h3 file-tooltip><a ng-href="#/files/{{file._id}}">{{file.name | trimFileExtension}}</a></h3>
             </div>
         </li>
     </ul>
+
+    <div class="modal fade" id="filesDetailModal" tabindex="-1" role="dialog" aria-labelledby="filesDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="filesDetailModalLabel">Modal title</h4>
+                </div>
+                <div class="modal-body">
+                    <div ui-view></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 

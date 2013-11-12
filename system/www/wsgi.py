@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify, abort, Response
 from helper.db import DBHelper, DBSelect
 from helper.filter import FilterHelper
 from helper.image import ImageHelper
 from model.device import DeviceModel
 from model.file import FileModel
-import json
+import os
+
 app = Flask(__name__)
 app.debug = True
 
@@ -47,13 +48,9 @@ def files_action():
     )
     ImageHelper().add_file_icons(models, 48*pixel_ratio, 128*pixel_ratio)
     for model in models:
-        try:
-            data.append(json.dumps(model.get_data()))
-        except UnicodeDecodeError:
-            pass #TODO: convert chatset at import
+        data.append(model.get_data())
 
-    return '{"sql": %s, "files": [%s]}' % (
-                json.dumps(models.render()), ','.join(data))
+    return jsonify({'files': data, 'sql': models.render()})
 
 @app.route('/files/filters')
 def file_filters_action():
@@ -71,5 +68,32 @@ def file_filters_action():
             'options': device_opts
         })
 
-    return json.dumps({'filters': filters})
+    return jsonify({'filters': filters})
+
+@app.route('/files/details')
+def file_details_action():
+
+    model = FileModel().load(request.args.get('id'))
+    return jsonify(model.get_data())
+
+@app.route('/files/stream/<file_id>/<display_name>')
+def file_stream_action(file_id=None, display_name=None):
+
+    if not file_id:
+        abort(404)
+
+    model = FileModel().load(file_id)
+    if not model.id():
+        abort(404)
+
+    filename = '%s/%s' % (model.abspath(), model.name())
+    mimetype = '%s/%s' % (model.type(), model.subtype())
+
+    if not os.path.isfile(filename):
+        abort(404)
+
+    return Response(
+                file(filename),
+                direct_passthrough=True,
+                content_type=mimetype)
 
