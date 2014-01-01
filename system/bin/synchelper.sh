@@ -14,11 +14,11 @@ function messagemanager
         fi
 
         if [ "$1" = "PENDING" ]; then
-                $LIGHT_PATH BLUE BLINK &
+                $LIGHT_PATH BLUE ON &
         fi
 
         if [ "$1" = "WORKING" ]; then
-                $LIGHT_PATH BLUE WORK &
+                $LIGHT_PATH BLUE BLINK &
         fi
 }
 

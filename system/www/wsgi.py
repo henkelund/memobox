@@ -26,7 +26,7 @@ def files_action():
     data = []
     args = request.args
     pixel_ratio = 1
-    models = FileModel.all().limit(48)
+    models = FileModel.all().limit(240)
 
     for arg in args.keys():
         if arg == 'retina':
