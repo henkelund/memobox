@@ -1,4 +1,5 @@
 import sys, os
+import subprocess
 from PIL import Image
 from helper.db import DBHelper, DBSelect
 from helper.image import ImageHelper
@@ -14,9 +15,15 @@ class ImageIndexer(object):
         ImageHelper.install()
 
         insert = {}
+        #models = FileModel.all().add_filter('extension', {'in': (
+        #    'bmp', 'gif', 'im', 'jpg', 'jpe', 'jpeg', 'msp',
+        #    'pcx', 'png', 'ppm', 'tiff', 'xpm', 'mov'
+        #)}).add_filter(
+        #    ('orientation',  'orientation'),
+        #    ({'null': True}, {'in': range(1, 9)})
+        #)
         models = FileModel.all().add_filter('extension', {'in': (
-            'bmp', 'gif', 'im', 'jpg', 'jpe', 'jpeg', 'msp',
-            'pcx', 'png', 'ppm', 'tiff', 'xpm'
+        	'mov'
         )}).add_filter(
             ('orientation',  'orientation'),
             ({'null': True}, {'in': range(1, 9)})
@@ -27,42 +34,73 @@ class ImageIndexer(object):
 
         for model in models:
             filename = os.path.join(model.abspath(), model.name())
-            if not os.path.isfile(filename):
-                insert[model.id()] = None
-
-            image = Image.open(filename)
-            if not image:
-                insert[model.id()] = None
-
+            extension = os.path.splitext(filename)[1][1:]
             thumbname = os.path.join(
-                'thumbnails',
-                '%sx%s' % (width if width else '', height if height else ''),
-                model.name()[0] if len(model.name()) > 0 else '_',
-                model.name()[1] if len(model.name()) > 1 else '_',
-                model.name()
+				'thumbnails',
+				'%sx%s' % (width if width else '', height if height else ''),
+				model.name()[0] if len(model.name()) > 0 else '_',
+				model.name()[1] if len(model.name()) > 1 else '_',
+				model.name()
             )
 
-            thumbfile = os.path.join(basedir, thumbname)
-            if not os.path.isfile(thumbfile):
-
-                directory = os.path.dirname(thumbfile)
-                if not os.path.isdir(directory):
-                    os.makedirs(directory)
-
-                rotation = 0.
-                if model.orientation() == 3:
-                    rotation = -180.
-                elif model.orientation() == 6:
-                    rotation = -90.
-                elif model.orientation() == 8:
-                    rotation = -270.
-                if rotation:
-                    image = image.rotate(rotation, expand = 1)
-
-                image = ImageHelper.resize(image, width, height)
-                image.save(thumbfile)
-
-            insert[model.id()] = thumbname
+            if extension == "MOV":
+            	thumbfile = os.path.join(basedir, thumbname+".jpg")
+            	print "Found Movie: "+filename
+            	if not os.path.isfile(thumbfile):
+            		directory = os.path.dirname(thumbfile)
+            		if not os.path.isdir(directory):
+            			os.makedirs(directory)
+            		
+            		cmdline = [
+            		'avconv',
+            		'-itsoffset',
+            		'-4',
+            		'-i',
+            		filename,
+            		'-vcodec',
+            		'mjpeg',
+            		'-vframes',
+            		'1',
+            		'-an',
+            		'-f',
+            		'rawvideo',
+            		'-s',
+            		str(width)+"x"+str(height),
+            		thumbfile,
+				]
+            	subprocess.call(cmdline)
+            	print "generated thumbfile:"+thumbfile
+            	insert[model.id()] = thumbname+".jpg"
+            else:
+	            thumbfile = os.path.join(basedir, thumbname)            
+	            if not os.path.isfile(filename):
+	                insert[model.id()] = None
+	
+	            image = Image.open(filename)
+	            if not image:
+	                insert[model.id()] = None
+	            
+	            if not os.path.isfile(thumbfile):
+	
+	                directory = os.path.dirname(thumbfile)
+	                if not os.path.isdir(directory):
+	                    os.makedirs(directory)
+	
+	                rotation = 0.
+	                if model.orientation() == 3:
+	                    rotation = -180.
+	                elif model.orientation() == 6:
+	                    rotation = -90.
+	                elif model.orientation() == 8:
+	                    rotation = -270.
+	                if rotation:
+	                    image = image.rotate(rotation, expand = 1)
+	
+	                image = ImageHelper.resize(image, width, height)
+	                print (thumbfile)
+	                image.save(thumbfile)
+	                insert[model.id()] = thumbname
+			print "Inserted file:"+thumbname+str(model.id())
 
         for file_id in insert.keys():
             ImageHelper.add_file_thumbnail(
@@ -83,6 +121,7 @@ if (__name__ == '__main__'):
     basedir = os.path.join(basedir, 'cache')
 
     DBHelper(database)
+        
     ImageIndexer.index_file_thumbnails(basedir, 260, 260) #TODO: read from configuration
     ImageIndexer.index_file_thumbnails(basedir, 520, 520) # retina
 
