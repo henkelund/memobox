@@ -31,7 +31,7 @@ stopblink()
 
 # PARSE INPUT DATA
 if [ "$2" = "ON" ]; then
-  	#cleanup
+  	stopblink
 	echo 1 > ${lamps[$1]}
 elif [ "$2" = "OFF" ]; then
 	stopblink

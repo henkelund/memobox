@@ -43,14 +43,22 @@
     </ul>
 
     <ul class="thumbnails">
-        <li class="span3" ng-repeat="file in FilesCtrl.fileService.files">
+        <!-- li class="span3" ng-repeat="file in FilesCtrl.fileService.files">
             <div class="thumbnail">
-                <div class="preview" file-thumbnail>
+                <div style="cursor: pointer;" onClick="window.location.hash = '/files/{{file._id}}'" class="preview" file-thumbnail>
                     <img alt="{{file.type}}/{{file.subtype}}" title="{{file.type}}/{{file.subtype}}" />
                 </div>
-                <h3 file-tooltip><a ng-href="#/files/{{file._id}}">{{file.name | trimFileExtension}}</a></h3>
             </div>
-        </li>
+        </li-->
+		<div ng-app='box' ng-controller='DemoController'>
+		  <div infinite-scroll='reddit.nextPage()' infinite-scroll-disabled='reddit.busy' infinite-scroll-distance='1'>
+				<ul class="thumbnails">
+					<li class="span3" ng-repeat="item in reddit.images" ng-bind-html-unsafe="item.html">
+					</li>
+				</ul>
+		  </div>
+		</div>
+        
     </ul>
 
     <div class="modal fade" id="filesDetailModal" tabindex="-1" role="dialog" aria-labelledby="filesDetailModalLabel" aria-hidden="true">
@@ -71,4 +79,3 @@
     </div>
 
 </div>
-

@@ -39,6 +39,7 @@ class FileIndexer(object):
                 for filename in files:
                     devpath = re.sub(r'^%s' % re.escape(abstrans), '', abspath)
                     absfile = os.path.join(abspath, filename)
+                    print '---'+absfile
                     file_model = FileModel.factory(absfile)
                     file_model.add_data({
                         'devpath': devpath,

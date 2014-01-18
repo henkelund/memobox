@@ -4,8 +4,79 @@
     /**
      * @var Object box
      */
-    var box = ng.module('box', ['ngResource', 'ui.router']);
+    var box = ng.module('box', ['ngResource', 'ui.router', 'infinite-scroll', 'ngSanitize']);
     exports.box = box;
+	
+	box.controller('DemoController', function($scope, Reddit) {
+	  $scope.reddit = new Reddit();
+
+	  $scope.render = function(e) {
+	    return $(e).html();
+	  }
+    	  
+	});
+	
+	// Reddit constructor function to encapsulate HTTP and pagination logic
+	box.factory('Reddit', function($http) {
+	  var Reddit = function() {
+	    this.images = [];
+	    this.busy = false;
+	    this.after = 1;
+	  };
+	
+	  Reddit.prototype.nextPage = function() {
+	    if (this.busy) return;
+	    this.busy = true;
+	
+		$.ajax({
+		    url : "http://10.0.1.154/files?after="+this.after,
+			async: false,
+			context: this,
+		    success : function(result){
+				//var last = $scope.images[$scope.images.length - 1];
+				//alert(this.images.length);
+			    for(var i = 0; i < result.files.length; i++) {
+			      this.images.push({html:"<div class=\"thumbnail\"><div style=\"cursor: pointer;\" onClick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview\" file-thumbnail><div style=\"cursor: pointer; background-image: url(http://10.0.1.154/static/images/thumbnails/260x260/I/M/"+result.files[i].name+"); background-position: 50% 50%;\" onclick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview image\"><img alt=\"image/jpeg\" title=\"image/jpeg\" src=\"/static/images/icons/mint/48/image-jpeg.png\" style=\"display: none;\"></div></div></div>"});
+			    }			    
+
+		        this.after = this.after + 1;
+		        this.busy = false;
+		    }
+		});
+	  };
+	
+	  return Reddit;
+	});	
+	
+/*	box.factory('ImageLoader', function($http) {
+	  var ImageLoader = function() {
+	    this.images = [];
+	    this.busy = false;
+	    this.after = '';
+	  };
+	  	
+	  ImageLoader.prototype.nextPage = function() {
+	    if (this.busy) return;
+	    this.busy = true;
+
+		$.ajax({
+		    url : "http://10.0.1.154/files?after="+after,
+			async: false,
+		    success : function(result){
+				//var last = $scope.images[$scope.images.length - 1];
+			    for(var i = 1; i <= result.files.length; i++) {
+			      $scope.images.push({html:"<div class=\"thumbnail\"><div style=\"cursor: pointer;\" onClick=\"window.location.hash = '/files/"+result.files[i].id+"'\" class=\"preview\" file-thumbnail><div style=\"cursor: pointer; background-image: url(http://10.0.1.154/static/images/thumbnails/260x260/I/M/"+result.files[i].name+"); background-position: 50% 50%;\" onclick=\"window.location.hash = '/files/"+result.files[i].id+"'\" class=\"preview image\"><img alt=\"image/jpeg\" title=\"image/jpeg\" src=\"/static/images/icons/mint/48/image-jpeg.png\" style=\"display: none;\"></div></div></div>"});
+			    }			    
+
+		        this.after = "t3_" + this.images[this.images.length - 1].id;
+		        this.busy = false;
+
+		    }
+		});
+	 };
+	
+	 return ImageLoader;
+	});	*/
 
     /**
      * Configure the box app
@@ -205,8 +276,8 @@
                     el.addClass('image')
                         .css('backgroundImage',
                                 'url(' + imgUrl + file.thumbnail + ')')
-                        .find('img').attr('src', imgUrl + file.icon_small);
-                    $($window).scroll(); // provoke background re-positioning
+			.find('img').attr('src', imgUrl + file.icon_small).hide();
+			$($window).scroll(); // provoke background re-positioning
                 } else {
                     el.addClass('icon')
                         .find('img').attr('src', imgUrl + file.icon_large);
@@ -224,7 +295,7 @@
             link: function (scope, element) {
                 var file = scope.file;
                 $(element).tooltip({
-                    title: file.devpath + '/' + file.name,
+                    title: file.devpath + '/' + file.name+file.extension,
                     placement: 'top'
                 });
             }
@@ -396,7 +467,7 @@
         this.id = $stateParams['id'];
         this.details = FileService.getDetails(this.id);
 
-        $('#filesDetailModalLabel').html($filter('trimFileExtension')(this.details.name));
+        $('#filesDetailModalLabel').html($filter('trimFileExtension')(this.details.name+this.details.extension));
         $('#filesDetailModal').modal('show');
 
         $scope.FilesDetailCtrl = this;

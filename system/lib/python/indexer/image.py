@@ -15,19 +15,14 @@ class ImageIndexer(object):
         ImageHelper.install()
 
         insert = {}
-        #models = FileModel.all().add_filter('extension', {'in': (
-        #    'bmp', 'gif', 'im', 'jpg', 'jpe', 'jpeg', 'msp',
-        #    'pcx', 'png', 'ppm', 'tiff', 'xpm', 'mov'
-        #)}).add_filter(
-        #    ('orientation',  'orientation'),
-        #    ({'null': True}, {'in': range(1, 9)})
-        #)
         models = FileModel.all().add_filter('extension', {'in': (
-        	'mov'
+            'bmp', 'gif', 'im', 'jpg', 'jpe', 'jpeg', 'msp',
+            'pcx', 'png', 'ppm', 'tiff', 'xpm', 'mov'
         )}).add_filter(
             ('orientation',  'orientation'),
             ({'null': True}, {'in': range(1, 9)})
         )
+
         ImageHelper.join_file_thumbnails(
             models, 'm.%s' % FileModel._pk, width, height, ())
         models.where('tt.thumbnail IS NULL').limit(5)
@@ -43,9 +38,8 @@ class ImageIndexer(object):
 				model.name()
             )
 
-            if extension == "MOV":
+            if (extension == "MOV") or (extension == "mov") :
             	thumbfile = os.path.join(basedir, thumbname+".jpg")
-            	print "Found Movie: "+filename
             	if not os.path.isfile(thumbfile):
             		directory = os.path.dirname(thumbfile)
             		if not os.path.isdir(directory):
@@ -68,15 +62,16 @@ class ImageIndexer(object):
             		str(width)+"x"+str(height),
             		thumbfile,
 				]
-            	subprocess.call(cmdline)
-            	print "generated thumbfile:"+thumbfile
-            	insert[model.id()] = thumbname+".jpg"
+            		subprocess.call(cmdline)
+            		insert[model.id()] = thumbname+".jpg"
             else:
 	            thumbfile = os.path.join(basedir, thumbname)            
 	            if not os.path.isfile(filename):
 	                insert[model.id()] = None
 	
+	            print "--"+filename
 	            image = Image.open(filename)
+
 	            if not image:
 	                insert[model.id()] = None
 	            
@@ -97,10 +92,8 @@ class ImageIndexer(object):
 	                    image = image.rotate(rotation, expand = 1)
 	
 	                image = ImageHelper.resize(image, width, height)
-	                print (thumbfile)
 	                image.save(thumbfile)
 	                insert[model.id()] = thumbname
-			print "Inserted file:"+thumbname+str(model.id())
 
         for file_id in insert.keys():
             ImageHelper.add_file_thumbnail(
@@ -124,4 +117,3 @@ if (__name__ == '__main__'):
         
     ImageIndexer.index_file_thumbnails(basedir, 260, 260) #TODO: read from configuration
     ImageIndexer.index_file_thumbnails(basedir, 520, 520) # retina
-

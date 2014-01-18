@@ -1,13 +1,21 @@
+import datetime as dt, time
 from flask import Flask, render_template, request, jsonify, abort, Response
+#from flask_debugtoolbar import DebugToolbarExtension
 from helper.db import DBHelper, DBSelect
 from helper.filter import FilterHelper
 from helper.image import ImageHelper
 from model.device import DeviceModel
 from model.file import FileModel
+from datetime import date
 import os
 
 app = Flask(__name__)
 app.debug = True
+#app.logger.debug(""+tt)
+t = dt.datetime(2011, 10, 21, 0, 0)
+now=dt.datetime.now()
+#toolbar = DebugToolbarExtension(app)
+print(time.mktime(now.timetuple()))
 
 DBHelper('../../data/index.db')
 ImageHelper('static/images', 'mint')
@@ -26,7 +34,14 @@ def files_action():
     data = []
     args = request.args
     pixel_ratio = 1
-    models = FileModel.all().limit(240)
+    cols = [
+    '_id',
+    'type',
+    'subtype',
+    'name'
+    ]
+
+    models = FileModel.all().columns(cols).limit(10, (request.args.get('after', 0, type=int)-1)*10).order('created_at')
 
     for arg in args.keys():
         if arg == 'retina':
@@ -34,9 +49,25 @@ def files_action():
             if val and val.lower() != 'false':
                 pixel_ratio = 2
             continue
+
         vals = args.get(arg).split(',')
-        if arg == 'device':
+
+        #if arg == 'year':
+        
+        if arg == 'year':
+            st = dt.datetime(int(vals[0]), 1, 1)
+            et = dt.datetime(int(vals[0]), 12, 31)
+            starttime = time.mktime(st.timetuple())
+            endtime = time.mktime(et.timetuple())
+            print(endtime)
+	    models.where('m.created_at < ?', endtime)   
+        elif arg == 'format':
+            formats = ['image','video','file']
+            froms = formats[int(vals[0])]
+            models.where('m.type = ?', froms)
+        elif arg == 'device':
             models.add_filter(arg, {'in': vals})
+            #models.where('m._id = ?',753)
         else:
             FilterHelper.apply_filter(arg, vals, models)
 
@@ -46,10 +77,10 @@ def files_action():
         260*pixel_ratio,
         260*pixel_ratio
     )
+
     ImageHelper().add_file_icons(models, 48*pixel_ratio, 128*pixel_ratio)
     for model in models:
         data.append(model.get_data())
-
     return jsonify({'files': data, 'sql': models.render()})
 
 @app.route('/files/filters')
