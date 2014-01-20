@@ -15,7 +15,6 @@ app.debug = True
 t = dt.datetime(2011, 10, 21, 0, 0)
 now=dt.datetime.now()
 #toolbar = DebugToolbarExtension(app)
-print(time.mktime(now.timetuple()))
 
 DBHelper('../../data/index.db')
 ImageHelper('static/images', 'mint')
@@ -31,6 +30,9 @@ def index_action():
 @app.route('/files')
 def files_action():
 
+    if request.args.get('after', 0, type=int) == 0:
+		return ""
+	
     data = []
     args = request.args
     pixel_ratio = 1
@@ -41,7 +43,7 @@ def files_action():
     'name'
     ]
 
-    models = FileModel.all().columns(cols).limit(10, (request.args.get('after', 0, type=int)-1)*10).order('created_at')
+    models = FileModel.all().join("file_attribute_integer", "parent = m._id").columns(cols).limit(16, (request.args.get('after', 0, type=int)-1)*16).where("file_attribute_integer.attribute = 5").order('file_attribute_integer.value', "DESC")
 
     for arg in args.keys():
         if arg == 'retina':
@@ -81,6 +83,7 @@ def files_action():
     ImageHelper().add_file_icons(models, 48*pixel_ratio, 128*pixel_ratio)
     for model in models:
         data.append(model.get_data())
+    print models
     return jsonify({'files': data, 'sql': models.render()})
 
 @app.route('/files/filters')
