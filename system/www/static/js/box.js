@@ -7,9 +7,25 @@
     var box = ng.module('box', ['ngResource', 'ui.router', 'infinite-scroll', 'ngSanitize']);
     exports.box = box;
 	
+	box.directive('myMainDirective', function() {
+	  return function(scope, element, attrs) {
+	      $("#dateHolder").sticky({ topSpacing: 0, center:true, className:"hey" });
+	  };
+	})
+
+	box.directive('myRepeatDirective', function() {
+	  return function(scope, element, attrs) {
+	    if (scope.$last){
+	      //scope.$emit('LastElem');
+	    }
+
+	    scope.$watch('thing', function(){
+	    });
+	  };
+	})
+	
 	box.controller('DemoController', function($scope, Reddit) {
 	  $scope.reddit = new Reddit();
-
 	  $scope.render = function(e) {
 	    return $(e).html();
 	  }
@@ -22,6 +38,9 @@
 	    this.images = [];
 	    this.busy = false;
 	    this.after = 1;
+	    this.viewMonth = null;
+	    this.viewYear = null; 
+		this.monthArr = "Alert";
 	  };
 	
 	  Reddit.prototype.nextPage = function() {
@@ -34,11 +53,12 @@
 			context: this,
 		    success : function(result){
 			    for(var i = 0; i < result.files.length; i++) {
-			      this.images.push({html:"<div class=\"thumbnail\"><div style=\"cursor: pointer;\" onClick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview\" file-thumbnail><div style=\"cursor: pointer; background-image: url(/static/images/thumbnails/260x260/I/M/"+result.files[i].name+"); background-position: 50% 50%;\" onclick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview image\"><img alt=\"image/jpeg\" title=\"image/jpeg\" src=\"/static/images/icons/mint/48/image-jpeg.png\" style=\"display: none;\"></div></div></div>"});
+			      //angular.mock.dump(result.files[i]);
+			      this.images.push({html:"<div class=\"thumbnail\"><div style=\"cursor: pointer;\" onClick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview\" file-thumbnail><div timestamp=\""+result.files[i].value+"\" style=\"cursor: pointer; background-image: url(/static/images/thumbnails/260x260/I/M/"+result.files[i].name+"); background-position: 50% 50%;\" onclick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview image\"><img alt=\"image/jpeg\" title=\"image/jpeg\" src=\"/static/images/icons/mint/48/image-jpeg.png\" style=\"display: none;\"></div></div></div>"});
 			    }			    
 
 		        this.after = this.after + 1;
-		        this.busy = false;
+		        this.busy = false;		        
 		    }
 		});
 	  };

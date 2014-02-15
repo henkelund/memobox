@@ -1,6 +1,27 @@
 body {
 /*    background-color: #EDF4F5;*/ /* #054950 #789A9F #EDF4F5 #FFFFFF #F78F1E */
 }
+.thumbnails{
+	margin-top: 15px; 
+}
+#dateHolder {
+      background: #a6eea4;
+	  box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 10px 0px;      
+	  -webkit-box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 10px 0px;	  
+      color: white;
+      width: 1160px; 
+      text-align: center;
+      padding: 5px;
+      margin: auto;
+      text-shadow: 0 1px 1px rgba(0,0,0,.2);
+      border-radius: 3px;
+	  font-weight: bold;
+	  font-style: italic;
+	  display: block; 
+	  margin-left: -30px; 
+	  background: linear-gradient(45deg, rgb(5, 73, 80) 0%, rgb(120, 154, 159) 100%);
+	  visibility: hidden;
+}
 .jumbotron {
     padding: 40px 0;
     color: #FFFFFF;

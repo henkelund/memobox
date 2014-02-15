@@ -116,13 +116,10 @@ do
             $PMOUNT --read-only "$LABEL" "$LABEL" > /dev/null
             ;;
         "ifuse")
-            $IDEVICEPAIR --udid "$LABEL" unpair #> /dev/null
-            $IDEVICEPAIR --udid "$LABEL" validate #> /dev/null
+            #$IDEVICEPAIR --udid "$LABEL" unpair #> /dev/null
+            #$IDEVICEPAIR --udid "$LABEL" validate #> /dev/null
             $IDEVICEPAIR --udid "$LABEL" pair #> /dev/null
-            sleep 1
-            $IDEVICEPAIR --udid "$LABEL" pair #> /dev/null
-            sleep 1
-	    $IFUSE "$MNTPNT" --udid "$LABEL" -o nonempty > /dev/null
+			$IFUSE "$MNTPNT" --udid "$LABEL" -o nonempty > /dev/null
             ;;
         "ptp")
             # Udev gives us a filename friendly label: {$BUSNUM}_{$DEVNUM}

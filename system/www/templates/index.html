@@ -23,6 +23,8 @@
         </div>
         {% endraw %}
         <script type="text/javascript" src="/static/js/jquery/jquery.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.sticky.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.viewport.js"></script>
         <script type="text/javascript" src="/static/js/bootstrap/bootstrap.js"></script>
         <script type="text/javascript" src="/static/js/angular/angular.js"></script>
         <script type="text/javascript" src="/static/js/angular/angular-resource.js"></script>
@@ -32,6 +34,29 @@
         <script type="text/javascript" src="/static/js/angular/sinon.js"></script>
         <script type="text/javascript" src="/static/js/angular/angular-sanitize.min.js"></script>
         <script type="text/javascript" src="/static/js/box.js"></script>
+        <script>
+		$( window ).scroll(function() {
+			refreshDate();
+		});	        
+		
+		function refreshDate() {
+		  var counter = 0; 
+	      $(".thumbnails .image:in-viewport").each(function( index ) {
+	      	  if(counter == 0) {
+				  var time = new Date($( this ).attr("timestamp")*1000);
+				  var viewMonth = time.getMonth();
+				  var viewYear = time.getFullYear().toString();
+				  var viewDate = time.getDate();
+				  var month = Array("Jan","Feb","Mar","Apr","Maj","Jun","Jul","Aug","Sep","Okt","Nov","Dec");
+				  $("#dateHolder").html(viewDate + " " + month[viewMonth]+" "+viewYear);
+				  counter++;
+				  $("#dateHolder").css("visibility","visible");
+			  }
+		  });
+		}
+		
+		setTimeout("refreshDate()", 500);
+        </script>
     </body>
 </html>
 

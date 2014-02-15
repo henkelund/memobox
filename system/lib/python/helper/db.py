@@ -183,8 +183,6 @@ class DBSelect(object):
     def _table_cols(self, alias, cols):
         """Specify columns to be selected for given table alias"""
 
-        print self._columns
-
         if isinstance(cols, basestring):
             self._columns.append((alias, cols, None))
         elif isinstance(cols, (tuple, list)):
@@ -261,9 +259,12 @@ class DBSelect(object):
         """Specify the FROM directive for this SELECT"""
         return self._join('FROM', name, None, cols, schema)
 
-    def columns(self, cols='*', table=None):
+    def columns(self, cols='*', table=None, reset=False):
         """Add columns to SELECT"""
-        self._columns = []
+
+        if reset == True:
+        	self._columns = []
+        	
         if table is None and self._tables:
             table = self._tables[0]['alias']
 

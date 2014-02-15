@@ -43,7 +43,7 @@ def files_action():
     'name'
     ]
 
-    models = FileModel.all().join("file_attribute_integer", "parent = m._id").columns(cols).limit(16, (request.args.get('after', 0, type=int)-1)*16).where("file_attribute_integer.attribute = 5").order('file_attribute_integer.value', "DESC")
+    models = FileModel.all().join("file_attribute_integer", "parent = m._id").columns(cols, "m", True).columns('value', 'file_attribute_integer').limit(16, (request.args.get('after', 0, type=int)-1)*16).where("file_attribute_integer.attribute = 5").order('file_attribute_integer.value', "DESC")
 
     for arg in args.keys():
         if arg == 'retina':
@@ -62,7 +62,7 @@ def files_action():
             starttime = time.mktime(st.timetuple())
             endtime = time.mktime(et.timetuple())
             print(endtime)
-	    models.where('m.created_at < ?', endtime)   
+            models.where('m.created_at < ?', endtime)   
         elif arg == 'format':
             formats = ['image','video','file']
             froms = formats[int(vals[0])]

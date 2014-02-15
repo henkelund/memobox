@@ -41,19 +41,12 @@
             <span class="divider" ng-show="! $last">/</span>
         </li>
     </ul>
-
+	<div id="dateHolder"><span id="viewMonth"></span><span id="viewYear"></span></div>
     <ul class="thumbnails">
-        <!-- li class="span3" ng-repeat="file in FilesCtrl.fileService.files">
-            <div class="thumbnail">
-                <div style="cursor: pointer;" onClick="window.location.hash = '/files/{{file._id}}'" class="preview" file-thumbnail>
-                    <img alt="{{file.type}}/{{file.subtype}}" title="{{file.type}}/{{file.subtype}}" />
-                </div>
-            </div>
-        </li-->
-		<div ng-app='box' ng-controller='DemoController'>
+		<div ng-app='box' ng-controller='DemoController' my-main-directive>
 		  <div infinite-scroll='reddit.nextPage()' infinite-scroll-disabled='reddit.busy' infinite-scroll-distance='1'>
 				<ul class="thumbnails">
-					<li class="span3" ng-repeat="item in reddit.images" ng-bind-html-unsafe="item.html">
+					<li class="span3" ng-repeat="item in reddit.images" ng-bind-html-unsafe="item.html" my-repeat-directive>
 					</li>
 				</ul>
 		  </div>
