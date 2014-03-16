@@ -41,6 +41,14 @@
             <span class="divider" ng-show="! $last">/</span>
         </li>
     </ul>
+
+    <ul id="device-list" class="breadcrumb" style="margin-left: -30px; width: 1140px; margin-bottom: 10px; ">
+		<button type="button" onClick="document.getElementById('device-list').style.display ='none';" class="close" data-dismiss="modal" aria-hidden="true">×</button>    
+        <li ng-repeat="device in FilesCtrl.fileService.devices"  ng-bind-html-unsafe="device.html">
+                    {{devie.html}}
+        </li>
+    </ul>
+    
 	<div id="dateHolder"><span id="viewMonth"></span><span id="viewYear"></span></div>
     <ul class="thumbnails">
 		<div ng-app='box' ng-controller='DemoController' my-main-directive>

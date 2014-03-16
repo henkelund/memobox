@@ -4,6 +4,8 @@ from PIL import Image
 from helper.db import DBHelper, DBSelect
 from helper.image import ImageHelper
 from model.file import FileModel
+from helper.log import LogHelper as logger
+from model.device import DeviceModel
 
 class ImageIndexer(object):
     """Class responsible for generating thumbnails"""
@@ -15,6 +17,13 @@ class ImageIndexer(object):
         ImageHelper.install()
 
         insert = {}
+        cols = [
+        '_id',
+        'type',
+        'subtype',
+        'name'
+        ]
+
         models = FileModel.all().add_filter('extension', {'in': (
             'bmp', 'gif', 'im', 'jpg', 'jpe', 'jpeg', 'msp',
             'pcx', 'png', 'ppm', 'tiff', 'xpm', 'mov'
@@ -25,11 +34,12 @@ class ImageIndexer(object):
 
         ImageHelper.join_file_thumbnails(
             models, 'm.%s' % FileModel._pk, width, height, ())
-        models.where('tt.thumbnail IS NULL').limit(5)
-
+        models.where('tt.thumbnail IS NULL').limit(5).order('m._id', 'DESC')
+       
         for model in models:
             filename = os.path.join(model.abspath(), model.name())
             extension = os.path.splitext(filename)[1][1:]
+                        
             thumbname = os.path.join(
 				'thumbnails',
 				'%sx%s' % (width if width else '', height if height else ''),
@@ -66,38 +76,38 @@ class ImageIndexer(object):
             		insert[model.id()] = thumbname+".jpg"
             else:
 	            thumbfile = os.path.join(basedir, thumbname)            
+	            print thumbfile
 	            if not os.path.isfile(filename):
 	                insert[model.id()] = None
-	
-	            print "--"+filename
+
 	            image = Image.open(filename)
 
 	            if not image:
 	                insert[model.id()] = None
-	            
-	            if not os.path.isfile(thumbfile):
-	
-	                directory = os.path.dirname(thumbfile)
-	                if not os.path.isdir(directory):
-	                    os.makedirs(directory)
-	
-	                rotation = 0.
-	                if model.orientation() == 3:
-	                    rotation = -180.
-	                elif model.orientation() == 6:
-	                    rotation = -90.
-	                elif model.orientation() == 8:
-	                    rotation = -270.
-	                if rotation:
-	                    image = image.rotate(rotation, expand = 1)
-	
-	                image = ImageHelper.resize(image, width, height)
-	                image.save(thumbfile)
-	                insert[model.id()] = thumbname
+	            	
+	            directory = os.path.dirname(thumbfile)
+	            if not os.path.isdir(directory):
+	                os.makedirs(directory)
+
+	            rotation = 0.
+	            if model.orientation() == 3:
+	                rotation = -180.
+	            elif model.orientation() == 6:
+	                rotation = -90.
+	            elif model.orientation() == 8:
+	                rotation = -270.
+	            if rotation:
+	                image = image.rotate(rotation, expand = 1)
+
+	            image = ImageHelper.resize(image, width, height)
+	            image.save(thumbfile)
+	            insert[model.id()] = thumbname
 
         for file_id in insert.keys():
             ImageHelper.add_file_thumbnail(
                 file_id, width, height, insert[file_id])
+                
+        print "Done"
 
 if (__name__ == '__main__'):
     """$ python image.py path/to/database path/to/basedir"""
@@ -114,6 +124,29 @@ if (__name__ == '__main__'):
     basedir = os.path.join(basedir, 'cache')
 
     DBHelper(database)
+
+    for device in DeviceModel.all():
+    	states = { -1 : 'Error', 1 : 'Preparing', 2 : 'Transfering files', 3 : 'Preparing images', 4 : 'Ready' }
+    	images = DBSelect('device','count(*) as imagecount').join('file', 'device._id = file.device', None).where("device._id = "+str(device.id())).where("file.extension = 'jpg'").query()
+    	thumbnails = DBSelect('device','count(*) as thumbnailcount').join('file', 'device._id = file.device', None).join('file_thumbnail', 'file_thumbnail.file = file._id', None).where("device._id = "+str(device.id())).where("file.extension = 'jpg'").query()
+
+    	imagecount = 0
+    	thumbnailcount = 0; 
+    	
+    	for image in images:
+    		imagecount = image['imagecount']
+
+    	for thumbnail in thumbnails:
+    		thumbnailcount = thumbnail['thumbnailcount']
+    	    	
+    	if(device.state() != 4 and imagecount == thumbnailcount):
+    		DBSelect('device').where('device._id = '+str(device.id())).query_update({ 'state' : 4 });
+    		#args = ['sudo','sqlite3', '/HDD/index.db', 'UPDATE device SET state = 4 WHERE _id > 0']
+    		#call(args)
+    		#print(" ".join(args))
+    		#device.state(4)
+    		#device.save()
+
         
     ImageIndexer.index_file_thumbnails(basedir, 260, 260) #TODO: read from configuration
-    ImageIndexer.index_file_thumbnails(basedir, 520, 520) # retina
+    #ImageIndexer.index_file_thumbnails(basedir, 520, 520) # retina

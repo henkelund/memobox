@@ -7,6 +7,7 @@ from helper.image import ImageHelper
 from model.device import DeviceModel
 from model.file import FileModel
 from datetime import date
+from subprocess import call
 import os
 
 app = Flask(__name__)
@@ -103,6 +104,45 @@ def file_filters_action():
         })
 
     return jsonify({'filters': filters})
+
+@app.route('/files/devices')
+def file_devices_action():
+
+    devices = []
+    for device in DeviceModel.all():
+    	states = { -1 : 'Error', 1 : 'Preparing', 2 : 'Transfering files', 3 : 'Preparing images ', 4 : 'Ready' }
+    	images = DBSelect('device','count(*) as imagecount').join('file', 'device._id = file.device', None).where("device._id = "+str(device.id())).where("file.extension = 'jpg'").query()
+    	thumbnails = DBSelect('device','count(*) as thumbnailcount').join('file', 'device._id = file.device', None).join('file_thumbnail', 'file_thumbnail.file = file._id', None).where("device._id = "+str(device.id())).where("file.extension = 'jpg'").query()
+
+    	imagecount = 0
+    	thumbnailcount = 0; 
+    	
+    	for image in images:
+    		imagecount = image['imagecount']
+
+    	for thumbnail in thumbnails:
+    		thumbnailcount = thumbnail['thumbnailcount']
+
+    	# Prepare status message
+    	message = states[device.state()]
+    	
+    	# If the number of images and thumbnails does not match, assume that thumbnails are still being generated and display progress
+    	if(thumbnailcount != imagecount):
+    		message = states[device.state()] + str(thumbnailcount)+'/'+str(imagecount)
+    	
+        devices.insert(0, {
+            'id': device.id(),
+            'product_name': device.product_name(),
+            'state': device.state(),
+            'model': device.model(),
+            'product_id': device.product_id(),
+            'last_backup': device.last_backup(),
+            'images': imagecount,
+            'images': thumbnailcount,
+            'html': '<div class="device"><img width="100" src="/static/images/icons/smartphone.png" /><br /><a href="javascript:void(0);">'+device.product_name()+'</a><br />'+message+'</div>'
+        })    
+
+    return jsonify({'devices': devices})
 
 @app.route('/files/details')
 def file_details_action():

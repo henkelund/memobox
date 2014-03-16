@@ -100,3 +100,10 @@ body {
         margin-bottom: 5px;
     }
 
+.device {
+	margin-right: 40px; 
+	text-align: center; 
+}
+	.device img {
+		margin-bottom: 10px; 
+	}

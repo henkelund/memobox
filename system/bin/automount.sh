@@ -59,7 +59,7 @@ done
 export DEVPATH
 source "$BIN_DIR/synchelper.sh"
 
-messagemanager PENDING
+messagemanager PENDING $LABEL
 
 # Check if data dir is a mountpoint
 #$CHKMNT -q "$DATA_DIR"
@@ -88,7 +88,9 @@ function _cleanup
             return 1
         fi
     done
-    return 0
+    echo "Ready to quit $LABEL"
+    exitmanager 0 $LABEL
+    echo "Has quit"    
 }
 
 # Make sure mount point exists and is free
@@ -216,7 +218,7 @@ echo "$SRC"
 
 echo "[$$] DEBUG ($SRC)" 1>&2
 
-messagemanager WORKING
+messagemanager WORKING  $LABEL
 
 echo "[$$] Starting transfer from $SRC to $TMPDEST"
 $RSYNC                                               \

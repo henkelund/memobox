@@ -15,7 +15,9 @@ class DeviceModel(BaseModel):
         'model': 'model',
         'vendor_id': 'idVendor',
         'vendor_name': 'vendor',
-        'manufacturer': 'manufacturer'
+        'manufacturer': 'manufacturer',
+        'last_backup': 'last_backup',
+        'state': 'state'
     }
 
     def get_transfer_dirs(self):

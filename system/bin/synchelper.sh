@@ -5,27 +5,43 @@ LIGHT_PATH="$BIN_DIR/lights.sh"
 
 function messagemanager
 {    
+		string="$2"
+		length=$(echo ${#string})
+		
+		echo "Debug $1 $2"
+		
         if [ "$1" = "DONE" ]; then
                 $LIGHT_PATH BLUE OFF &
+                if [ "$length" -ne 0 ]; then
+                	echo "/usr/bin/sqlite3 -init <(echo .timeout 5000) -line /HDD/index.db UPDATE device SET state = 3, last_backup = date('now') WHERE serial = '$2'"
+                	/usr/bin/sqlite3 -init <(echo .timeout 5000) -line /HDD/index.db "UPDATE device SET state = 3, last_backup = date('now') WHERE serial = '$2'" &
+                fi
         fi
 
         if [ "$1" = "ERROR" ]; then
                 $LIGHT_PATH BLUE OFF &
+                /usr/bin/sqlite3 -init <(echo .timeout 5000) -line /HDD/index.db "UPDATE device SET state = -1 WHERE serial = '$2'"
         fi
 
         if [ "$1" = "PENDING" ]; then
                 $LIGHT_PATH BLUE ON &
+                /usr/bin/sqlite3 -init <(echo .timeout 5000) -line /HDD/index.db "UPDATE device SET state = 1 WHERE serial = '$2'"
+                
         fi
 
         if [ "$1" = "WORKING" ]; then
                 $LIGHT_PATH BLUE BLINK &
+                /usr/bin/sqlite3 -init <(echo .timeout 5000) -line /HDD/index.db "UPDATE device SET state = 2 WHERE serial = '$2'"                
         fi
 }
 
 function exitmanager
 {
 	if [ "$1" = 0 ]; then
-		messagemanager DONE
+		echo "inside exitmanager $1 $2"
+		messagemanager DONE "$2"
+		echo "now quitting"
+		return $1
 	else
 		messagemanager ERROR
 	fi

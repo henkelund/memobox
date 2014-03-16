@@ -74,6 +74,11 @@
         $urlRouterProvider.otherwise('/');
 
         $stateProvider
+            .state('devices', {
+                url: '/devices',
+                controller: 'DevicesCtrl',
+                templateUrl: '/templates/devices.html'
+            })
             .state('files', {
                 url: '/',
                 controller: 'FilesCtrl',
@@ -125,6 +130,8 @@
             this.filesResource = $resource('/files');
             this.filterResource = $resource('/files/filters');
             this.detailsResource = $resource('/files/details');
+            this.deviceResource = $resource('/files/devices');
+            this.devices = [];
             this.files = [];
             this.filters = [];
             this.details = [];
@@ -145,6 +152,14 @@
             loadFiltersSuccess: function (data) {
                 this.filters = data.filters;
             },
+
+            /**
+             * Successful filters load callback
+             */
+            loadDevicesSuccess: function (data) {
+                this.devices = data.devices;
+            },
+
 
             /**
              * Successful filters load callback
@@ -200,6 +215,19 @@
                 return this;
             },
 
+
+            /**
+             * Load available filters
+             */
+            loadDevices: function () {
+                this.deviceResource.get(
+                    {},
+                    this.loadDevicesSuccess.bind(this),
+                    this.loadError.bind(this)
+                );
+                return this;
+            },
+            
             /**
              * Load available filters
              */
@@ -249,6 +277,68 @@
 
         return new FileService();
     });
+
+    /**
+     * Device service
+     */
+    box.factory('DeviceService', function ($resource, $window, $q) {
+
+        /**
+         *
+         */
+        var DeviceService = function () {
+            this.devicesResource = $resource('/files/devices');
+            this.devices = [];
+        };
+        DeivceService.prototype = {
+
+            /**
+             * Successful devices load callback
+             */
+            loadDevicesSuccess: function (resource) {
+                this.devices = resource.devices;
+                console.log(resource.sql);
+            },
+
+            /**
+             * Failed load callback
+             */
+            loadError: function (data) {
+                console.log(data);
+            },
+
+            /**
+             * Load devices passing 'devices'
+             */
+            loadDevices: function (filter, complete) {
+                var that = this,
+                    args = {}, // arguments
+                    fk;        // filter key
+
+
+                this.devicesResource.get(
+                    args,
+                    function (data) {
+                        that.loadDevicesSuccess(data);
+                        if (typeof complete === 'function') {
+                            complete(data);
+                        }
+                    },
+                    function (data) {
+                        that.loadError(data);
+                        if (typeof complete === 'function') {
+                            complete(data);
+                        }
+                    }
+                );
+                return this;
+            },
+
+        };
+
+        return new DeviceService();
+    });
+
 
     /**
      * File thumbnail directive
@@ -357,7 +447,7 @@
     box.controller('FilesCtrl', function ($scope, $location, FileService) {
 
         var that = this;
-        this.fileService = FileService.loadFilters().loadFiles();
+        this.fileService = FileService.loadFilters().loadFiles().loadDevices();
         this.filterState = {};
         this.isFilterPending = false;
         $('#filesDetailModal').modal({show: false})
