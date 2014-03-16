@@ -1,9 +1,6 @@
 body {
 /*    background-color: #EDF4F5;*/ /* #054950 #789A9F #EDF4F5 #FFFFFF #F78F1E */
 }
-.thumbnails{
-	margin-top: 15px; 
-}
 #dateHolder {
       background: #a6eea4;
 	  box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 10px 0px;      
@@ -107,3 +104,39 @@ body {
 	.device img {
 		margin-bottom: 10px; 
 	}
+	
+	
+.date-navbar {
+	margin-bottom: 0px;
+}
+
+	.date-navbar  #dateHolder-sticky-wrapper .navbar-inner {
+		min-height: 30px;
+	}
+
+	.date-navbar  #dateHolder-sticky-wrapper .navbar-inner .nav {
+		margin-left: 480px; 
+	}	
+	
+		.date-navbar #dateHolder-sticky-wrapper ul li a {
+			color: white; 
+			text-shadow: none;
+			padding-top: 5px; 
+			padding-bottom: 5px; 
+		}
+		
+		.date-navbar #dateHolder-sticky-wrapper ul li .dropdown-menu li a { 
+			color: #333;
+		}
+		
+		.date-navbar #dateHolder-sticky-wrapper .nav li.dropdown.open > .dropdown-toggle {
+			background-color: transparent;
+		}
+
+.container {
+	width: 1140px;
+}
+
+.thumbnails{
+	margin-top: 5px; 
+}
