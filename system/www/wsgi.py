@@ -1,3 +1,5 @@
+from __future__ import division
+import math
 import datetime as dt, time
 from flask import Flask, render_template, request, jsonify, abort, Response
 #from flask_debugtoolbar import DebugToolbarExtension
@@ -110,7 +112,7 @@ def file_devices_action():
 
     devices = []
     for device in DeviceModel.all():
-    	states = { -1 : 'Error', 1 : 'Preparing', 2 : 'Transfering files', 3 : 'Preparing images ', 4 : 'Ready' }
+    	states = { -1 : 'Error', 1 : 'Preparing', 2 : 'Transfering files', 3 : 'Preparing images', 4 : 'Ready' }
     	images = DBSelect('device','count(*) as imagecount').join('file', 'device._id = file.device', None).where("device._id = "+str(device.id())).where("file.extension = 'jpg'").query()
     	thumbnails = DBSelect('device','count(*) as thumbnailcount').join('file', 'device._id = file.device', None).join('file_thumbnail', 'file_thumbnail.file = file._id', None).where("device._id = "+str(device.id())).where("file.extension = 'jpg'").query()
 
@@ -124,11 +126,11 @@ def file_devices_action():
     		thumbnailcount = thumbnail['thumbnailcount']
 
     	# Prepare status message
-    	message = states[device.state()]
+    	message = states[device.state()]+"<br /><br />"
     	
     	# If the number of images and thumbnails does not match, assume that thumbnails are still being generated and display progress
     	if(thumbnailcount != imagecount):
-    		message = states[device.state()] + str(thumbnailcount)+'/'+str(imagecount)
+    		message = states[device.state()] + "<br />Progress: "+str(100-int(math.ceil(((imagecount-thumbnailcount)/imagecount)*100)))+"%"
     	
         devices.insert(0, {
             'id': device.id(),
@@ -139,7 +141,7 @@ def file_devices_action():
             'last_backup': device.last_backup(),
             'images': imagecount,
             'images': thumbnailcount,
-            'html': '<div class="device"><img width="100" src="/static/images/icons/smartphone.png" /><br /><a href="javascript:void(0);">'+device.product_name()+'</a><br />'+message+'</div>'
+            'html': '<div id="'+str(device.id())+'" class="device"><div id="noti_Container"><img width="100" src="/static/images/icons/smartphone.png" /><div class="noti_bubble">'+str(imagecount)+'</div></div><a href="javascript:void(0);">'+device.product_name()+'</a><br />'+message+'</div>'
         })    
 
     return jsonify({'devices': devices})

@@ -140,3 +140,18 @@ body {
 .thumbnails{
 	margin-top: 5px; 
 }
+
+#noti_Container {
+    position:relative;
+}
+
+.noti_bubble {
+    position:absolute;
+    top: -6px;
+    right:-6px;
+    padding:5px;
+    background-color:red;
+    color:white;
+    border-radius:10px;
+    box-shadow:1px 1px 1px gray;
+}
