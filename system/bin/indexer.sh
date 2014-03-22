@@ -28,7 +28,7 @@ else
     for indexer in "file" "filetime" "image"
     do
     	echo "$indexer"
-        "$PYTHON" "$INDEXDIR/$indexer.py" "$DATABASE" "$DATA_DIR" &
+        "$PYTHON" "$INDEXDIR/$indexer.py" "$DATABASE" "$DATA_DIR"
     done
 fi
 
