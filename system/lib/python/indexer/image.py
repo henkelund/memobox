@@ -125,6 +125,9 @@ if (__name__ == '__main__'):
 
     DBHelper(database)
 
+    ImageIndexer.index_file_thumbnails(basedir, 260, 260) #TODO: read from configuration
+    #ImageIndexer.index_file_thumbnails(basedir, 520, 520) # retina
+
     for device in DeviceModel.all():
     	states = { -1 : 'Error', 1 : 'Preparing', 2 : 'Transfering files', 3 : 'Preparing images', 4 : 'Ready' }
     	images = DBSelect('device','count(*) as imagecount').join('file', 'device._id = file.device', None).where("device._id = "+str(device.id())).where("file.extension = 'jpg'").query()
@@ -146,7 +149,3 @@ if (__name__ == '__main__'):
     		#print(" ".join(args))
     		#device.state(4)
     		#device.save()
-
-        
-    ImageIndexer.index_file_thumbnails(basedir, 260, 260) #TODO: read from configuration
-    #ImageIndexer.index_file_thumbnails(basedir, 520, 520) # retina

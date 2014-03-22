@@ -43,7 +43,7 @@ class FileModel(ExtendedModel):
         if not self.id():
             # set timestamp for new files
             self.indexed_at(math.floor(time.time()))
-
+        
         return super(FileModel, self).save()
 
     def _load_type_data(self, filename=None):
@@ -364,8 +364,12 @@ class FileModelTypeImage(FileModelTypeBase):
                 model.latitude(latlng[0])
                 model.longitude(latlng[1])
 
-        if 'DateTime' in exif:
-            date_str = self._clean_exif_string(exif['DateTime'])
+        if 'DateTime' in exif or 'DateTimeOriginal' in exif:
+            if 'DateTime' in exif:
+            	date_str = self._clean_exif_string(exif['DateTime'])
+            if 'DateTimeOriginal' in exif:
+            	date_str = self._clean_exif_string(exif['DateTimeOriginal'])
+            
             try:
                 time_struct = time.strptime(date_str, '%Y:%m:%d %H:%M:%S')
                 timestamp = int(time.mktime(time_struct))

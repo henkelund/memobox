@@ -75,7 +75,9 @@ class DeviceModel(BaseModel):
                             "model"        TEXT NOT NULL DEFAULT '',
                             "vendor_id"    TEXT NOT NULL DEFAULT '',
                             "vendor_name"  TEXT NOT NULL DEFAULT '',
-                            "manufacturer" TEXT NOT NULL DEFAULT ''
+                            "manufacturer" TEXT NOT NULL DEFAULT '',
+                            "last_backup" DATETIME,
+                            "state" INT NOT NULL DEFAULT 3
                         )
                     """ % table),
                 DBHelper().query(
