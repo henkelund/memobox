@@ -54,7 +54,7 @@
 		    success : function(result){
 			    for(var i = 0; i < result.files.length; i++) {
 			      //angular.mock.dump(result.files[i]);
-			      this.images.push({html:"<div class=\"thumbnail\"><div style=\"cursor: pointer;\" onClick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview\" file-thumbnail><div timestamp=\""+result.files[i].value+"\" style=\"cursor: pointer; background-image: url(/static/images/thumbnails/260x260/I/M/"+result.files[i].name+"); background-position: 50% 50%;\" onclick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview image\"><img alt=\"image/jpeg\" title=\"image/jpeg\" src=\"/static/images/icons/mint/48/image-jpeg.png\" style=\"display: none;\"></div></div></div>"});
+			      this.images.push({html:"<div class=\"thumbnail\"><div style=\"cursor: pointer;\" onClick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview\" file-thumbnail><div timestamp=\""+result.files[i].value+"\" style=\"cursor: pointer; background-image: url(/static/images/"+result.files[i].thumbnail+"); background-position: 50% 50%;\" onclick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview image\"><img alt=\"image/jpeg\" title=\"image/jpeg\" src=\"/static/images/icons/mint/48/image-jpeg.png\" style=\"display: none;\"></div></div></div>"});
 			    }			    
 
 		        this.after = this.after + 1;
