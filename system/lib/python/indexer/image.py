@@ -24,7 +24,7 @@ class ImageIndexer(object):
         'name'
         ]
 
-        models = FileModel.all().add_filter('extension', {'in': (
+        models = FileModel.all().join('file_attribute_integer', 'file_attribute_integer.parent = m._id', 'value').where("file_attribute_integer.attribute = 5").add_filter('extension', {'in': (
             'bmp', 'gif', 'im', 'jpg', 'jpe', 'jpeg', 'msp',
             'pcx', 'png', 'ppm', 'tiff', 'xpm', 'mov'
         )}).add_filter(
@@ -34,8 +34,7 @@ class ImageIndexer(object):
 
         ImageHelper.join_file_thumbnails(
             models, 'm.%s' % FileModel._pk, width, height, ())
-        models.where('tt.thumbnail IS NULL').limit(5).order('m._id', 'DESC')
-       
+        models.where('tt.thumbnail IS NULL').limit(70).order('file_attribute_integer.value', 'DESC')
         for model in models:
             filename = os.path.join(model.abspath(), model.name())
             extension = os.path.splitext(filename)[1][1:]
@@ -75,39 +74,38 @@ class ImageIndexer(object):
             		subprocess.call(cmdline)
             		insert[model.id()] = thumbname+".jpg"
             else:
-	            thumbfile = os.path.join(basedir, thumbname)            
-	            print thumbfile
-	            if not os.path.isfile(filename):
-	                insert[model.id()] = None
+            	thumbfile = os.path.join(basedir, thumbname+"_"+str(model.id())+".jpg")
+            	print "Thumbfile: "+thumbfile
+            	directory = os.path.dirname(thumbfile)
+            	if not os.path.isdir(directory):
+            		os.makedirs(directory)
+        		
+            	cmdline = [
+            	'gm',
+            	'convert',
+            	'-size',
+            	str(width)+"x"+str(height),
+            	filename,
+            	'-thumbnail',
+            	str(width)+"x"+str(height)+"^",
+            	'-gravity',
+            	'center',
+            	'-extent',
+            	str(width)+"x"+str(height),
+            	'+profile',
+            	'"*"',
+            	'-auto-orient',
+            	thumbfile
+			]
+            	subprocess.call(cmdline)
+            	insert[model.id()] = thumbname+"_"+str(model.id())+".jpg"
 
-	            image = Image.open(filename)
-
-	            if not image:
-	                insert[model.id()] = None
-	            	
-	            directory = os.path.dirname(thumbfile)
-	            if not os.path.isdir(directory):
-	                os.makedirs(directory)
-
-	            rotation = 0.
-	            if model.orientation() == 3:
-	                rotation = -180.
-	            elif model.orientation() == 6:
-	                rotation = -90.
-	            elif model.orientation() == 8:
-	                rotation = -270.
-	            if rotation:
-	                image = image.rotate(rotation, expand = 1)
-
-	            image = ImageHelper.resize(image, width, height)
-	            image.save(thumbfile)
-	            insert[model.id()] = thumbname
-
+        print "Add generated thumbnails to database"
         for file_id in insert.keys():
             ImageHelper.add_file_thumbnail(
                 file_id, width, height, insert[file_id])
                 
-        print "Done"
+        print "Image index done"
 
 if (__name__ == '__main__'):
     """$ python image.py path/to/database path/to/basedir"""

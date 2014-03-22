@@ -83,7 +83,7 @@ def files_action():
         260*pixel_ratio
     )
 
-    ImageHelper().add_file_icons(models, 48*pixel_ratio, 128*pixel_ratio)
+    #ImageHelper().add_file_icons(models, 48*pixel_ratio, 128*pixel_ratio)
     for model in models:
         data.append(model.get_data())
     print models
