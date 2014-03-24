@@ -24,7 +24,7 @@ class ImageIndexer(object):
         'name'
         ]
 
-        models = FileModel.all().join('file_attribute_integer', 'file_attribute_integer.parent = m._id', 'value').where("file_attribute_integer.attribute = 5").add_filter('extension', {'in': (
+        models = FileModel.all().add_filter('extension', {'in': (
             'bmp', 'gif', 'im', 'jpg', 'jpe', 'jpeg', 'msp',
             'pcx', 'png', 'ppm', 'tiff', 'xpm', 'mov'
         )}).add_filter(
@@ -34,10 +34,13 @@ class ImageIndexer(object):
 
         ImageHelper.join_file_thumbnails(
             models, 'm.%s' % FileModel._pk, width, height, ())
-        models.where('tt.thumbnail IS NULL').limit(70).order('file_attribute_integer.value', 'DESC')
+        models.where('tt.thumbnail IS NULL').limit(70).order('created_at', 'DESC')
+        
         for model in models:
             filename = os.path.join(model.abspath(), model.name())
             extension = os.path.splitext(filename)[1][1:]
+
+            print filename
                         
             thumbname = os.path.join(
 				'thumbnails',

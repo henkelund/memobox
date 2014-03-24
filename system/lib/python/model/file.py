@@ -367,7 +367,7 @@ class FileModelTypeImage(FileModelTypeBase):
         if 'DateTime' in exif or 'DateTimeOriginal' in exif:
             if 'DateTime' in exif:
             	date_str = self._clean_exif_string(exif['DateTime'])
-            if 'DateTimeOriginal' in exif:
+            elif 'DateTimeOriginal' in exif:
             	date_str = self._clean_exif_string(exif['DateTimeOriginal'])
             
             try:
@@ -375,6 +375,7 @@ class FileModelTypeImage(FileModelTypeBase):
                 timestamp = int(time.mktime(time_struct))
                 if timestamp > 0:
                     model.timestamp(timestamp)
+                    model.created_at(timestamp);
             except ValueError:
                 logger.notice(
                     'Could not parse DateTime string "%s" from %s' %
