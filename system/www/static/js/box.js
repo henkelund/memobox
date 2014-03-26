@@ -25,7 +25,8 @@
 	})
 	
 	box.controller('DemoController', function($scope, Reddit) {
-	  $scope.reddit = new Reddit();
+	  $scope.reddit = new Reddit($scope);
+	  $scope.items = [];
 	  $scope.render = function(e) {
 	    return $(e).html();
 	  }
@@ -34,27 +35,42 @@
 	
 	// Reddit constructor function to encapsulate HTTP and pagination logic
 	box.factory('Reddit', function($http) {
-	  var Reddit = function() {
+	  var Reddit = function($scope) {
+	  	this.me = $scope;
 	    this.images = [];
 	    this.busy = false;
 	    this.after = 1;
 	    this.viewMonth = null;
 	    this.viewYear = null; 
 		this.monthArr = "Alert";
+		this.device = -1; 
 	  };
 	
-	  Reddit.prototype.nextPage = function() {
+	  Reddit.prototype.nextPage = function(_device) {
 	    if (this.busy) return;
-	    this.busy = true;
+	    this.busy = true;	
+	    var changedDevice = false; 
+		if(_device != null) {
+			if(this.device != _device) {
+				changedDevice = true;
+				this.after = 1; 
+				$(".device").removeClass("selectedDevice");
+				$("#"+_device).addClass("selectedDevice");
+			}
+			this.device = _device; 
+		}
 	
 		$.ajax({
-		    url : "/files?after="+this.after,
+		    url : "/files?after="+this.after+"&device="+this.device,
 			async: false,
 			context: this,
 		    success : function(result){
+		    	if(changedDevice == true) {
+					this.me.items = [];
+				}
+
 			    for(var i = 0; i < result.files.length; i++) {
-			      //angular.mock.dump(result.files[i]);
-			      this.images.push({html:"<div class=\"thumbnail\"><div style=\"cursor: pointer;\" onClick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview\" file-thumbnail><div timestamp=\""+result.files[i].value+"\" style=\"cursor: pointer; background-image: url(/static/images/"+result.files[i].thumbnail+"); background-position: 50% 50%;\" onclick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview image\"><img alt=\"image/jpeg\" title=\"image/jpeg\" src=\"/static/images/icons/mint/48/image-jpeg.png\" style=\"display: none;\"></div></div></div>"});
+			      this.me.items.push({html:"<div class=\"thumbnail\" id=\""+result.files[i].file+"\"><div style=\"cursor: pointer;\" onClick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview\" file-thumbnail><div timestamp=\""+result.files[i].created_at+"\" style=\"cursor: pointer; background-image: url(/static/images/"+result.files[i].thumbnail+"); background-position: 50% 50%;\" onclick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview image\"><img alt=\"image/jpeg\" title=\"image/jpeg\" src=\"/static/images/icons/mint/48/image-jpeg.png\" style=\"display: none;\"></div></div></div>"});
 			    }			    
 
 		        this.after = this.after + 1;

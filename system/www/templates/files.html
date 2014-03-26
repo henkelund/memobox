@@ -29,38 +29,30 @@
 </div>
 
 <div class="container">
-
-    <ul class="breadcrumb" ng-show="FilesCtrl.isFilterActive()">
-        <li ng-repeat="filter in FilesCtrl.fileService.filters | activeFilters:this">
-            <span ng-repeat="(value, label) in filter.options | activeFilterOptions:filter:this">
-                <a href="javascript:void(0);"
-                   ng-click="FilesCtrl.filterClicked(filter, value)"
-                   ng-class="{active: FilesCtrl.isFilterPending}">
-                    {{label}}</a><span class="divider" ng-show="! $last">,</span>
-            </span>
-            <span class="divider" ng-show="! $last">/</span>
-        </li>
-    </ul>
-
+	<div  ng-controller='DemoController'>
     <ul id="device-list" class="breadcrumb" style="margin-left: -30px; width: 1140px; margin-bottom: 10px; ">
 		<button type="button" onClick="document.getElementById('device-list').style.display ='none';" class="close" data-dismiss="modal" aria-hidden="true">×</button>    
-        <li ng-repeat="device in FilesCtrl.fileService.devices"  ng-bind-html-unsafe="device.html">
-                    {{devie.html}}
+        <li ng-repeat="device in FilesCtrl.fileService.devices">
+        	<div id="{{device.id}}" class="device" imagecount="{{device.images}}" thumbcount="{{device.thumbnails}}">
+        	<div id="noti_Container"><a href="javascript:void(0)" ng-click="reddit.nextPage('{{device.id}}')"><img ng-src="{{device.symbol}}"  width="100" /></a><div class="noti_bubble">{{device.images}}</div></div>
+        	<a href="javascript:void(0)" ng-click="reddit.nextPage('{{device.id}}')">{{device.product_name}}</a>&nbsp;&nbsp;
+        	</div>
         </li>
     </ul>
     
 	<div class="navbar date-navbar"><div class="navbar-inner" id="dateHolder"></div></div>
     <ul class="thumbnails">
-		<div ng-app='box' ng-controller='DemoController' my-main-directive>
+		<div ng-app='box' my-main-directive>
 		  <div infinite-scroll='reddit.nextPage()' infinite-scroll-disabled='reddit.busy' infinite-scroll-distance='1'>
-				<ul class="thumbnails">
-					<li class="span3" ng-repeat="item in reddit.images" ng-bind-html-unsafe="item.html" my-repeat-directive>
+				<ul id="thumbnails" class="thumbnails">
+					<li class="span3" ng-repeat="item in items" ng-bind-html-unsafe="item.html" my-repeat-directive>
 					</li>
 				</ul>
 		  </div>
 		</div>
         
     </ul>
+    </div>
 
     <div class="modal fade" id="filesDetailModal" tabindex="-1" role="dialog" aria-labelledby="filesDetailModalLabel" aria-hidden="true">
         <div class="modal-dialog">

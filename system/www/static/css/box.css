@@ -100,9 +100,18 @@ body {
 .device {
 	margin-right: 40px; 
 	text-align: center; 
+	border-radius: 10px; 
+	background-color: transparent; 
+	padding: 10px; 		
 }
 	.device img {
 		margin-bottom: 10px; 
+	}
+	
+	.selectedDevice {
+		border-radius: 10px; 
+		background-color: #DDD; 
+		padding: 10px; 		
 	}
 	
 	

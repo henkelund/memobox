@@ -46,7 +46,7 @@ def files_action():
     'name'
     ]
 
-    models = FileModel.all().join("file_attribute_integer", "parent = m._id").columns(cols, "m", True).columns('value', 'file_attribute_integer').limit(16, (request.args.get('after', 0, type=int)-1)*16).where("file_attribute_integer.attribute = 5").order('file_attribute_integer.value', "DESC")
+    models = FileModel.all().join("file_thumbnail", "m._id = file_thumbnail.file").limit(16, (request.args.get('after', 0, type=int)-1)*16).order('m.created_at', "DESC")
 
     for arg in args.keys():
         if arg == 'retina':
@@ -64,29 +64,20 @@ def files_action():
             et = dt.datetime(int(vals[0]), 12, 31)
             starttime = time.mktime(st.timetuple())
             endtime = time.mktime(et.timetuple())
-            print(endtime)
             models.where('m.created_at < ?', endtime)   
         elif arg == 'format':
             formats = ['image','video','file']
             froms = formats[int(vals[0])]
             models.where('m.type = ?', froms)
-        elif arg == 'device':
-            models.add_filter(arg, {'in': vals})
-            #models.where('m._id = ?',753)
+        elif arg == 'device' and vals[0] != "-1":
+            models.where('m.device = '+str(vals[0]))
         else:
             FilterHelper.apply_filter(arg, vals, models)
 
-    ImageHelper().join_file_thumbnails(
-        models,
-        'm.%s' % FileModel._pk,
-        260*pixel_ratio,
-        260*pixel_ratio
-    )
-
-    #ImageHelper().add_file_icons(models, 48*pixel_ratio, 128*pixel_ratio)
+       #ImageHelper().add_file_icons(models, 48*pixel_ratio, 128*pixel_ratio)
     for model in models:
         data.append(model.get_data())
-    print models
+
     return jsonify({'files': data, 'sql': models.render()})
 
 @app.route('/files/filters')
@@ -113,9 +104,9 @@ def file_devices_action():
     devices = []
     for device in DeviceModel.all():
     	states = { -1 : 'Error', 1 : 'Preparing', 2 : 'Transfering files', 3 : 'Preparing images', 4 : 'Ready' }
-    	images = DBSelect('device','count(*) as imagecount').join('file', 'device._id = file.device', None).where("device._id = "+str(device.id())).where("file.extension = 'jpg'").query()
-    	thumbnails = DBSelect('device','count(*) as thumbnailcount').join('file', 'device._id = file.device', None).join('file_thumbnail', 'file_thumbnail.file = file._id', None).where("device._id = "+str(device.id())).where("file.extension = 'jpg'").query()
-
+    	images = DBSelect('file','count(*) as imagecount').join('device', 'device._id = file.device', None).where("device._id = "+str(device.id())).where("file.type = 'image'").query()
+    	thumbnails = DBSelect('file','count(*) as thumbnailcount').join('device', 'device._id = file.device', None).join('file_thumbnail', 'file_thumbnail.file = file._id', None).where("device._id = "+str(device.id())).where("file.type = 'image'").query()
+    			
     	imagecount = 0
     	thumbnailcount = 0; 
     	
@@ -140,8 +131,8 @@ def file_devices_action():
             'product_id': device.product_id(),
             'last_backup': device.last_backup(),
             'images': imagecount,
-            'images': thumbnailcount,
-            'html': '<div id="'+str(device.id())+'" class="device"><div id="noti_Container"><img width="100" src="/static/images/icons/smartphone.png" /><div class="noti_bubble">'+str(imagecount)+'</div></div><a href="javascript:void(0);">'+device.product_name()+'</a><br />'+message+'</div>'
+            'thumbnails': thumbnailcount,
+            'symbol': '/static/images/icons/'+str(device.type())+'.png'
         })    
 
     return jsonify({'devices': devices})

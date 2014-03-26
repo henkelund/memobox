@@ -68,6 +68,12 @@
 		        scrollTop: id.offset().top});
 		}
 		
+		var selectedDevice = -1; 
+		
+		function setDevice(id) {
+			selectedDevice = id; 
+		}
+		
 		function refreshDate() {
 		  var counter = 0; 
 	      $(".thumbnails .image:in-viewport").each(function( index ) {

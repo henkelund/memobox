@@ -29,7 +29,7 @@ class ImageIndexer(object):
             'pcx', 'png', 'ppm', 'tiff', 'xpm', 'mov'
         )}).add_filter(
             ('orientation',  'orientation'),
-            ({'null': True}, {'in': range(1, 9)})
+            ({'null': True}, {'in': range(0, 9)})
         )
 
         ImageHelper.join_file_thumbnails(
