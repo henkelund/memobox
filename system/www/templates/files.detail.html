@@ -1,4 +1,7 @@
 <a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 10px;" class="btn" href="/files/stream/{{FilesDetailCtrl.id}}/{{FilesDetailCtrl.details.name}}">
     <i class="icon-download-alt"></i> Download
 </a>
-<img style="position: relative; z-index: 9999;" src="/files/stream/{{FilesDetailCtrl.id}}/{{FilesDetailCtrl.details.name}}" />
+<img id="modalImage" style="display: none; position: relative; z-index: 9999;" src="/files/stream/{{FilesDetailCtrl.id}}/{{FilesDetailCtrl.details.name}}" />
+<video id="modalVideo" style="display: none;" width="520" height="520" controls autoplay>
+  <source id="modalSource" src="" type="video/quicktime">
+</video>

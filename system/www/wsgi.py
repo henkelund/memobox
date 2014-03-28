@@ -46,7 +46,7 @@ def files_action():
     'name'
     ]
 
-    models = FileModel.all().join("file_thumbnail", "m._id = file_thumbnail.file").limit(16, (request.args.get('after', 0, type=int)-1)*16).order('m.created_at', "DESC")
+    models = FileModel.all().join("file_thumbnail", "m._id = file_thumbnail.file").limit(16, (request.args.get('after', 0, type=int)-1)*16).where("width = 260").order('m.created_at', "DESC")
 
     for arg in args.keys():
         if arg == 'retina':

@@ -127,7 +127,7 @@ if (__name__ == '__main__'):
     DBHelper(database)
 
     ImageIndexer.index_file_thumbnails(basedir, 260, 260) #TODO: read from configuration
-    #ImageIndexer.index_file_thumbnails(basedir, 520, 520) # retina
+    ImageIndexer.index_file_thumbnails(basedir, 520, 520) # retina
 
     for device in DeviceModel.all():
     	states = { -1 : 'Error', 1 : 'Preparing', 2 : 'Transfering files', 3 : 'Preparing images', 4 : 'Ready' }

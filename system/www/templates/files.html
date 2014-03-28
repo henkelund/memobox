@@ -30,7 +30,7 @@
 
 <div class="container">
 	<div  ng-controller='DemoController'>
-    <ul id="device-list" class="breadcrumb" style="margin-left: -30px; width: 1140px; margin-bottom: 10px; ">
+    <ul id="device-list" class="breadcrumb" style="margin-bottom: 10px; ">
 		<button type="button" onClick="document.getElementById('device-list').style.display ='none';" class="close" data-dismiss="modal" aria-hidden="true">×</button>    
         <li ng-repeat="device in FilesCtrl.fileService.devices">
         	<div id="{{device.id}}" class="device" imagecount="{{device.images}}" thumbcount="{{device.thumbnails}}">

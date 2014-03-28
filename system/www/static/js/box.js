@@ -70,7 +70,7 @@
 				}
 
 			    for(var i = 0; i < result.files.length; i++) {
-			      this.me.items.push({html:"<div class=\"thumbnail\" id=\""+result.files[i].file+"\"><div style=\"cursor: pointer;\" onClick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview\" file-thumbnail><div timestamp=\""+result.files[i].created_at+"\" style=\"cursor: pointer; background-image: url(/static/images/"+result.files[i].thumbnail+"); background-position: 50% 50%;\" onclick=\"window.location.hash = '/files/"+result.files[i]._id+"'\" class=\"preview image\"><img alt=\"image/jpeg\" title=\"image/jpeg\" src=\"/static/images/icons/mint/48/image-jpeg.png\" style=\"display: none;\"></div></div></div>"});
+			      this.me.items.push({html:"<div class=\"thumbnail\" id=\""+result.files[i].file+"\"><div style=\"cursor: pointer;\" onClick=\"window.location.hash = '/files/"+result.files[i].file+"'\" class=\"preview\" file-thumbnail><div timestamp=\""+result.files[i].created_at+"\" style=\"cursor: pointer; background-image: url(/static/images/"+result.files[i].thumbnail+"); background-position: 50% 50%;\" onclick=\"window.location.hash = '/files/"+result.files[i].file+"'\" class=\"preview image\"><img alt=\"image/jpeg\" title=\"image/jpeg\" src=\"/static/images/icons/mint/48/image-jpeg.png\" style=\"display: none;\"><div class=\""+result.files[i].type+"\"></div></div></div></div>"});
 			    }			    
 
 		        this.after = this.after + 1;
@@ -563,7 +563,16 @@
 
 		var ts = new Date(null);
 		ts.setTime(this.details.timestamp*1000);
-
+		
+		if(this.details.type == "video") {
+			$("#modalVideo > source").attr("src", this.details.abspath.replace("/backupbox/data/devices/", "/static/devices/")+"/"+this.details.name)
+			$("#modalVideo").show();
+			$("#modalImage").hide();
+		} else {
+			$("#modalVideo").hide();
+			$("#modalImage").show();			
+		}
+		
         $('#filesDetailModalLabel').html($filter('trimFileExtension')(this.details.name)+" - "+ts.getFullYear().toString() + "-"+ (ts.getMonth()+1) +"-"+ ts.getDate().toString());
         $('#filesDetailModal').modal('show');
 
