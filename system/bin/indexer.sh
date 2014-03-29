@@ -20,6 +20,11 @@ PYTHONPATH="$PYTHONPATH:$PYTHONDIR"
 PYTHON="$(which python)"
 DATETIME=$(date "+%Y-%m-%d %H:%M:%S")
 
+if [ "$1" == "RESET" ]; then 
+	find "$DATA_DIR/devices"  -name .__indexed__ -exec rm -rf {} \;
+	exit 0
+fi
+
 if ps auxwww | grep "$INDEXDIR" | grep -v grep > /dev/null 2>&1
 then
     echo "[$DATETIME] An index process is already running, exiting.."
