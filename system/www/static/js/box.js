@@ -570,10 +570,11 @@
 			$("#modalImage").hide();
 		} else {
 			$("#modalVideo").hide();
-			$("#modalImage").show();			
+			$("#modalImage").show();
+			$("#modalImage").attr("src", "/static/images/"+this.details.thumbnail);			
 		}
 		
-        $('#filesDetailModalLabel').html($filter('trimFileExtension')(this.details.name)+" - "+ts.getFullYear().toString() + "-"+ (ts.getMonth()+1) +"-"+ ts.getDate().toString());
+        //$('#filesDetailModalLabel').html($filter('trimFileExtension')(this.details.name)+" - "+ts.getFullYear().toString() + "-"+ (ts.getMonth()+1) +"-"+ ts.getDate().toString());
         $('#filesDetailModal').modal('show');
 
         $scope.FilesDetailCtrl = this;

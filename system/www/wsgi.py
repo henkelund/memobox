@@ -105,8 +105,7 @@ def file_devices_action():
     for device in DeviceModel.all():
     	states = { -1 : 'Error', 1 : 'Preparing', 2 : 'Transfering files', 3 : 'Preparing images', 4 : 'Ready' }
     	images = DBSelect('file','count(*) as imagecount').join('device', 'device._id = file.device', None).where("device._id = "+str(device.id())).where("file.type = 'image'").query()
-    	thumbnails = DBSelect('file','count(*) as thumbnailcount').join('device', 'device._id = file.device', None).join('file_thumbnail', 'file_thumbnail.file = file._id', None).where("device._id = "+str(device.id())).where("file.type = 'image'").query()
-    			
+    	thumbnails = DBSelect('file','count(*) as thumbnailcount').join('device', 'device._id = file.device', None).join('file_thumbnail', 'file_thumbnail.file = file._id', None).where("device._id = "+str(device.id())).where("file.type = 'image'").where("file_thumbnail.width = 260").query()    			
     	imagecount = 0
     	thumbnailcount = 0; 
     	
@@ -141,6 +140,11 @@ def file_devices_action():
 def file_details_action():
 
     model = FileModel().load(request.args.get('id'))
+    thumbnails = DBSelect('file').join('file_thumbnail', 'file._id = file_thumbnail.file', "thumbnail").where("file._id = "+str(request.args.get('id'))).where("file_thumbnail.width = 520").query()
+    
+    for thumbnail in thumbnails:
+    	model.set_data('thumbnail', thumbnail["thumbnail"])
+    	
     return jsonify(model.get_data())
 
 @app.route('/files/stream/<file_id>/<display_name>')

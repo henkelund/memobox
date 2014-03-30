@@ -34,7 +34,7 @@
 		<button type="button" onClick="document.getElementById('device-list').style.display ='none';" class="close" data-dismiss="modal" aria-hidden="true">×</button>    
         <li ng-repeat="device in FilesCtrl.fileService.devices">
         	<div id="{{device.id}}" class="device" imagecount="{{device.images}}" thumbcount="{{device.thumbnails}}">
-        	<div id="noti_Container"><a href="javascript:void(0)" ng-click="reddit.nextPage('{{device.id}}')"><img ng-src="{{device.symbol}}"  width="100" /></a><div class="noti_bubble">{{device.images}}</div></div>
+        	<div id="noti_Container"><a href="javascript:void(0)" ng-click="reddit.nextPage('{{device.id}}')"><img ng-src="{{device.symbol}}"  width="100" /></a><div class="noti_bubble">{{device.thumbnails}}</div></div>
         	<a href="javascript:void(0)" ng-click="reddit.nextPage('{{device.id}}')">{{device.product_name}}</a>&nbsp;&nbsp;
         	</div>
         </li>
