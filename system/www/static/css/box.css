@@ -1,41 +1,21 @@
 body {
 /*    background-color: #EDF4F5;*/ /* #054950 #789A9F #EDF4F5 #FFFFFF #F78F1E */
 }
-#dateHolder {
-      background: #a6eea4;
-	  box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 10px 0px;      
-	  -webkit-box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 10px 0px;	  
-      color: white;
-      width: 1160px; 
-      text-align: center;
-      padding: 5px;
-      margin: auto;
-      text-shadow: 0 1px 1px rgba(0,0,0,.2);
-      border-radius: 3px;
-	  font-weight: bold;
-	  font-style: italic;
-	  display: block; 
-	  margin-left: -30px; 
-	  background: linear-gradient(45deg, rgb(5, 73, 80) 0%, rgb(120, 154, 159) 100%);
-	  visibility: hidden;
-}
+
 .jumbotron {
-    padding: 40px 0;
-    color: #FFFFFF;
+    padding: 15px 0;
+    color: #FFF;
     text-align: left;
-    text-shadow: 0 1px 3px rgba(0,0,0,.4), 0 0 30px rgba(0,0,0,.075);
-    background: #054950;
-    background: -moz-linear-gradient(45deg, #054950 0%, #789A9F 100%);
-    background: -webkit-gradient(linear, left bottom, right top, color-stop(0%,#054950), color-stop(100%,#789A9F));
-    background: -webkit-linear-gradient(45deg, #054950 0%,#789A9F 100%);
-    background: -o-linear-gradient(45deg, #054950 0%,#789A9F 100%);
-    background: -ms-linear-gradient(45deg, #054950 0%,#789A9F 100%);
-    background: linear-gradient(45deg, #054950 0%,#789A9F 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#054950', endColorstr='#789A9F',GradientType=1 );
-    -webkit-box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
-    -moz-box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
-    box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
+    /* text-shadow: 0 1px 3px rgba(0,0,0,.4), 0 0 30px rgba(0,0,0,.075); */
+	background-color: #fc423a;
+	box-shadow: 0px 10px 0px #bf332d;
+	margin-bottom: 20px; 
 }
+
+.jumbotron h1 a {
+	color: white; 
+}
+
 @media (max-width: 767px) {
     .jumbotron {
         padding: 40px 20px;
@@ -119,11 +99,39 @@ body {
 			padding: 10px; 		
 		}
 	
+
+#dateHolder {
+      background: #f7e635;
+	  /*box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 10px 0px;      
+	  -webkit-box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 10px 0px;	  */
+	  -webkit-box-shadow: none; 
+	  box-shadow: none;
+      color: #fc423a;
+      text-align: center;
+      padding: 5px;
+      margin: auto;
+	  margin-right: 15px; 
+      border-radius: 3px;
+	  font-weight: bold;
+	  font-style: italic;
+	  display: block; 
+	  margin-left: -30px; 
+	  /*background: linear-gradient(45deg, rgb(5, 73, 80) 0%, rgb(120, 154, 159) 100%);*/
+	  visibility: hidden;
+}
+
 	
 .date-navbar {
 	margin-bottom: 0px;
 	margin-right: 30px; 
+	border-bottom: 0px;
 }
+
+	.date-navbar .navbar-inner {
+		background-color: transparent; 
+		background-image: none; 
+		border: 0px; 
+	}
 
 	.date-navbar  #dateHolder-sticky-wrapper .navbar-inner {
 		min-height: 30px;
@@ -131,13 +139,15 @@ body {
 
 	.date-navbar  #dateHolder-sticky-wrapper .navbar-inner .nav {
 		margin-left: 480px; 
+		margin-right: 443px;
 	}	
 	
 		.date-navbar #dateHolder-sticky-wrapper ul li a {
-			color: white; 
+			color: #fc423a; 
 			text-shadow: none;
 			padding-top: 5px; 
 			padding-bottom: 5px; 
+			font-size: 16px;
 		}
 		
 		.date-navbar #dateHolder-sticky-wrapper ul li .dropdown-menu li a { 
@@ -161,10 +171,10 @@ body {
     top: -6px;
     right:-6px;
     padding:5px;
-    background-color:red;
+    background-color:#fc423a;
     color:white;
-    border-radius:10px;
-    box-shadow:1px 1px 1px gray;
+    border-radius:3px;
+    box-shadow:1px 1px 1px #bf332d;
 }
 
 div.video {
