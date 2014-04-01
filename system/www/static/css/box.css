@@ -137,10 +137,10 @@ body {
 		min-height: 30px;
 	}
 
-	.date-navbar  #dateHolder-sticky-wrapper .navbar-inner .nav {
-		margin-left: 480px; 
-		margin-right: 443px;
-	}	
+		.date-navbar  #dateHolder-sticky-wrapper .navbar-inner .nav {
+			margin-left: 480px; 
+			margin-right: 443px;
+		}	
 	
 		.date-navbar #dateHolder-sticky-wrapper ul li a {
 			color: #fc423a; 
@@ -184,4 +184,16 @@ div.video {
 	background-color: rgba(255, 255, 255, 0.5);
 	background-position: center center; 
 	background-repeat: no-repeat;
+}
+
+div.video .typecontent {
+	background-color: white;
+	padding: 3px;
+	position: relative; 
+	display: inline;
+	width: auto; 
+	height: 20px;
+	right: 2px; 
+	top: -65px;
+	line-height: 20px;
 }
