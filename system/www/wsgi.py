@@ -33,7 +33,7 @@ def index_action():
 @app.route('/files')
 def files_action():
 
-    if request.args.get('after', 0, type=int) == 0:
+    if request.args.get('after', 1, type=int) == 0:
 		return ""
 	
     data = []
@@ -105,7 +105,7 @@ def file_devices_action():
     for device in DeviceModel.all():
     	states = { -1 : 'Error', 1 : 'Preparing', 2 : 'Transfering files', 3 : 'Preparing images', 4 : 'Ready' }
     	images = DBSelect('file','count(*) as imagecount').join('device', 'device._id = file.device', None).where("device._id = "+str(device.id())).where("file.type = 'image'").query()
-    	thumbnails = DBSelect('file','count(*) as thumbnailcount').join('device', 'device._id = file.device', None).join('file_thumbnail', 'file_thumbnail.file = file._id', None).where("device._id = "+str(device.id())).where("file.type = 'image'").query()
+    	thumbnails = DBSelect('file','count(*) as thumbnailcount').join('device', 'device._id = file.device', None).join('file_thumbnail', 'file_thumbnail.file = file._id', None).where("device._id = "+str(device.id())).where("file.type = 'image'").where("file_thumbnail.width = 260").query()
     			
     	imagecount = 0
     	thumbnailcount = 0; 
