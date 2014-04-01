@@ -46,7 +46,7 @@ def files_action():
     'name'
     ]
 
-    models = FileModel.all().join("file_thumbnail", "m._id = file_thumbnail.file").limit(32, (request.args.get('after', 0, type=int)-1)*32).where("width = 260").order('m.created_at', "DESC")
+    models = FileModel.all().join("file_thumbnail", "m._id = file_thumbnail.file").left_outer_join("file_attribute_text", "file_attribute_text.parent = m._id", "value").limit(32, (request.args.get('after', 0, type=int)-1)*32).where("width = 260").order('m.created_at', "DESC")
 
     for arg in args.keys():
         if arg == 'retina':
@@ -105,7 +105,8 @@ def file_devices_action():
     for device in DeviceModel.all():
     	states = { -1 : 'Error', 1 : 'Preparing', 2 : 'Transfering files', 3 : 'Preparing images', 4 : 'Ready' }
     	images = DBSelect('file','count(*) as imagecount').join('device', 'device._id = file.device', None).where("device._id = "+str(device.id())).where("file.type = 'image'").query()
-    	thumbnails = DBSelect('file','count(*) as thumbnailcount').join('device', 'device._id = file.device', None).join('file_thumbnail', 'file_thumbnail.file = file._id', None).where("device._id = "+str(device.id())).where("file.type = 'image'").where("file_thumbnail.width = 260").query()    			
+    	thumbnails = DBSelect('file','count(*) as thumbnailcount').join('device', 'device._id = file.device', None).join('file_thumbnail', 'file_thumbnail.file = file._id', None).where("device._id = "+str(device.id())).where("file.type = 'image'").query()
+    			
     	imagecount = 0
     	thumbnailcount = 0; 
     	
@@ -144,8 +145,29 @@ def file_details_action():
     
     for thumbnail in thumbnails:
     	model.set_data('thumbnail', thumbnail["thumbnail"])
-    	
+    	    
     return jsonify(model.get_data())
+
+@app.route('/files/calendar')
+def file_calendar_action():
+
+    months = DBSelect('file',"strftime('%Y-%m', datetime(created_at, 'unixepoch')) as date").distinct(True).order('date','DESC')
+    
+    if request.args.get('device') is not None:
+    	months.where("device = "+request.args.get('id'))
+    
+    months = months.query()
+    
+    _data = {}
+    counter = 0
+    
+    for month in months:
+    	print month["date"]
+     	_data[counter] = month["date"]
+     	counter = counter + 1
+    
+    return jsonify(_data)
+
 
 @app.route('/files/stream/<file_id>/<display_name>')
 def file_stream_action(file_id=None, display_name=None):
