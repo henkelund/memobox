@@ -283,6 +283,10 @@ class DBSelect(object):
         """Left join a table"""
         return self._join('LEFT JOIN', name, cond, cols, schema)
 
+    def left_outer_join(self, name, cond, cols='*', schema=None):
+        """Left outer join a table"""
+        return self._join('LEFT OUTER JOIN', name, cond, cols, schema)
+
     def right_join(self, name, cond, cols='*', schema=None):
         """Right join a table"""
         return self._join('RIGHT JOIN', name, cond, cols, schema)
