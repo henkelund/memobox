@@ -3,6 +3,7 @@ from model.extended import ExtendedModel
 from helper.db import DBHelper
 from helper.log import LogHelper as logger
 import sys, os, subprocess, re, mimetypes, hashlib, math, time
+from datetime import date
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
 
@@ -386,3 +387,66 @@ class FileModelTypeImage(FileModelTypeBase):
 
         return self
 
+class FileModelTypeVideo(FileModelTypeBase):
+    """Image file type specialist
+
+    EXIF to LatLng conversion courtesy of erans
+    https://gist.github.com/erans/983821
+    """
+
+    def _get_mediainfo_attributes(self, filename):
+        attributes = {}
+        
+        mediainfo = subprocess.Popen(['mediainfo', filename],stdout=subprocess.PIPE)
+        stdout, stderr = mediainfo.communicate()
+        lines  = stdout.splitlines()
+        
+        for line in lines:
+        	_values = line.split(":", 1)
+        	if(len(_values) == 2):
+        		attributes[_values[0].strip()] = _values[1].strip()
+                        
+        return attributes
+
+
+    def _clean_exif_string(self, string):
+        """Clean strings from trailing null char"""
+        return re.sub(r'\0.*$', r'', string)
+
+    def _harvest(self, filename):
+        """Gather image specific data from 'filename'"""
+
+        model = self.get_file()
+        
+        try: 
+        	attributes = self._get_mediainfo_attributes(filename)
+        	#print "######"
+        	#print attributes["Width"]
+        	#print attributes["Height"]
+        	#print attributes["Duration"]
+        	#print attributes["Recorded date"]
+        	#print attributes["Display aspect ratio"]
+        	
+        	try:
+        		d = date(int(attributes["Encoded date"][4:8]), int(attributes["Encoded date"][9:11]), int(attributes["Encoded date"][12:14]))        	
+        		model.created_at(int(time.mktime(d.timetuple())))
+        	except (KeyError) as e:
+        		logger.notice("Could not fetch creation date for %s" % filename)
+
+        	try:
+        		model.duration(str(attributes["Duration"]))
+        	except (KeyError) as e:
+        		logger.notice("Could not fetch duration for %s" % filename)
+
+        	try:
+        		model.width(int(attributes["Width"].replace(" ", "").replace("pixels", "")))
+        		model.height(int(attributes["Height"].replace(" ", "").replace("pixels", "")))
+        	except (KeyError) as e:
+        		logger.notice("Could not fetch width/height for %s" % filename)
+        	
+
+        except (IOError, AttributeError) as e:
+        	print "Error!!!"+e
+        	logger.notice("Could not read video attributes from %s" % filename)
+        
+        return self
