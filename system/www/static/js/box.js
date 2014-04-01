@@ -72,10 +72,15 @@
 			    for(var i = 0; i < result.files.length; i++) {
 			      var type_content = ""; 
 			      
-			      if(result.files[i].type == "video") {
-				      type_content = result.files[i].value;
-			      }
-			      
+			      if(result.files[i].type == "video" && result.files[i].value != null) {
+			      	  var video_length = result.files[i].value.split(" ")
+			      	  var suffix = "ms"; 
+			      	  
+			      	  for (var ind = 0; ind < video_length.length; ++ind) {
+			      	  	if(video_length[ind].indexOf(suffix, video_length[ind].length - suffix.length) == -1)
+							type_content += video_length[ind]+" ";
+					  }
+			      }			      
 			      this.me.items.push({html:"<div class=\"thumbnail\" id=\""+result.files[i].file+"\"><div style=\"cursor: pointer;\" onClick=\"window.location.hash = '/files/"+result.files[i].file+"'\" class=\"preview\" file-thumbnail><div timestamp=\""+result.files[i].created_at+"\" style=\"cursor: pointer; background-image: url(/static/images/"+result.files[i].thumbnail+"); background-position: 50% 50%;\" onclick=\"window.location.hash = '/files/"+result.files[i].file+"'\" class=\"preview image\"><img alt=\"image/jpeg\" title=\"image/jpeg\" src=\"/static/images/icons/mint/48/image-jpeg.png\" style=\"display: none;\"><div class=\""+result.files[i].type+"\"><div class=\"typecontent\">"+type_content+"</div></div></div></div></div>"});
 			    }			    
 
