@@ -1,199 +1,612 @@
-body {
-/*    background-color: #EDF4F5;*/ /* #054950 #789A9F #EDF4F5 #FFFFFF #F78F1E */
-}
+(function (exports, ng, $, console) {
+    'use strict';
 
-.jumbotron {
-    padding: 15px 0;
-    color: #FFF;
-    text-align: left;
-    /* text-shadow: 0 1px 3px rgba(0,0,0,.4), 0 0 30px rgba(0,0,0,.075); */
-	background-color: #fc423a;
-	box-shadow: 0px 10px 0px #bf332d;
-	margin-bottom: 20px; 
-}
+    /**
+     * @var Object box
+     */
+    var box = ng.module('box', ['ngResource', 'ui.router', 'infinite-scroll', 'ngSanitize']);
+    exports.box = box;
+	
+	box.directive('myMainDirective', function() {
+	  return function(scope, element, attrs) {
+	      $("#dateHolder").sticky({ topSpacing: 0, center:true, className:"hey" });
+	  };
+	})
 
-.jumbotron h1 a {
-	color: white; 
-}
+	box.directive('myRepeatDirective', function() {
+	  return function(scope, element, attrs) {
+	    if (scope.$last){
+	      //scope.$emit('LastElem');
+	    }
 
-@media (max-width: 767px) {
-    .jumbotron {
-        padding: 40px 20px;
-        margin-right: -20px;
-        margin-left: -20px;
-    }
-}
-.navbar {
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 10px;
-}
-.breadcrumb > li > span > .divider {
-    color: #ccc;
-}
-.thumbnail {
-    background-color: #F5F5F5;
-    border: 1px solid #E3E3E3;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-    }
-    .thumbnail .preview {
-        background-size: 260px 260px;
-        background-repeat: no-repeat;
-        background-position: 50% 50%;
-        height: 156px;
-        line-height: 156px;
-        text-align: right;
-    }
-    .thumbnail .preview.icon {
-        text-align: center;
-        }
-        .thumbnail .preview.image img {
-            width: 48px;
-            height: 48px;
-            vertical-align: bottom;
-        }
-        .thumbnail .preview.icon img {
-            width: 128px;
-            height: 128px;
-            vertical-align: middle;
-        }
-    .thumbnail h3 {
-        text-align: center;
-        font-size: 1em;
-        line-height: 1.1em;
-        height: 1.1em;
-        overflow: hidden;
-        text-shadow: 0 1px #FFFFFF;
-        cursor: pointer;
-    }
-.btn-toolbar {
-    text-align: center;
-    }
-    .btn-toolbar .btn {
-        margin-bottom: 5px;
-    }
-
-#device-list {
-	margin-left: -30px; 
-	margin-right: 30px; 	
-}
-
-	.device {
-		margin-right: 40px; 
-		text-align: center; 
-		border-radius: 10px; 
-		background-color: transparent; 
-		padding: 10px; 		
-	}
-		.device img {
-			margin-bottom: 10px; 
-		}
-		
-		.selectedDevice {
-			border-radius: 10px; 
-			background-color: #DDD; 
-			padding: 10px; 		
+	    scope.$watch('thing', function(){
+	    });
+	  };
+	})
+	
+	box.controller('DemoController', function($scope, Reddit) {
+	  $scope.reddit = new Reddit($scope);
+	  $scope.items = [];
+	  $scope.render = function(e) {
+	    return $(e).html();
+	  }
+    	  
+	});
+	
+	// Reddit constructor function to encapsulate HTTP and pagination logic
+	box.factory('Reddit', function($http) {
+	  var Reddit = function($scope) {
+	  	this.me = $scope;
+	    this.images = [];
+	    this.busy = false;
+	    this.after = 1;
+	    this.viewMonth = null;
+	    this.viewYear = null; 
+		this.monthArr = "Alert";
+		this.device = -1; 
+	  };
+	
+	  Reddit.prototype.nextPage = function(_device) {
+	    if (this.busy) return;
+	    this.busy = true;	
+	    var changedDevice = false; 
+		if(_device != null) {
+			if(this.device != _device) {
+				changedDevice = true;
+				this.after = 1; 
+				$(".device").removeClass("selectedDevice");
+				$("#"+_device).addClass("selectedDevice");
+			}
+			this.device = _device; 
 		}
 	
+		$.ajax({
+		    url : "/files?after="+this.after+"&device="+this.device,
+			async: false,
+			context: this,
+		    success : function(result){
+		    	if(changedDevice == true) {
+					this.me.items = [];
+				}
 
-#dateHolder {
-      background: #f7e635;
-	  /*box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 10px 0px;      
-	  -webkit-box-shadow: rgba(0, 0, 0, 0.0980392) 0px 1px 10px 0px;	  */
-	  -webkit-box-shadow: none; 
-	  box-shadow: none;
-      color: #fc423a;
-      text-align: center;
-      padding: 5px;
-      margin: auto;
-	  margin-right: 15px; 
-      border-radius: 3px;
-	  font-weight: bold;
-	  font-style: italic;
-	  display: block; 
-	  margin-left: -30px; 
-	  /*background: linear-gradient(45deg, rgb(5, 73, 80) 0%, rgb(120, 154, 159) 100%);*/
-	  visibility: hidden;
-}
+			    for(var i = 0; i < result.files.length; i++) {
+			      var type_content = ""; 
+			      
+			      if(result.files[i].type == "video") {
+				      type_content = result.files[i].value;
+			      }
+			      
+			      this.me.items.push({html:"<div class=\"thumbnail\" id=\""+result.files[i].file+"\"><div style=\"cursor: pointer;\" onClick=\"window.location.hash = '/files/"+result.files[i].file+"'\" class=\"preview\" file-thumbnail><div timestamp=\""+result.files[i].created_at+"\" style=\"cursor: pointer; background-image: url(/static/images/"+result.files[i].thumbnail+"); background-position: 50% 50%;\" onclick=\"window.location.hash = '/files/"+result.files[i].file+"'\" class=\"preview image\"><img alt=\"image/jpeg\" title=\"image/jpeg\" src=\"/static/images/icons/mint/48/image-jpeg.png\" style=\"display: none;\"><div class=\""+result.files[i].type+"\"><div class=\"typecontent\">"+type_content+"</div></div></div></div></div>"});
+			    }			    
 
+		        this.after = this.after + 1;
+		        this.busy = false;		        
+		    }
+		});
+	  };
 	
-.date-navbar {
-	margin-bottom: 0px;
-	margin-right: 30px; 
-	border-bottom: 0px;
-}
+	  return Reddit;
+	});	
 
-	.date-navbar .navbar-inner {
-		background-color: transparent; 
-		background-image: none; 
-		border: 0px; 
-	}
+    /**
+     * Configure the box app
+     */
+    box.config(function ($stateProvider, $urlRouterProvider) {
 
-	.date-navbar  #dateHolder-sticky-wrapper .navbar-inner {
-		min-height: 30px;
-	}
+        $urlRouterProvider.otherwise('/');
 
-		.date-navbar  #dateHolder-sticky-wrapper .navbar-inner .nav {
-			margin-left: 480px; 
-			margin-right: 443px;
-		}	
-	
-		.date-navbar #dateHolder-sticky-wrapper ul li a {
-			color: #fc423a; 
-			text-shadow: none;
-			padding-top: 5px; 
-			padding-bottom: 5px; 
-			font-size: 16px;
+        $stateProvider
+            .state('devices', {
+                url: '/devices',
+                controller: 'DevicesCtrl',
+                templateUrl: '/templates/devices.html'
+            })
+            .state('files', {
+                url: '/',
+                controller: 'FilesCtrl',
+                templateUrl: '/templates/files.html'
+            })
+            .state('files.detail', {
+                url: '^/files/:id',
+                resolve: {
+                    fileDetails: function ($stateParams, FileService) {
+                        return FileService.loadDetails($stateParams['id']);
+                    }
+                },
+                controller: 'FilesDetailCtrl',
+                templateUrl: '/templates/files.detail.html'
+            });
+    });
+
+    /**
+     * Run the box app
+     */
+    box.run(function ($window) {
+
+        ng.element($window).bind('scroll', function () {
+            var winHeight = $($window).height();
+            $('.preview.image').each(function () {
+                var rect = this.getBoundingClientRect(),
+                    el = $(this),
+                    pos,
+                    percent;
+                if (rect.bottom >= 0 && rect.top <= winHeight) {
+                    pos = rect.top / (winHeight - el.height());
+                    percent = Math.round(Math.min(100, Math.max(0,
+                                pos * 100)));
+                    el.css('backgroundPosition', '50% ' + percent + '%');
+                }
+            });
+        });
+    });
+
+    /**
+     * File service
+     */
+    box.factory('FileService', function ($resource, $window, $q) {
+
+        /**
+         *
+         */
+        var FileService = function () {
+            this.filesResource = $resource('/files');
+            this.filterResource = $resource('/files/filters');
+            this.detailsResource = $resource('/files/details');
+            this.deviceResource = $resource('/files/devices');
+            this.calendarResource = $resource('/files/calendar');
+            this.calendar = [];
+            this.devices = [];
+            this.files = [];
+            this.filters = [];
+            this.details = [];
+        };
+        FileService.prototype = {
+
+            /**
+             * Successful files load callback
+             */
+            loadFilesSuccess: function (resource) {
+                this.files = resource.files;
+                console.log(resource.sql);
+            },
+
+            /**
+             * Successful filters load callback
+             */
+            loadFiltersSuccess: function (data) {
+                this.filters = data.filters;
+            },
+
+            /**
+             * Successful filters load callback
+             */
+            loadCalendarSuccess: function (data) {
+                this.calendar = data;
+            },
+
+            /**
+             * Successful filters load callback
+             */
+            loadDevicesSuccess: function (data) {
+                this.devices = data.devices;
+            },
+
+
+            /**
+             * Successful filters load callback
+             */
+            loadDetailsSuccess: function (data) {
+                if (data['_id'] !== undefined) {
+                    this.details[data['_id']] = data;
+                }
+            },
+
+            /**
+             * Failed load callback
+             */
+            loadError: function (data) {
+                console.log(data);
+            },
+
+            /**
+             * Load files passing 'filter'
+             */
+            loadFiles: function (filter, complete) {
+                var that = this,
+                    args = {}, // arguments
+                    fk;        // filter key
+
+                if ($window.devicePixelRatio && $window.devicePixelRatio > 1) {
+                    args.retina = 1;
+                }
+
+                if (typeof filter === 'object') {
+                    for (fk in filter) {
+                        if (filter.hasOwnProperty(fk) && filter[fk].length) {
+                            args[fk] = filter[fk].join(',');
+                        }
+                    }
+                }
+
+                this.filesResource.get(
+                    args,
+                    function (data) {
+                        that.loadFilesSuccess(data);
+                        if (typeof complete === 'function') {
+                            complete(data);
+                        }
+                    },
+                    function (data) {
+                        that.loadError(data);
+                        if (typeof complete === 'function') {
+                            complete(data);
+                        }
+                    }
+                );
+                return this;
+            },
+
+
+            /**
+             * Load available calendar
+             */
+            loadCalendar: function () {
+                this.calendarResource.get(
+                    {},
+                    this.loadCalendarSuccess.bind(this),
+                    this.loadError.bind(this)
+                );
+                return this;
+            },
+
+            /**
+             * Load available devices
+             */
+            loadDevices: function () {
+                this.deviceResource.get(
+                    {},
+                    this.loadDevicesSuccess.bind(this),
+                    this.loadError.bind(this)
+                );
+                return this;
+            },
+            
+            /**
+             * Load available filters
+             */
+            loadFilters: function () {
+                this.filterResource.get(
+                    {},
+                    this.loadFiltersSuccess.bind(this),
+                    this.loadError.bind(this)
+                );
+                return this;
+            },
+
+            /**
+             * Load file by id
+             */
+            loadDetails: function (id) {
+                var that = this,
+                    deferred = $q.defer(),
+                    resource;
+
+                if (this.details[id] !== undefined) {
+                    deferred.resolve();
+                } else {
+                    resource = this.detailsResource.get(
+                        {id: id},
+                        function (data) {
+                            that.loadDetailsSuccess(data);
+                            deferred.resolve();
+                        },
+                        function (data) {
+                            that.loadError(data);
+                            deferred.resolve();
+                        }
+                    );
+                }
+
+                return deferred.promise;
+            },
+
+            /**
+             * Get laoded details
+             */
+            getDetails: function (id) {
+                return this.details[id] || false;
+            }
+        };
+
+        return new FileService();
+    });
+
+    /**
+     * Device service
+     */
+    box.factory('DeviceService', function ($resource, $window, $q) {
+
+        /**
+         *
+         */
+        var DeviceService = function () {
+            this.devicesResource = $resource('/files/devices');
+            this.devices = [];
+        };
+        DeivceService.prototype = {
+
+            /**
+             * Successful devices load callback
+             */
+            loadDevicesSuccess: function (resource) {
+                this.devices = resource.devices;
+                console.log(resource.sql);
+            },
+
+            /**
+             * Failed load callback
+             */
+            loadError: function (data) {
+                console.log(data);
+            },
+
+            /**
+             * Load devices passing 'devices'
+             */
+            loadDevices: function (filter, complete) {
+                var that = this,
+                    args = {}, // arguments
+                    fk;        // filter key
+
+
+                this.devicesResource.get(
+                    args,
+                    function (data) {
+                        that.loadDevicesSuccess(data);
+                        if (typeof complete === 'function') {
+                            complete(data);
+                        }
+                    },
+                    function (data) {
+                        that.loadError(data);
+                        if (typeof complete === 'function') {
+                            complete(data);
+                        }
+                    }
+                );
+                return this;
+            },
+
+        };
+
+        return new DeviceService();
+    });
+
+
+    /**
+     * File thumbnail directive
+     */
+    box.directive('fileThumbnail', function ($window) {
+        return {
+            restrict: 'A',
+            link: function (scope, element) {
+                var el = ng.element(element),
+                    file = scope.file,
+                    imgUrl = '/static/images/';
+                if (file.thumbnail) {
+                    el.addClass('image')
+                        .css('backgroundImage',
+                                'url(' + imgUrl + file.thumbnail + ')')
+			.find('img').attr('src', imgUrl + file.icon_small).hide();
+			$($window).scroll(); // provoke background re-positioning
+                } else {
+                    el.addClass('icon')
+                        .find('img').attr('src', imgUrl + file.icon_large);
+                }
+            }
+        };
+    });
+
+    /**
+     * File tooltip directive
+     */
+    box.directive('fileTooltip', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, element) {
+                var file = scope.file;
+                $(element).tooltip({
+                    title: file.devpath + '/' + file.name+file.extension,
+                    placement: 'top'
+                });
+            }
+        };
+    });
+
+    /**
+     * Available filters filter
+     */
+    box.filter('availableFilters', function () {
+        return function (filters, scope) {
+            if (scope.FilesCtrl === undefined) {
+                return filters;
+            }
+            return $.grep(filters, function (item) {
+                return scope.FilesCtrl.isFilterAvailable(item);
+            });
+        };
+    });
+
+    /**
+     * Active filters filter
+     */
+    box.filter('activeFilters', function () {
+        return function (filters, scope) {
+            if (scope.FilesCtrl === undefined) {
+                return filters;
+            }
+            return $.grep(filters, function (item) {
+                return scope.FilesCtrl.isFilterActive(item);
+            });
+        };
+    });
+
+    /**
+     * Active filter options filter
+     */
+    box.filter('activeFilterOptions', function () {
+        return function (options, filter, scope) {
+            var value,
+                result = {};
+            if (scope.FilesCtrl === undefined) {
+                return options;
+            }
+            for (value in options) {
+                if (options.hasOwnProperty(value) &&
+                        scope.FilesCtrl.isFilterActive(filter, value)) {
+                    result[value] = options[value];
+                }
+            }
+            return result;
+        };
+    });
+
+    /**
+     * File extension trim filter
+     */
+    box.filter('trimFileExtension', function () {
+        return function (fileName) {
+            var parts = fileName.split('.');
+            if (parts.length >= 2) {
+                parts.pop();
+            }
+            return parts.join('.');
+        };
+    });
+
+    /**
+     * Files controller
+     */
+    box.controller('FilesCtrl', function ($scope, $location, FileService) {
+
+        var that = this;
+        this.fileService = FileService.loadFilters().loadFiles().loadDevices();
+        this.filterState = {};
+        this.isFilterPending = false;
+        $('#filesDetailModal').modal({show: false})
+                .on('hide.bs.modal', function () {
+            $location.path('/');
+            $scope.$apply();
+        });
+
+        /**
+         * Check if a given filter - or option - is active
+         */
+        this.isFilterActive = function (filter, value) {
+            var state;
+            if (filter === undefined) {
+                for (state in that.filterState) {
+                    if (that.filterState.hasOwnProperty(state) &&
+                            that.filterState[state].length > 0) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            state = that.filterState[filter.param];
+            return (state !== undefined) &&
+                        (state.length > 0) &&
+                        (value === undefined ||
+                            state.indexOf(value) >= 0);
+        };
+
+        /**
+         * Check if a given filter - or option - is available
+         */
+        this.isFilterAvailable = function (filter, value) {
+            var i,
+                val;
+
+            if (filter === undefined) {
+                filter = that.fileService.filters;
+            } else {
+                filter = [filter];
+            }
+
+            if (value === undefined) {
+                for (i = 0; i < filter.length; ++i) {
+                    for (val in filter[i].options) {
+                        if (filter[i].options.hasOwnProperty(val) &&
+                                !that.isFilterActive(filter[i], val)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            for (i = 0; i < filter.length; ++i) {
+                if (!that.isFilterActive(filter[i], value)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /**
+         * Toggle a given filter option
+         */
+        this.filterClicked = function (filter, value) {
+            var i, state = that.filterState[filter.param];
+            if (state === undefined) {
+                state = that.filterState[filter.param] = [];
+            }
+            i = state.indexOf(value);
+            if (i >= 0) {
+                state.splice(i, 1);
+            } else {
+                if (filter.multi === undefined || !filter.multi) {
+                    state = [];
+                }
+                state.push(value);
+            }
+            that.isFilterPending = true;
+            that.fileService.loadFiles(that.filterState, function () {
+                that.isFilterPending = false;
+            });
+        };
+
+        $scope.FilesCtrl = this;
+        return this;
+    });
+
+    /**
+     * Files detail controller
+     */
+    box.controller('FilesDetailCtrl', function ($scope, $stateParams, $filter, FileService) {
+
+        this.id = $stateParams['id'];
+        this.details = FileService.getDetails(this.id);
+
+		var ts = new Date(null);
+		ts.setTime(this.details.timestamp*1000);
+
+		if(this.details.type == "video") {
+			$("#modalVideo > source").attr("src", this.details.abspath.replace("/backupbox/data/devices/", "/static/devices/")+"/"+this.details.name)
+			$("#modalVideo").show();
+			$("#modalImage").hide();
+		} else {
+			$("#modalVideo").hide();
+			$("#modalImage").show();
+			$("#modalImage").attr("src", "/static/images/"+this.details.thumbnail);
 		}
-		
-		.date-navbar #dateHolder-sticky-wrapper ul li .dropdown-menu li a { 
-			color: #333;
-		}
-		
-		.date-navbar #dateHolder-sticky-wrapper .nav li.dropdown.open > .dropdown-toggle {
-			background-color: transparent;
-		}
 
-.thumbnails{
-	margin-top: 5px; 
-}
+        //$('#filesDetailModalLabel').html($filter('trimFileExtension')(this.details.name)+" - "+ts.getFullYear().toString() + "-"+ (ts.getMonth()+1) +"-"+ ts.getDate().toString());
+        $('#filesDetailModal').modal('show');
 
-#noti_Container {
-    position:relative;
-}
+        $scope.FilesDetailCtrl = this;
+        return this;
+    });
 
-.noti_bubble {
-    position:absolute;
-    top: -6px;
-    right:-6px;
-    padding:5px;
-    background-color:#fc423a;
-    color:white;
-    border-radius:3px;
-    box-shadow:1px 1px 1px #bf332d;
-}
+}(window, angular, jQuery, console || {log: function () { 'use strict'; return; }}));
 
-div.video {
-	width: 100%;
-	height: 100%;
-	background-image: url(/static/images/icons/play.png);
-	background-color: rgba(255, 255, 255, 0.5);
-	background-position: center center; 
-	background-repeat: no-repeat;
-}
-
-div.video .typecontent {
-	background-color: white;
-	padding: 3px;
-	position: relative; 
-	display: inline;
-	width: auto; 
-	height: 20px;
-	right: 2px; 
-	top: -65px;
-	line-height: 20px;
-}
