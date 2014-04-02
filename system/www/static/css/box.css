@@ -16,14 +16,6 @@ body {
 	color: white; 
 }
 
-@media (max-width: 767px) {
-    .jumbotron {
-        padding: 40px 20px;
-        margin-right: -20px;
-        margin-left: -20px;
-        border: 1px solid blue;
-    }
-}
 .navbar {
     border-bottom: 1px solid #ddd;
     margin-bottom: 10px;
@@ -164,7 +156,7 @@ body {
 	margin-top: 5px; 
 }
 
-#noti_Container {
+.noti_Container {
     position:relative;
 }
 
@@ -198,4 +190,43 @@ div.video .typecontent {
 	right: 2px; 
 	top: -65px;
 	line-height: 20px;
+}
+
+@media (max-width: 767px) {
+    .jumbotron {
+        padding: 40px 20px;
+        margin-right: -20px;
+        margin-left: -20px;
+    }
+    
+    .noti_Container {
+	    display: none;
+    }
+
+	#device-list {
+		margin-left: 0px; 
+		margin-right: 0px; 	
+	}
+
+	#dateHolder {
+		margin-left: 0px;
+		margin-right: 0px; 
+	}
+	
+	.date-navbar {
+		margin-right: 0px;
+	}
+	
+	.device {
+		width: 200px;
+		height: 25px; 
+		float: left; 
+		margin-right: 10px;
+		background-color: #FFF;
+	}
+	
+	.selectedDevice {
+		background-color: #DDD;
+	}
+
 }
