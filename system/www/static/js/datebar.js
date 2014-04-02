@@ -95,4 +95,8 @@ function refreshDate() {
   });
 }
 
+function doStuff(id) {
+	alert(id);
+}
+
 setTimeout("refreshDate()", 500);

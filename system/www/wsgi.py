@@ -154,7 +154,7 @@ def file_calendar_action():
     months = DBSelect('file',"strftime('%Y-%m', datetime(created_at, 'unixepoch')) as date").distinct(True).order('date','DESC')
     
     if request.args.get('device') is not None:
-    	months.where("device = "+request.args.get('id'))
+    	months.where("device = "+request.args.get('device'))
     
     months = months.query()
     

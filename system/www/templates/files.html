@@ -45,7 +45,8 @@
 		<div ng-app='box' my-main-directive>
 		  <div infinite-scroll='reddit.nextPage()' infinite-scroll-disabled='reddit.busy' infinite-scroll-distance='1'>
 				<ul id="thumbnails" class="thumbnails">
-					<li class="span3" ng-repeat="item in items" ng-bind-html-unsafe="item.html" my-repeat-directive>
+					<li class="span3" ng-repeat="item in items" my-repeat-directive>
+						<div id="{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div timestamp="{{item.created_at}}" style="background-image: url(/static/images/{{item.background}})" class="preview image" ng-click="reddit.showPicture('{{item.id}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
 					</li>
 				</ul>
 		  </div>
@@ -62,7 +63,14 @@
                     <h4 class="modal-title" id="filesDetailModalLabel">Modal title</h4>
                 </div>
                 <div class="modal-body">
-                    <div ui-view></div>
+                    <a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 10px;" class="btn" id="modalDownload" target="_blank" href="">
+					    <i class="icon-download-alt"></i> Download
+					</a>
+					<img id="modalImage" style="display: none; position: relative; z-index: 9999;" src="" />
+					<video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay">
+					  <source id="modalSource" src="" type="video/mp4" />
+					</video>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

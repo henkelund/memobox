@@ -26,6 +26,7 @@
 	
 	box.controller('DemoController', function($scope, Reddit) {
 	  $scope.reddit = new Reddit($scope);
+	  //$scope.fileservice = new FileService($scope);
 	  $scope.items = [];
 	  $scope.render = function(e) {
 	    return $(e).html();
@@ -45,7 +46,35 @@
 		this.monthArr = "Alert";
 		this.device = -1; 
 	  };
-	
+	  
+	  Reddit.prototype.showPicture = function(file) {
+		$.ajax({
+		    url : "/files/details?id="+file,
+			async: false,
+			context: this,
+		    success : function(result){
+				var ts = new Date(null);
+				ts.setTime(result.timestamp*1000);
+		
+				if(result.type == "video") {
+					$("#modalVideo > source").attr("src", result.abspath.replace("/backupbox/data/devices/", "/static/devices/")+"/"+result.name)
+					$("#modalVideo").show();
+					$("#modalImage").hide();
+				} else {
+					$("#modalVideo").hide();
+					$("#modalImage").show();
+					$("#modalDownload").attr("href", "/files/stream/"+result._id+"/"+result.name);
+					$("#modalImage").attr("src", "/static/images/"+result.thumbnail);
+				}
+		
+		        $('#filesDetailModal').modal('show');				
+		    }
+		});	  	
+  	
+	  	//var f = new FileService();
+	  	//f.loadDetails(file);	  	
+	  }
+	  
 	  Reddit.prototype.nextPage = function(_device) {
 	    if (this.busy) return;
 	    this.busy = true;	
@@ -58,6 +87,15 @@
 				$("#"+_device).addClass("selectedDevice");
 			}
 			this.device = _device; 
+
+			$.ajax({
+			    url : "/files/calendar?device="+_device,
+				async: false,
+				context: this,
+			    success : function(result){
+					
+			    }
+			});
 		}
 	
 		$.ajax({
@@ -81,7 +119,7 @@
 							type_content += video_length[ind]+" ";
 					  }
 			      }			      
-			      this.me.items.push({html:"<div class=\"thumbnail\" id=\""+result.files[i].file+"\"><div style=\"cursor: pointer;\" onClick=\"window.location.hash = '/files/"+result.files[i].file+"'\" class=\"preview\" file-thumbnail><div timestamp=\""+result.files[i].created_at+"\" style=\"cursor: pointer; background-image: url(/static/images/"+result.files[i].thumbnail+"); background-position: 50% 50%;\" onclick=\"window.location.hash = '/files/"+result.files[i].file+"'\" class=\"preview image\"><img alt=\"image/jpeg\" title=\"image/jpeg\" src=\"/static/images/icons/mint/48/image-jpeg.png\" style=\"display: none;\"><div class=\""+result.files[i].type+"\"><div class=\"typecontent\">"+type_content+"</div></div></div></div></div>"});
+			      this.me.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});
 			    }			    
 
 		        this.after = this.after + 1;
@@ -111,16 +149,6 @@
                 controller: 'FilesCtrl',
                 templateUrl: '/templates/files.html'
             })
-            .state('files.detail', {
-                url: '^/files/:id',
-                resolve: {
-                    fileDetails: function ($stateParams, FileService) {
-                        return FileService.loadDetails($stateParams['id']);
-                    }
-                },
-                controller: 'FilesDetailCtrl',
-                templateUrl: '/templates/files.detail.html'
-            });
     });
 
     /**
@@ -582,34 +610,6 @@
         };
 
         $scope.FilesCtrl = this;
-        return this;
-    });
-
-    /**
-     * Files detail controller
-     */
-    box.controller('FilesDetailCtrl', function ($scope, $stateParams, $filter, FileService) {
-
-        this.id = $stateParams['id'];
-        this.details = FileService.getDetails(this.id);
-
-		var ts = new Date(null);
-		ts.setTime(this.details.timestamp*1000);
-
-		if(this.details.type == "video") {
-			$("#modalVideo > source").attr("src", this.details.abspath.replace("/backupbox/data/devices/", "/static/devices/")+"/"+this.details.name)
-			$("#modalVideo").show();
-			$("#modalImage").hide();
-		} else {
-			$("#modalVideo").hide();
-			$("#modalImage").show();
-			$("#modalImage").attr("src", "/static/images/"+this.details.thumbnail);
-		}
-
-        //$('#filesDetailModalLabel').html($filter('trimFileExtension')(this.details.name)+" - "+ts.getFullYear().toString() + "-"+ (ts.getMonth()+1) +"-"+ ts.getDate().toString());
-        $('#filesDetailModal').modal('show');
-
-        $scope.FilesDetailCtrl = this;
         return this;
     });
 
