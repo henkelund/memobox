@@ -230,3 +230,7 @@ div.video .typecontent {
 	}
 
 }
+
+#modalImage {
+	min-height: 400px;
+}

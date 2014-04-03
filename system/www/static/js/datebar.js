@@ -9,6 +9,13 @@ var lastYear = null;
 var lastMonth = null;
 var lastDate = null;
 
+function stopVideo() {
+	$("#moddalVideoContainer").html('<video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay"><source id="modalSource" src="" type="video/mp4" /></video>');
+	$("#modalVideo > source").attr("src", "");
+	$("#modalVideo").load();
+
+}
+
 function showDate( dd ) {
 	var counter = 0;
 	var targetDate = new Date(lastYear, lastMonth, dd);
@@ -93,10 +100,6 @@ function refreshDate() {
 		  $("#dateHolder").css("visibility","visible");
 	  }
   });
-}
-
-function doStuff(id) {
-	alert(id);
 }
 
 setTimeout("refreshDate()", 500);
