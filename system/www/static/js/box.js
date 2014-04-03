@@ -55,9 +55,13 @@
 		    success : function(result){
 				var ts = new Date(null);
 				ts.setTime(result.timestamp*1000);
-		
+				
+				$("#filesDetailModalLabel").html(result.name);
+				
 				if(result.type == "video") {
-					$("#modalVideo > source").attr("src", result.abspath.replace("/backupbox/data/devices/", "/static/devices/")+"/"+result.name)
+					$("#moddalVideoContainer").html('<video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay"><source id="modalSource" src="" type="video/mp4" /></video>');
+					$("#modalVideo > source").attr("src", result.abspath.replace("/backupbox/data/devices/", "/static/devices/")+"/"+result.name);
+					$("#modalVideo").load();
 					$("#modalVideo").show();
 					$("#modalImage").hide();
 				} else {

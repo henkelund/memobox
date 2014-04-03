@@ -59,7 +59,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <button type="button" class="close" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title" id="filesDetailModalLabel">Modal title</h4>
                 </div>
                 <div class="modal-body">
@@ -67,9 +67,9 @@
 					    <i class="icon-download-alt"></i> Download
 					</a>
 					<img id="modalImage" style="display: none; position: relative; z-index: 9999;" src="" />
-					<video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay">
+					<div id="moddalVideoContainer"><video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay">
 					  <source id="modalSource" src="" type="video/mp4" />
-					</video>
+					</video></div>
 
                 </div>
                 <div class="modal-footer">
