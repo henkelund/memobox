@@ -142,9 +142,15 @@ def file_details_action():
 
     model = FileModel().load(request.args.get('id'))
     thumbnails = DBSelect('file').join('file_thumbnail', 'file._id = file_thumbnail.file', "thumbnail").where("file._id = "+str(request.args.get('id'))).where("file_thumbnail.width = 520").query()
-    
+
     for thumbnail in thumbnails:
     	model.set_data('thumbnail', thumbnail["thumbnail"])
+
+    devices = DBSelect('file').join('device', 'device._id = file.device', "product_name").where("file._id = "+str(request.args.get('id'))).query()
+
+    for device in devices:
+    	model.set_data('product_name', device["product_name"])
+    
     	    
     return jsonify(model.get_data())
 
