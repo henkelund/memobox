@@ -93,8 +93,8 @@
 			if(this.device != _device) {
 				changedDevice = true;
 				this.after = 1; 
-				$(".device").removeClass("selectedDevice");
-				$("#"+_device).addClass("selectedDevice");
+				$(".device span").removeClass("selectedDevice");
+				$("#"+_device+" span").addClass("selectedDevice");
 			}
 			this.device = _device; 
 
@@ -126,7 +126,7 @@
 			      	  
 			      	  for (var ind = 0; ind < video_length.length; ++ind) {
 			      	  	if(video_length[ind].indexOf(suffix, video_length[ind].length - suffix.length) == -1)
-							type_content += video_length[ind]+" ";
+							type_content += video_length[ind].replace("mn", "min")+" ";
 					  }
 			      }			      
 			      this.me.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});

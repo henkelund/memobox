@@ -1,44 +1,50 @@
-<!-- div class="navbar navbar-inverse navbar-static-top">
-    <div class="navbar-inner">
-        <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </a>
-        <div class="nav-collapse collapse navbar-inverse-collapse">
-            <ul class="nav">
-                <li class="dropdown"
-                    ng-repeat="filter in FilesCtrl.fileService.filters | availableFilters:this"
-                    ng-class="{active: FilesCtrl.isFilterPending}">
-                    <a href="javascript:void(0);"
-                       class="dropdown-toggle"
-                       data-toggle="dropdown">
-                        {{filter.label}} <b class="caret"></b>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li ng-show="FilesCtrl.isFilterAvailable(filter, value)"
-                            ng-repeat="(value, label) in filter.options"
-                            ng-click="FilesCtrl.filterClicked(filter, value)">
-                            <a href="javascript:void(0);">{{label}}</a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-</div  -->
-
 <div class="container">
 	<div  ng-controller='DemoController'>
-    <ul id="device-list" class="breadcrumb" style="margin-bottom: 10px; ">
-		<button type="button" onClick="document.getElementById('device-list').style.display ='none';" class="close" data-dismiss="modal" aria-hidden="true">×</button>    
-        <li ng-repeat="device in FilesCtrl.fileService.devices">
-        	<div id="{{device.id}}" class="device" imagecount="{{device.images}}" thumbcount="{{device.thumbnails}}">
-        	<div class="noti_Container"><a href="javascript:void(0)" ng-click="reddit.nextPage('{{device.id}}')"><img ng-src="{{device.symbol}}"  width="100" /></a><div class="noti_bubble">{{device.thumbnails}}</div></div>
-        	<a href="javascript:void(0)" ng-click="reddit.nextPage('{{device.id}}')">{{device.product_name}}</a>&nbsp;&nbsp;
-        	</div>
-        </li>
-    </ul>
+	<!-- div class="navbar navbar-inverse navbar-static-top">
+	    <div class="navbar-inner">
+	        <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	        </a>
+	        <div class="nav-collapse collapse navbar-inverse-collapse">
+	            <ul class="nav">
+	                <li class="dropdown">
+	                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">iPhone 5s</a>
+	                </li>
+	                <li class="dropdown">
+	                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">iPhone 5s</a>
+	                </li>
+	                <li class="dropdown">
+	                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">iPhone 5s</a>
+	                </li>
+	                <li class="dropdown">
+	                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">iPhone 5s</a>
+	                </li>
+	            </ul>
+	        </div>
+	    </div>
+	</div -->
+	<div id="device-list" class="navbar navbar-inverse navbar-static-top">
+	    <div class="navbar-inner">
+	        <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	            <span class="icon-bar"></span>
+	        </a>
+		    <div class="nav-collapse collapse navbar-inverse-collapse">
+				<ul class="nav">
+			        <li ng-repeat="device in FilesCtrl.fileService.devices" class="dropdown">
+			        	<a href="javascript:void(0)" id="{{device.id}}" class="device" ng-click="reddit.nextPage('{{device.id}}')"><span>{{device.product_name}}</span></a>
+			        	<!-- div id="{{device.id}}" class="device" imagecount="{{device.images}}" thumbcount="{{device.thumbnails}}">
+			        	<div class="noti_Container"><a href="javascript:void(0)" ng-click="reddit.nextPage('{{device.id}}')"><img ng-src="{{device.symbol}}"  width="100" /></a><div class="noti_bubble">{{device.thumbnails}}</div></div>
+			        	<a href="javascript:void(0)" ng-click="reddit.nextPage('{{device.id}}')">{{device.product_name}}</a>&nbsp;&nbsp;
+			        	</div -->
+			        </li>
+				</ul>
+			</div>
+		</div>
+	</div>
     
 	<div class="navbar date-navbar"><div class="navbar-inner" id="dateHolder"></div></div>
     <ul class="thumbnails">
