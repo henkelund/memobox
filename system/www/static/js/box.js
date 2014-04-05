@@ -45,7 +45,8 @@
 	    this.viewYear = null; 
 		this.monthArr = "Alert";
 		this.device = -1; 
-	  };
+		this.type = null; 
+	};
 	  
 	  Reddit.prototype.showPicture = function(file) {
 		$.ajax({
@@ -85,13 +86,14 @@
 	  	//f.loadDetails(file);	  	
 	  }
 	  
-	  Reddit.prototype.nextPage = function(_device) {
+	  Reddit.prototype.nextPage = function(_device, _type) {
 	    if (this.busy) return;
 	    this.busy = true;	
-	    var changedDevice = false; 
+	    
+	    var changedState = false; 
 		if(_device != null) {
 			if(this.device != _device) {
-				changedDevice = true;
+				changedState = true;
 				this.after = 1; 
 				$(".device span").removeClass("selectedDevice");
 				$("#"+_device+" span").addClass("selectedDevice");
@@ -107,13 +109,28 @@
 			    }
 			});
 		}
+
+		if(_type != null) {
+			if(this.type != _type) {
+				changedState = true;
+				this.after = 1; 
+				$(".type").removeClass("selectedDevice");
+				$("#type-"+_type).addClass("selectedDevice");
+				this.type = _type; 				
+			} else {
+				changedState = true;
+				this.after = 1; 
+				$(".type").removeClass("selectedDevice");
+				this.type = null;
+			}
+		}
 	
 		$.ajax({
-		    url : "/files?after="+this.after+"&device="+this.device,
+		    url : "/files?after="+this.after+"&device="+this.device+"&format="+this.type,
 			async: false,
 			context: this,
 		    success : function(result){
-		    	if(changedDevice == true) {
+		    	if(changedState == true) {
 					this.me.items = [];
 				}
 

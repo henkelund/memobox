@@ -79,10 +79,12 @@ body {
 		background-color: transparent; 
 	}
 
-	.selectedDevice {
-		border-bottom: 2px solid white; 
+	.selectedDevice, .navbar-inverse .nav > li > a.selectedDevice {
+		text-decoration: underline; 
 		color: white; 	
 	}
+
+	.navbar-inverse .nav > li > a
 	
 
 #dateHolder {
@@ -184,6 +186,7 @@ div.video .typecontent {
 	line-height: 20px;
 }
 
+
 @media (max-width: 767px) {
     .jumbotron {
         padding: 40px 20px;
@@ -217,10 +220,6 @@ div.video .typecontent {
 		background-color: #FFF;
 	}*/
 	
-	.selectedDevice {
-		background-color: #DDD;
-	}
-
 }
 
 #modalImage {

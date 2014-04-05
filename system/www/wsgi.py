@@ -33,9 +33,11 @@ def index_action():
 @app.route('/files')
 def files_action():
 
-    if request.args.get('after', 1, type=int) == 0:
-		return ""
-	
+    after = 1
+    
+    if (request.args.get('after') is not None) and (int(request.args.get('after')) > 0):
+    	after = int(request.args.get('after'))
+    
     data = []
     args = request.args
     pixel_ratio = 1
@@ -46,18 +48,10 @@ def files_action():
     'name'
     ]
 
-    models = FileModel.all().join("file_thumbnail", "m._id = file_thumbnail.file").left_outer_join("file_attribute_text", "file_attribute_text.parent = m._id", "value").limit(32, (request.args.get('after', 0, type=int)-1)*32).where("width = 260").order('m.created_at', "DESC")
+    models = FileModel.all().join("file_thumbnail", "m._id = file_thumbnail.file").left_outer_join("file_attribute_text", "file_attribute_text.parent = m._id", "value").limit(32, (after-1)*32).where("width = 260").order('m.created_at', "DESC")
 
     for arg in args.keys():
-        if arg == 'retina':
-            val = args.get(arg)
-            if val and val.lower() != 'false':
-                pixel_ratio = 2
-            continue
-
         vals = args.get(arg).split(',')
-
-        #if arg == 'year':
         
         if arg == 'year':
             st = dt.datetime(int(vals[0]), 1, 1)
@@ -65,16 +59,15 @@ def files_action():
             starttime = time.mktime(st.timetuple())
             endtime = time.mktime(et.timetuple())
             models.where('m.created_at < ?', endtime)   
-        elif arg == 'format':
-            formats = ['image','video','file']
-            froms = formats[int(vals[0])]
-            models.where('m.type = ?', froms)
-        elif arg == 'device' and vals[0] != "-1":
+        elif (arg == 'format') and (len(vals) > 0) and (str(vals[0]) != "null"):
+            print "Arg: "+arg
+            print "Arg: "+str(vals[0])
+            models.where("m.type = '"+str(vals[0])+"'")
+        elif arg == 'device' and (len(vals) > 0) and vals[0] != "-1":
             models.where('m.device = '+str(vals[0]))
-        else:
-            FilterHelper.apply_filter(arg, vals, models)
 
-       #ImageHelper().add_file_icons(models, 48*pixel_ratio, 128*pixel_ratio)
+    print models.render()
+
     for model in models:
         data.append(model.get_data())
 
