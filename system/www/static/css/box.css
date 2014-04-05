@@ -186,6 +186,36 @@ div.video .typecontent {
 	line-height: 20px;
 }
 
+#formatFilter {
+	float:right; 
+	margin-top: 10px;	
+}
+
+	#formatFilter .type {
+		display: inline; 
+		padding-left: 30px; 
+		padding-bottom: 0px; 
+		background-repeat: no-repeat; 
+		background-size: 20px; 
+		background-position: left 10px;
+	}
+	
+	#formatFilter .photo {
+		background-image: url(/static/images/icons/photos.png); 		
+	}
+
+	#formatFilter .video {
+		background-image: url(/static/images/icons/videos.png);
+	}
+
+
+@media (max-width: 1199px) {
+	#device-list {
+		margin-left: -20px; 
+		margin-right: 20px; 	
+	}
+
+}
 
 @media (max-width: 767px) {
     .jumbotron {
@@ -212,13 +242,9 @@ div.video .typecontent {
 		margin-right: 0px;
 	}
 	
-	/*.device {
-		width: 200px;
-		height: 25px; 
-		float: left; 
-		margin-right: 10px;
-		background-color: #FFF;
-	}*/
+	#formatFilter {
+		display: none;
+	}
 	
 }
 
