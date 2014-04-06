@@ -98,13 +98,18 @@ def file_devices_action():
     for device in DeviceModel.all():
     	states = { -1 : 'Error', 1 : 'Preparing', 2 : 'Transfering files', 3 : 'Preparing images', 4 : 'Ready' }
     	images = DBSelect('file','count(*) as imagecount').join('device', 'device._id = file.device', None).where("device._id = "+str(device.id())).where("file.type = 'image'").query()
+    	videos = DBSelect('file','count(*) as videocount').join('device', 'device._id = file.device', None).where("device._id = "+str(device.id())).where("file.type = 'video'").query()
     	thumbnails = DBSelect('file','count(*) as thumbnailcount').join('device', 'device._id = file.device', None).join('file_thumbnail', 'file_thumbnail.file = file._id', None).where("device._id = "+str(device.id())).where("file.type = 'image'").where("file_thumbnail.width = 260").query()
     			
     	imagecount = 0
+    	videocount = 0
     	thumbnailcount = 0; 
-    	
+
     	for image in images:
     		imagecount = image['imagecount']
+    	
+    	for video in videos:
+    		videocount = video['videocount']
 
     	for thumbnail in thumbnails:
     		thumbnailcount = thumbnail['thumbnailcount']
@@ -124,8 +129,10 @@ def file_devices_action():
             'product_id': device.product_id(),
             'last_backup': device.last_backup(),
             'images': imagecount,
+            'videos': videocount,
             'thumbnails': thumbnailcount,
-            'symbol': '/static/images/icons/'+str(device.type())+'.png'
+            'symbol': str(device.type()),
+            'message': states[device.state()]
         })    
 
     return jsonify({'devices': devices})

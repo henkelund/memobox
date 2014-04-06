@@ -83,8 +83,6 @@ body {
 		text-decoration: underline; 
 		color: white; 	
 	}
-
-	.navbar-inverse .nav > li > a
 	
 
 #dateHolder {
@@ -250,4 +248,19 @@ div.video .typecontent {
 
 #modalImage {
 	min-height: 400px;
+}
+
+div.tooltip-inner {
+	width: 200px;
+	height: 100px;
+	font-size: 14px;
+	text-align: left;
+	padding-top: 20px;
+}
+
+div.tooltip-inner .imageContainer {
+	float: left;
+	margin-left: 10px; 
+	margin-right: 20px;
+	height: 80px;
 }

@@ -1,5 +1,5 @@
 <div class="container">
-	<div  ng-controller='DemoController'>
+	<div  ng-controller='FilesCtrl'>
 	<div id="device-list" class="navbar navbar-inverse navbar-static-top">
 	    <div class="navbar-inner">
 	        <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
@@ -9,10 +9,10 @@
 	        </a>
 		    <div class="nav-collapse collapse navbar-inverse-collapse">
 				<ul class="nav" style="width: 100%;">
-			        <li ng-repeat="device in FilesCtrl.fileService.devices" class="dropdown">
-			        	<a href="javascript:void(0)" id="{{device.id}}" class="device" ng-click="reddit.nextPage('{{device.id}}')"><span>{{device.product_name}}</span></a>
+			        <li ng-repeat="device in FilesCtrl.fileService.devices" device-repeat-directive class="dropdown">
+			        	<a href="javascript:void(0)" id="{{device.id}}" data-placement="bottom" data-html="true" ng-attr-title="<div class='imageContainer'><img src='/static/images/icons/{{device.symbol}}.png' /></div>{{device.thumbnails}} photos<br />{{device.videos}} videos<br />Status: {{device.message}}" class="device" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span></a>
 			        </li>
-					<li id="formatFilter"><a href="#" ng-click="reddit.nextPage(null,'image')" id="type-image" class="type photo">Photos</a><a href="#" ng-click="reddit.nextPage(null,'video')" id="type-video" class="type video">Videos</a></li>
+					<li id="formatFilter"><a href="#" ng-click="infinity.nextPage(null,'image')" id="type-image" title="Show only photos" class="type photo">Photo</a><a href="#" ng-click="infinity.nextPage(null,'video')" id="type-video" title="Show only videos" class="type video">Video</a></li>
 				</ul>
 			</div>
 		</div>
@@ -21,10 +21,10 @@
 	<!-- div class="navbar date-navbar"><div class="navbar-inner" id="dateHolder"></div></div -->
     <ul class="thumbnails">
 		<div ng-app='box' my-main-directive>
-		  <div infinite-scroll='reddit.nextPage()' infinite-scroll-disabled='reddit.busy' infinite-scroll-distance='1'>
+		  <div infinite-scroll='infinity.nextPage()' infinite-scroll-disabled='infinity.busy' infinite-scroll-distance='1'>
 				<ul id="thumbnails" class="thumbnails">
-					<li class="span3" ng-repeat="item in items" my-repeat-directive>
-						<div id="{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div timestamp="{{item.created_at}}" style="background-image: url(/static/images/{{item.background}})" class="preview image" ng-click="reddit.showPicture('{{item.id}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
+					<li class="span3" ng-repeat="item in items">
+						<div id="{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div timestamp="{{item.created_at}}" style="background-image: url(/static/images/{{item.background}})" class="preview image" ng-click="infinity.showPicture('{{item.id}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
 					</li>
 				</ul>
 		  </div>
