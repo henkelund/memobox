@@ -7,36 +7,24 @@
     var box = ng.module('box', ['ngResource', 'ui.router', 'infinite-scroll', 'ngSanitize']);
     exports.box = box;
 	
-	box.directive('myMainDirective', function() {
-	  return function(scope, element, attrs) {
-	      $("#dateHolder").sticky({ topSpacing: 0, center:true, className:"hey" });
-	  };
-	})
-
-	box.directive('myRepeatDirective', function() {
-	  return function(scope, element, attrs) {
-	    if (scope.$last){
-	      //scope.$emit('LastElem');
-	    }
-
-	    scope.$watch('thing', function(){
-	    });
-	  };
-	})
+	/* Repeat directive that activates tooltip  on loaded devices */
+	box.directive('deviceRepeatDirective', function ($timeout) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attr) {
+                if (scope.$last === true) {
+                    $timeout(function () {
+                        scope.$emit('deviceRepeatDirective');
+                        $(".device").tooltip();
+                    });
+                }
+            }
+        }
+     });
 	
-	box.controller('DemoController', function($scope, Reddit) {
-	  $scope.reddit = new Reddit($scope);
-	  //$scope.fileservice = new FileService($scope);
-	  $scope.items = [];
-	  $scope.render = function(e) {
-	    return $(e).html();
-	  }
-    	  
-	});
-	
-	// Reddit constructor function to encapsulate HTTP and pagination logic
-	box.factory('Reddit', function($http) {
-	  var Reddit = function($scope) {
+	// Infinity constructor function to encapsulate HTTP and pagination logic
+	box.factory('Infinity', function($http) {
+	  var Infinity = function($scope) {
 	  	this.me = $scope;
 	    this.images = [];
 	    this.busy = false;
@@ -48,7 +36,7 @@
 		this.type = null; 
 	};
 	  
-	  Reddit.prototype.showPicture = function(file) {
+	  Infinity.prototype.showPicture = function(file) {
 		$.ajax({
 		    url : "/files/details?id="+file,
 			async: false,
@@ -86,7 +74,7 @@
 	  	//f.loadDetails(file);	  	
 	  }
 	  
-	  Reddit.prototype.nextPage = function(_device, _type) {
+	  Infinity.prototype.nextPage = function(_device, _type) {
 	    if (this.busy) return;
 	    this.busy = true;	
 	    
@@ -97,8 +85,14 @@
 				this.after = 1; 
 				$(".device span").removeClass("selectedDevice");
 				$("#"+_device+" span").addClass("selectedDevice");
+				this.device = _device; 
+			} else {
+				this.device = -1; 
+				$(".device span").removeClass("selectedDevice");
+				this.after = 1; 
+				changedState = true; 
 			}
-			this.device = _device; 
+			
 
 			$.ajax({
 			    url : "/files/calendar?device="+_device,
@@ -155,7 +149,7 @@
 		});
 	  };
 	
-	  return Reddit;
+	  return Infinity;
 	});	
 
     /**
@@ -468,70 +462,6 @@
     });
 
     /**
-     * File tooltip directive
-     */
-    box.directive('fileTooltip', function () {
-        return {
-            restrict: 'A',
-            link: function (scope, element) {
-                var file = scope.file;
-                $(element).tooltip({
-                    title: file.devpath + '/' + file.name+file.extension,
-                    placement: 'top'
-                });
-            }
-        };
-    });
-
-    /**
-     * Available filters filter
-     */
-    box.filter('availableFilters', function () {
-        return function (filters, scope) {
-            if (scope.FilesCtrl === undefined) {
-                return filters;
-            }
-            return $.grep(filters, function (item) {
-                return scope.FilesCtrl.isFilterAvailable(item);
-            });
-        };
-    });
-
-    /**
-     * Active filters filter
-     */
-    box.filter('activeFilters', function () {
-        return function (filters, scope) {
-            if (scope.FilesCtrl === undefined) {
-                return filters;
-            }
-            return $.grep(filters, function (item) {
-                return scope.FilesCtrl.isFilterActive(item);
-            });
-        };
-    });
-
-    /**
-     * Active filter options filter
-     */
-    box.filter('activeFilterOptions', function () {
-        return function (options, filter, scope) {
-            var value,
-                result = {};
-            if (scope.FilesCtrl === undefined) {
-                return options;
-            }
-            for (value in options) {
-                if (options.hasOwnProperty(value) &&
-                        scope.FilesCtrl.isFilterActive(filter, value)) {
-                    result[value] = options[value];
-                }
-            }
-            return result;
-        };
-    });
-
-    /**
      * File extension trim filter
      */
     box.filter('trimFileExtension', function () {
@@ -547,10 +477,16 @@
     /**
      * Files controller
      */
-    box.controller('FilesCtrl', function ($scope, $location, FileService) {
+    box.controller('FilesCtrl', function ($scope, $location, FileService, Infinity) {
 
         var that = this;
         this.fileService = FileService.loadFilters().loadFiles().loadDevices();
+        $scope.infinity = new Infinity($scope);
+        $scope.items = [];
+        $scope.render = function(e) {
+			return $(e).html();
+        }
+        
         this.filterState = {};
         this.isFilterPending = false;
         $('#filesDetailModal').modal({show: false})
@@ -558,83 +494,6 @@
             $location.path('/');
             $scope.$apply();
         });
-
-        /**
-         * Check if a given filter - or option - is active
-         */
-        this.isFilterActive = function (filter, value) {
-            var state;
-            if (filter === undefined) {
-                for (state in that.filterState) {
-                    if (that.filterState.hasOwnProperty(state) &&
-                            that.filterState[state].length > 0) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-            state = that.filterState[filter.param];
-            return (state !== undefined) &&
-                        (state.length > 0) &&
-                        (value === undefined ||
-                            state.indexOf(value) >= 0);
-        };
-
-        /**
-         * Check if a given filter - or option - is available
-         */
-        this.isFilterAvailable = function (filter, value) {
-            var i,
-                val;
-
-            if (filter === undefined) {
-                filter = that.fileService.filters;
-            } else {
-                filter = [filter];
-            }
-
-            if (value === undefined) {
-                for (i = 0; i < filter.length; ++i) {
-                    for (val in filter[i].options) {
-                        if (filter[i].options.hasOwnProperty(val) &&
-                                !that.isFilterActive(filter[i], val)) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-
-            for (i = 0; i < filter.length; ++i) {
-                if (!that.isFilterActive(filter[i], value)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /**
-         * Toggle a given filter option
-         */
-        this.filterClicked = function (filter, value) {
-            var i, state = that.filterState[filter.param];
-            if (state === undefined) {
-                state = that.filterState[filter.param] = [];
-            }
-            i = state.indexOf(value);
-            if (i >= 0) {
-                state.splice(i, 1);
-            } else {
-                if (filter.multi === undefined || !filter.multi) {
-                    state = [];
-                }
-                state.push(value);
-            }
-            that.isFilterPending = true;
-            that.fileService.loadFiles(that.filterState, function () {
-                that.isFilterPending = false;
-            });
-        };
 
         $scope.FilesCtrl = this;
         return this;
