@@ -217,17 +217,19 @@ class FileModel(ExtendedModel):
                 """ % table),
                 cls._create_attribute_tables(),
                 cls._create_attribute(
-                    'width', 'Width', 'integer', 'Image'),
+                    'width', 'Width', 'integer', ['Image', 'Video']),
                 cls._create_attribute(
-                    'height', 'Height', 'integer', 'Image'),
+                    'height', 'Height', 'integer', ['Image', 'Video']),
                 cls._create_attribute(
-                    'latitude', 'Latitude', 'real', 'Image'),
+                    'latitude', 'Latitude', 'real', ['Image']),
                 cls._create_attribute(
-                    'longitude', 'Longitude', 'real', 'Image'),
+                    'longitude', 'Longitude', 'real', ['Image']),
                 cls._create_attribute(
-                    'timestamp', 'Timestamp', 'integer', 'Image'),
+                    'timestamp', 'Timestamp', 'integer', ['Image']),
                 cls._create_attribute(
-                    'orientation', 'Orientation', 'integer', 'Image')
+                    'orientation', 'Orientation', 'integer', ['Image']),
+                cls._create_attribute(
+                    'duration', 'Duration', 'text', ['Video'])
             ),
         )
 
