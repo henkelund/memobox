@@ -246,7 +246,7 @@ div.video .typecontent {
 	
 }
 
-#modalImage {
+.modal-body {
 	min-height: 400px;
 }
 
