@@ -243,7 +243,10 @@ div.video .typecontent {
 	#formatFilter {
 		display: none;
 	}
-	
+}
+
+.container .modal {
+	display: none;
 }
 
 .modal-body {

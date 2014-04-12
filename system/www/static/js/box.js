@@ -15,7 +15,9 @@
                 if (scope.$last === true) {
                     $timeout(function () {
                         scope.$emit('deviceRepeatDirective');
-                        $(".device").tooltip();
+                        if (!window.matchMedia || (window.matchMedia("(min-width: 767px)").matches)) {
+	                        $(".device").tooltip();
+                        }
                     });
                 }
             }
@@ -125,6 +127,12 @@
 			context: this,
 		    success : function(result){
 		    	if(changedState == true) {
+					if (!window.matchMedia || (window.matchMedia("(max-width: 767px)").matches)) {
+						$("#mainNav").css("height", "0px");
+						$("#mainNav").removeClass("in");
+						$("#mainNav-btn").addClass("collapsed");
+					}
+					
 					this.me.items = [];
 				}
 

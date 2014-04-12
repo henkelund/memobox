@@ -2,12 +2,12 @@
 	<div  ng-controller='FilesCtrl'>
 	<div id="device-list" class="navbar navbar-inverse navbar-static-top">
 	    <div class="navbar-inner">
-	        <a class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+	        <a id="mainNav-btn" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
 	            <span class="icon-bar"></span>
 	            <span class="icon-bar"></span>
 	            <span class="icon-bar"></span>
 	        </a>
-		    <div class="nav-collapse collapse navbar-inverse-collapse">
+		    <div id="mainNav" class="nav-collapse collapse navbar-inverse-collapse">
 				<ul class="nav" style="width: 100%;">
 			        <li ng-repeat="device in FilesCtrl.fileService.devices" device-repeat-directive class="dropdown">
 			        	<a href="javascript:void(0)" id="{{device.id}}" data-placement="bottom" data-html="true" ng-attr-title="<div class='imageContainer'><img src='/static/images/icons/{{device.symbol}}.png' /></div>{{device.thumbnails}} photos<br />{{device.videos}} videos<br />Status: {{device.message}}" class="device" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span></a>
