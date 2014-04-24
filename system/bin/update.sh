@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ../config/dirs.cfg
+source /backupbox/system/config/dirs.cfg
 
 cd $ROOT_DIR
 git fetch --all
