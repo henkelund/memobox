@@ -37,7 +37,7 @@ end
 # libav-tools - avconv is used to generate thumbnails from videos
 # graphicsmagick - Extremely fast thumbnail generation tool
 packages = %w{
-  pmount ifuse libimobiledevice-utils gphotofs parted python python-werkzeug
+  libfuse-dev libusb-1.0-0-dev python-dev pkg-config libxml2-dev pmount libtool automake autoconf autotools-dev tree gphotofs parted python python-werkzeug
   python-imaging python-flask uwsgi uwsgi-plugin-python nginx curl mediainfo libav-tools graphicsmagick
 }
 packages.each do |package_name|
