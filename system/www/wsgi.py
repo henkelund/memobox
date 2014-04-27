@@ -73,6 +73,13 @@ def files_action():
 
     return jsonify({'files': data, 'sql': models.render()})
 
+
+@app.route('/info')
+def file_info_action():
+	with open ("/tmp/ping.txt", "r") as myfile:
+		data=myfile.read().replace('\n', '<br />')
+	return data
+	
 @app.route('/files/filters')
 def file_filters_action():
 

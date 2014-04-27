@@ -7,14 +7,15 @@ freespace () {
         mount_point=${1:-"/tmp"}
         threshold=${2:-10}
          
-        used_space=`df -k $mount_point | grep % | awk {'print $5'} | sed 's/%//g'`
+        used_space=`df -kH $mount_point | grep % | awk {'print $3'} | sed 's/%//g'`
         used_space=`echo "$used_space" | sed -n 2p`
         
-        available_space=`df -kH $mount_point | grep % | awk {'print $2'} | sed 's/%//g'`
-        available_space=`echo "$available_space" | sed -n 2p`
+        #capacity=`df -kH $mount_point | grep % | awk {'print $2'} | sed 's/%//g'`
+        capacity=`df -kH $mount_point | grep % | awk {'print $2'} | sed 's/%//g'`
+        capacity=`echo "$capacity" | sed -n 2p`
         
-        echo "available_space=$available_space&"
-        echo "free_space=`expr 100 - $used_space`%&"
+        echo "Hard Drive Capacity: $capacity"
+        echo "Used Capacity: $used_space"
 }
 
 gatherdevices () {
