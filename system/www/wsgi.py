@@ -76,7 +76,7 @@ def files_action():
 
 @app.route('/info')
 def file_info_action():
-	with open ("/tmp/ping.txt", "r") as myfile:
+	with open ("/tmp/info.txt", "r") as myfile:
 		data=myfile.read().replace('\n', '<br />')
 	return data
 
