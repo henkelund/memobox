@@ -48,7 +48,7 @@ def files_action():
     'name'
     ]
 
-    models = FileModel.all().join("file_thumbnail", "m._id = file_thumbnail.file").left_outer_join("file_attribute_text", "file_attribute_text.parent = m._id", "value").limit(32, (after-1)*32).where("width = 260").order('m.created_at', "DESC")
+    models = FileModel.all().join("file_thumbnail", "m._id = file_thumbnail.file").left_outer_join("file_attribute_text", "file_attribute_text.parent = m._id", "value").limit(32, (after-1)*32).where("width = 260").where("is_hidden = 0").order('m.created_at', "DESC")
 
     for arg in args.keys():
         vals = args.get(arg).split(',')
@@ -79,24 +79,6 @@ def file_info_action():
 	with open ("/tmp/ping.txt", "r") as myfile:
 		data=myfile.read().replace('\n', '<br />')
 	return data
-	
-@app.route('/files/filters')
-def file_filters_action():
-
-    filters = FilterHelper.get_all_filters()
-
-    device_opts = {}
-    for device in DeviceModel.all():
-        device_opts[device.id()] = device.product_name()
-    if len(device_opts) > 1:
-        filters.insert(0, {
-            'label': 'Device',
-            'multi': True,
-            'param': 'device',
-            'options': device_opts
-        })
-
-    return jsonify({'filters': filters})
 
 @app.route('/files/devices')
 def file_devices_action():
@@ -160,6 +142,13 @@ def file_details_action():
     
     	    
     return jsonify(model.get_data())
+
+@app.route('/files/hide')
+def file_hide_action():
+	if request.args.get('id') is None:
+		return "error"
+	DBSelect('file').where("file._id = "+str(request.args.get('id'))).query_update({'is_hidden': 1});
+	return "ok"
 
 @app.route('/files/calendar')
 def file_calendar_action():

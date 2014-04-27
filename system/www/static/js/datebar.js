@@ -1,4 +1,4 @@
-$( window ).scroll(function() {
+/*$( window ).scroll(function() {
 	refreshDate();
 });	        
 
@@ -7,7 +7,7 @@ var previousMonths = new Array();
 var previousDates = new Array(); 
 var lastYear = null;
 var lastMonth = null;
-var lastDate = null;
+var lastDate = null;*/
 
 function stopVideo() {
 	$("#moddalVideoContainer").html('<video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay"><source id="modalSource" src="" type="video/mp4" /></video>');
@@ -16,7 +16,17 @@ function stopVideo() {
 
 }
 
-function showDate( dd ) {
+function hideFile() {
+	var file_id = $("#filesDetailModalLabel").attr("file");
+	$.get( "/files/hide?id="+file_id, function( data ) {
+	  if(data == "ok") {
+		  $("#"+file_id).parent().hide();
+	  }
+	});
+	$('#filesDetailModal').modal('hide');
+}
+
+/*function showDate( dd ) {
 	var counter = 0;
 	var targetDate = new Date(lastYear, lastMonth, dd);
 	$(".thumbnails .image").each(function( index ) {
@@ -102,4 +112,4 @@ function refreshDate() {
   });
 }
 
-setTimeout("refreshDate()", 500);
+setTimeout("refreshDate()", 500);*/

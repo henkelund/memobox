@@ -55,6 +55,7 @@
 				var month = Array("January","February","March","April","May","June","July","August","September","October","November","December");
 				
 				$("#filesDetailModalLabel").html(result.name+" – "+viewDate +" "+ month[viewMonth] + ", "+viewYear+" – "+result.product_name);
+				$("#filesDetailModalLabel").attr("file", file);
 				
 				if(result.type == "video") {
 					$("#moddalVideoContainer").html('<video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay"><source id="modalSource" src="" type="video/mp4" /></video>');
@@ -500,7 +501,7 @@
     box.controller('FilesCtrl', function ($scope, $location, FileService, Infinity) {
 
         var that = this;
-        this.fileService = FileService.loadFilters().loadFiles().loadDevices();
+        this.fileService = FileService.loadFiles().loadDevices();
         $scope.infinity = new Infinity($scope);
         $scope.items = [];
         $scope.render = function(e) {
