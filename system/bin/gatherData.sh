@@ -21,7 +21,7 @@ uuid=`blkid -s UUID -o value /dev/sda1`
 echo "Unique Device ID: $uuid" >> $INFOFILE
 
 # Calculate free and total space of the backup drive
-freespace /HDD >> $INFOFILE
+freespace human /HDD >> $INFOFILE
 
 ver=$(cd /backupbox && git log -1 --format=%cd .)
 echo "Current Software Version: $ver" >> $INFOFILE
@@ -45,4 +45,6 @@ echo "local_ip=$lip&" >> $PINGFILE
 
 #Load Unique ID of backup hard drive
 uuid=`blkid -s UUID -o value /dev/sda1`
-echo "uuid=$uuid" >> $PINGFILE
+echo "uuid=$uuid&" >> $PINGFILE
+
+freespace computer /HDD >> $PINGFILE

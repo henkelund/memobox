@@ -2,21 +2,26 @@
 #!/bin/bash
 
 freespace () {
-        mount_point="$1"
+        mount_point="$2"
         used_space=0
-        mount_point=${1:-"/tmp"}
+        mount_point=${2:-"/tmp"}
         threshold=${2:-10}
          
         used_space=`df -kH $mount_point | grep % | awk {'print $3'} | sed 's/%//g'`
         used_space=`echo "$used_space" | sed -n 2p`
         
-        #capacity=`df -kH $mount_point | grep % | awk {'print $2'} | sed 's/%//g'`
         capacity=`df -kH $mount_point | grep % | awk {'print $2'} | sed 's/%//g'`
         capacity=`echo "$capacity" | sed -n 2p`
         
-        echo "Hard Drive Capacity: $capacity"
-        echo "Used Capacity: $used_space"
+        if [ "$1" = "human" ]; then
+	        echo "Hard Drive Capacity: $capacity"
+	        echo "Used Capacity: $used_space"
+	    else
+	        echo "available_space=$capacity&"
+	        echo "used_space=$used_space"
+	    fi
 }
+
 
 gatherdevices () {
 	devices=`find -L $1 -maxdepth 2 -name manufacturer -printf '%h;'`
