@@ -21,7 +21,7 @@ echo "Unique Device ID: $uuid" >> $PINGFILE
 # Calculate free and total space of the backup drive
 freespace /HDD >> $PINGFILE
 
-ver=$(git log -1 --format=%cd /backupbox/)
+ver=$(cd /backupbox && git log -1 --format=%cd .)
 echo "Current Software Version: $ver" >> $PINGFILE
 #git log -1 --format=%cd /backupbox/ >> $PINGFILE
 
