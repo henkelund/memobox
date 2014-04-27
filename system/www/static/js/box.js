@@ -35,7 +35,8 @@
 	    this.viewYear = null; 
 		this.monthArr = "Alert";
 		this.device = -1; 
-		this.type = null; 
+		this.type = null;
+		this.imageCount = -1; 
 	};
 	  
 	  Infinity.prototype.showPicture = function(file) {
@@ -136,6 +137,13 @@
 					this.me.items = [];
 				}
 
+				
+				if(result.files.length == 0) {
+					this.me.missingImages = true; 	
+				} else {
+					this.me.missingImages = false; 
+				}
+
 			    for(var i = 0; i < result.files.length; i++) {
 			      var type_content = ""; 
 			      
@@ -218,6 +226,7 @@
             this.calendarResource = $resource('/files/calendar');
             this.calendar = [];
             this.devices = [];
+            this.missingDevices = false; 
             this.files = [];
             this.filters = [];
             this.details = [];
@@ -251,6 +260,9 @@
              */
             loadDevicesSuccess: function (data) {
                 this.devices = data.devices;
+                if(this.devices.length == 0) {
+	                this.missingDevices = true; 
+                }
             },
 
 
