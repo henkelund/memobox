@@ -20,5 +20,5 @@ do
 		$BIN_DIR/lights.sh GREEN BLINK &
 	fi
 
-	sleep 1
+	sleep 60
 done
