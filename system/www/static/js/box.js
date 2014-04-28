@@ -16,6 +16,7 @@
                     $timeout(function () {
                         scope.$emit('deviceRepeatDirective');
                         if (!window.matchMedia || (window.matchMedia("(min-width: 767px)").matches)) {
+	                        //$(".device").on('click',function(){$(this).tooltip('destroy');});
 	                        $(".device").tooltip();
                         }
                     });
@@ -38,6 +39,30 @@
 		this.type = null;
 		this.imageCount = -1; 
 	};
+
+	  Infinity.prototype.editDevice = function(device) {
+		  $('#deviceDetailModal').attr("device", device);					  
+		  $.ajax({
+			    url : "/device/detail?id="+device,
+				async: false,
+				context: this,
+			    success : function(result){
+			        $("#deviceDetailModalInput").attr("value", result.product_name);
+			        $('#deviceDetailModal').modal('show');				
+			    }
+		  });	  	
+	  }
+
+	  Infinity.prototype.updateDevice = function() {
+		$.ajax({
+		    url : "/device/update?id="+$('#deviceDetailModal').attr("device")+"&product_name="+$("#deviceDetailModalInput").val(),
+			async: false,
+			context: this,
+		    success : function(result){
+		        window.location = "/"; 
+		    }
+		});	  	
+	  }
 	  
 	  Infinity.prototype.showPicture = function(file) {
 		$.ajax({
@@ -139,7 +164,7 @@
 				}
 
 				
-				if(result.files.length == 0) {
+				if(result.files.length == 0 && this.me.items.length == 0) {
 					this.me.missingImages = true; 	
 				} else {
 					this.me.missingImages = false; 
@@ -223,7 +248,7 @@
             this.filesResource = $resource('/files');
             this.filterResource = $resource('/files/filters');
             this.detailsResource = $resource('/files/details');
-            this.deviceResource = $resource('/files/devices');
+            this.deviceResource = $resource('/devices');
             this.calendarResource = $resource('/files/calendar');
             this.calendar = [];
             this.devices = [];
@@ -405,7 +430,7 @@
          *
          */
         var DeviceService = function () {
-            this.devicesResource = $resource('/files/devices');
+            this.devicesResource = $resource('/devices');
             this.devices = [];
         };
         DeivceService.prototype = {

@@ -80,7 +80,19 @@ def file_info_action():
 		data=myfile.read().replace('\n', '<br />')
 	return data
 
-@app.route('/files/devices')
+@app.route('/device/update')
+def file_devicedetail_action():
+    device = DeviceModel().load(str(request.args.get('id')))
+    device.add_data({"product_name" : str(request.args.get('product_name'))})
+    device.save()
+    return "ok"
+
+@app.route('/device/detail')
+def file_deviceupdate_action():
+    device = DeviceModel().load(str(request.args.get('id')))
+    return jsonify(device.get_data())
+
+@app.route('/devices')
 def file_devices_action():
 
     devices = []

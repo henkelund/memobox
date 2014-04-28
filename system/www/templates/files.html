@@ -1,5 +1,5 @@
-<div class="container">
-	<div  ng-controller='FilesCtrl'>
+<div ng-controller='FilesCtrl' class="container">
+	<div>
 		<div id="device-list" class="navbar navbar-inverse navbar-static-top">
 		    <div class="navbar-inner">
 		        <a id="mainNav-btn" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
@@ -10,7 +10,7 @@
 			    <div id="mainNav" class="nav-collapse collapse navbar-inverse-collapse">
 					<ul class="nav" style="width: 100%;">
 				        <li ng-repeat="device in FilesCtrl.fileService.devices" device-repeat-directive class="dropdown">
-				        	<a href="javascript:void(0)" id="{{device.id}}" data-placement="bottom" data-html="true" ng-attr-title="<div class='imageContainer'><img src='/static/images/icons/{{device.symbol}}.png' /></div>{{device.thumbnails}} photos<br />{{device.videos}} videos<br />Status: {{device.message}}" class="device" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span></a>
+				        	<a href="javascript:void(0)" id="{{device.id}}" data-placement="bottom" data-trigger="hover" nng-click="infinity.editDevice('{{device.id}}')" data-html="true" ng-attr-title="<div class='imageContainer'><img src='/static/images/icons/{{device.symbol}}.png' /></div>{{device.thumbnails}} photos<br />{{device.videos}} videos<br />Status: {{device.message}}" class="device" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span></a>
 				        </li>
 						<li id="formatFilter"><a href="#" ng-click="infinity.nextPage(null,'image')" id="type-image" title="Show only photos" class="type photo">Photo</a><a href="#" ng-click="infinity.nextPage(null,'video')" id="type-video" title="Show only videos" class="type video">Video</a></li>
 					</ul>
@@ -57,6 +57,28 @@
 					  <source id="modalSource" src="" type="video/mp4" />
 					</video></div>
 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deviceDetailModal" tabindex="-1" role="dialog" aria-labelledby="deviceDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="deviceDetailModalLabel">Edit device information</h4>
+                </div>
+                <div class="modal-body">
+					<form>
+						<input id="deviceDetailModalInput" type="text" name="label" /><br />
+	                    <a style="z-index: 10000; position: absolute; margin-top: 15px;" class="btn" ng-click="infinity.updateDevice()" id="modalSave" target="_blank" href="">
+						    <i class="icon-download-alt"></i> Save
+						</a>						
+					</form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
