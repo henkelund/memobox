@@ -7,6 +7,7 @@ from helper.db import DBHelper, DBSelect
 from helper.filter import FilterHelper
 from helper.image import ImageHelper
 from model.device import DeviceModel
+from model.box import BoxModel
 from model.file import FileModel
 from datetime import date
 from subprocess import call
@@ -17,11 +18,18 @@ app.debug = True
 #app.logger.debug(""+tt)
 t = dt.datetime(2011, 10, 21, 0, 0)
 now=dt.datetime.now()
+b=BoxModel()
 #toolbar = DebugToolbarExtension(app)
 
-DBHelper('../../data/index.db')
+DBHelper('../data/index.db')
 ImageHelper('static/images', 'mint')
 DeviceModel.install()
+try:
+    BoxModel.install()
+except:
+    print "table already exists"
+b.init()
+
 FileModel.install()
 FilterHelper.install()
 
