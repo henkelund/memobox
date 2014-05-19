@@ -75,9 +75,13 @@ body {
         margin-bottom: 5px;
     }
 
+#libContainer {
+	margin-left: 30px; 
+}
+
 #device-list {
 	margin-left: -30px; 
-	margin-right: 30px; 	
+	margin-right: 0px; 	
 }
 
 	.device {
@@ -213,9 +217,13 @@ div.video .typecontent {
 
 
 @media (max-width: 1199px) {
+	#libContainer {
+		margin-left: 20px; 	
+	}
+	
 	#device-list {
 		margin-left: -20px; 
-		margin-right: 20px; 	
+		margin-right: 0px; 	
 	}
 
 }
@@ -240,6 +248,10 @@ div.video .typecontent {
 	    display: none;
     }
 
+	#libContainer {
+		margin-left: 0px; 
+	}
+
 	#device-list {
 		margin-left: 0px; 
 		margin-right: 0px; 	
@@ -256,6 +268,19 @@ div.video .typecontent {
 	
 	#formatFilter {
 		display: none;
+	}
+	
+	.modal {
+		left: 0px; 
+		right: 0px; 
+	}
+	
+	.modal-body {
+		padding: 0px; 
+	}
+	
+	.modal.fade.in {
+		top: 0px; 
 	}
 }
 

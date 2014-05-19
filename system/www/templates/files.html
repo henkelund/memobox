@@ -1,5 +1,5 @@
 <div ng-controller='FilesCtrl' class="container">
-	<div>
+	<div id="libContainer">
 		<div id="device-list" class="navbar navbar-inverse navbar-static-top">
 		    <div class="navbar-inner">
 		        <a id="mainNav-btn" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
@@ -48,10 +48,10 @@
                 </div>
                 <div class="modal-body">
                     <a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 10px;" class="btn" id="modalDownload" target="_blank" href="">
-					    <i class="icon-download-alt"></i> Download
+					    <span class="icon-download-alt"></span> Download
 					</a>
                     <a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 130px;" class="btn" id="modalDelete" target="_blank" onClick="hideFile()" href="">
-					    <i class="icon-remove"></i> Delete
+					    <span class="icon-remove"></span> Delete
 					</a>					<img id="modalImage" style="display: none; position: relative; z-index: 9999;" src="" />
 					<div id="moddalVideoContainer"><video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay">
 					  <source id="modalSource" src="" type="video/mp4" />
