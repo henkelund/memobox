@@ -170,7 +170,7 @@ class FileModel(ExtendedModel):
             'charset': file_type[1] if len(file_type) > 0 else 'unknown',
             'checksum': checksum,
             'size': stat.st_size,
-            'created_at': int(stat.st_ctime),
+            'created_at': int(stat.st_mtime),
             'is_hidden': 1 if visibility in (
                                 VISIBILITY_HIDDEN, VISIBILITY_IN_HIDDEN_DIR
                             ) else 0
