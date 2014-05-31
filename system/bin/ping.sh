@@ -1,10 +1,10 @@
 #!/bin/bash
-source ../config/dirs.cfg
 LOGFILE=/var/log/ping.log 
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SYSTEM_DIR="$(dirname "$BIN_DIR")"
 BACKUP_DIR="$(dirname "$SYSTEM_DIR")/data"
 pingvalues=`sed '{:q;N;s/\n//g;t q}' /tmp/ping.txt`
+source "$SYSTEM_DIR/config/dirs.cfg"
 
 COMMAND="curl --connect-timeout 5 -s -X GET http://$BOXUSER.backupbox.se/ping?$pingvalues"
 
