@@ -1,10 +1,14 @@
 #!/bin/bash
+source ../config/dirs.cfg
 LOGFILE=/var/log/ping.log 
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SYSTEM_DIR="$(dirname "$BIN_DIR")"
 BACKUP_DIR="$(dirname "$SYSTEM_DIR")/data"
+pingvalues=`sed '{:q;N;s/\n//g;t q}' /tmp/ping.txt`
 
-COMMAND="curl --connect-timeout 5 -s -X POST -d @/tmp/ping.txt http://www.backupbox.se/index.php/ping"
+COMMAND="curl --connect-timeout 5 -s -X GET http://$BOXUSER.backupbox.se/ping?$pingvalues"
+
+echo $COMMAND
 
 while ! test -f /tmp/stop-my-script
 do
@@ -16,7 +20,6 @@ do
 		$BIN_DIR/lights.sh GREEN ON &
 	else
 		echo "$response"
-		cat /tmp/ping.txt
 		$BIN_DIR/lights.sh GREEN BLINK &
 	fi
 

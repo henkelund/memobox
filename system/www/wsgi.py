@@ -8,6 +8,7 @@ from helper.filter import FilterHelper
 from helper.image import ImageHelper
 from model.device import DeviceModel
 from model.box import BoxModel
+from model.ping import PingModel
 from model.file import FileModel
 from datetime import date
 from subprocess import call
@@ -15,19 +16,23 @@ import os
 
 app = Flask(__name__)
 app.debug = True
-#app.logger.debug(""+tt)
 t = dt.datetime(2011, 10, 21, 0, 0)
-now=dt.datetime.now()
+now = dt.datetime.now()
 b=BoxModel()
-#toolbar = DebugToolbarExtension(app)
-
 DBHelper('../data/index.db')
 ImageHelper('static/images', 'mint')
 DeviceModel.install()
+
 try:
-    BoxModel.install()
+	PingModel.install()
 except:
     print "table already exists"
+
+try:
+	BoxModel.install()
+except:
+    print "table already exists"
+
 b.init()
 
 FileModel.install()
@@ -87,6 +92,15 @@ def file_info_action():
 	with open ("/tmp/info.txt", "r") as myfile:
 		data=myfile.read().replace('\n', '<br />')
 	return data
+
+@app.route('/ping')
+def file_ping_action():
+	#try:
+	PingModel.ping(request.args.get('local_ip'), request.args.get('public_ip'), request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'));
+	#except:
+	#    return "error"
+	    
+	return "ok"
 
 @app.route('/device/update')
 def file_devicedetail_action():
