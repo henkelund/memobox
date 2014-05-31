@@ -1,5 +1,7 @@
 #!/bin/bash
-
+/etc/init.d/uwsgi stop
+/etc/init.d/nginx stop
+umount /HDD
 printf "n\np\n1\n\n\nw\n" | sudo fdisk /dev/sda
 mkfs.ext3 /dev/sda1
 mkdir /HDD
