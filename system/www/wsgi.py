@@ -47,10 +47,10 @@ def index_action():
 	
 	if PingModel.validate_ip(ping["_host"]):
 		ping["islocal"] = "yes"
-		return redirect("http://"+ping["_local_ip"]+"/", code=302)
 	else:
 		if ping["_ip"] == ping["public_ip"]:
 			ping["islocal"] = "yes"
+			return redirect("http://"+ping["_local_ip"]+"/", code=302)
 		else:
 			ping["islocal"] = "no"
 	
