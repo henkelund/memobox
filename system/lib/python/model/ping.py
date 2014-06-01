@@ -46,7 +46,7 @@ class PingModel(BaseModel):
     @staticmethod
     def lastping():
          _ping = {}
-         pings = DBSelect('ping','*').where("uuid not null AND uuid is not 'None'").query()
+         pings = DBSelect('ping','*').where("uuid not null AND uuid is not 'None' AND uuid is not ''").query()
          pingcount = 0; 
 
          for ping in pings:

@@ -53,9 +53,10 @@ def index_action():
 			return redirect("http://"+ping["local_ip"]+"/", code=302)
 		else:
 			ping["islocal"] = "no"
+			return render_template('index.html', cloud=True)
 	
 	if ping["islocal"] is "yes":
-		return render_template('index.html')
+		return render_template('index.html', cloud=False)
 	else:
 		return jsonify(ping)
 
