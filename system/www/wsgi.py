@@ -48,7 +48,10 @@ def index_action():
 	if PingModel.validate_ip(ping["_host"]):
 		ping["islocal"] = "yes"
 	else:
-		ping["islocal"] = "no"
+		if ping["_ip"] == ping["public_ip"]:
+			ping["islocal"] = "yes"
+		else:
+			ping["islocal"] = "no"
 	
 	if ping["islocal"] is "yes":
 		return render_template('index.html')
