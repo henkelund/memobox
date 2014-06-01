@@ -1,7 +1,7 @@
 from __future__ import division
 import math
 import datetime as dt, time
-from flask import Flask, render_template, request, jsonify, abort, Response
+from flask import Flask, render_template, request, jsonify, abort, Response, redirect
 #from flask_debugtoolbar import DebugToolbarExtension
 from helper.db import DBHelper, DBSelect
 from helper.filter import FilterHelper
@@ -50,7 +50,7 @@ def index_action():
 	else:
 		if ping["_ip"] == ping["public_ip"]:
 			ping["islocal"] = "yes"
-			return redirect("http://"+ping["_local_ip"]+"/", code=302)
+			return redirect("http://"+ping["local_ip"]+"/", code=302)
 		else:
 			ping["islocal"] = "no"
 	
