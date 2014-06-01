@@ -41,7 +41,19 @@ FilterHelper.install()
 # Start page route
 @app.route('/')
 def index_action():
-    return render_template('index.html')
+	ping = PingModel.lastping()
+	ping["_ip"] = request.remote_addr
+	ping["_host"] = request.host
+	
+	if PingModel.validate_ip(ping["_host"]):
+		ping["islocal"] = "yes"
+	else:
+		ping["islocal"] = "no"
+	
+	if ping["islocal"] is "yes":
+		return render_template('index.html')
+	else:
+		return jsonify(ping)
 
 @app.route('/files')
 def files_action():
