@@ -224,13 +224,18 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	    	filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
 	    	mimetype = '%s/%s' % (model.type(), model.subtype())
     else:    
-	    filename = '%s/%s' % (model.abspath(), model.name())
+	    filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+request.base_url.split(".")[0].split("//")[1]), model.name())
 	    mimetype = '%s/%s' % (model.type(), model.subtype())
 
     if not os.path.isfile(filename):
         abort(404)
 
+    _headers = {}
+    _headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+    _headers['Cache-Control'] = 'public, max-age=0'
+
     return Response(
                 file(filename),
+                headers=_headers,
                 direct_passthrough=True,
                 content_type=mimetype)
