@@ -27,7 +27,7 @@ b=BoxModel()
 def index_action():
 	PingModel.initdb(request.host, request.base_url)
 	
-	if PingModel.islocal(request):
+	if PingModel.haslocalaccess(request):
 		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
 	else:
 		return render_template('index.html', cloud=False)

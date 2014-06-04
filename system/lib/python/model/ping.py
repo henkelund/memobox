@@ -83,6 +83,20 @@ class PingModel(BaseModel):
 				return True
 			else:
 				return False
+
+    @staticmethod
+    def haslocalaccess(request):
+		ping = PingModel.lastping()
+		ping["_ip"] = request.remote_addr
+		ping["_host"] = request.host
+		
+		if PingModel.validate_ip(ping["_host"]):
+			return False
+		else:
+			if ping["_ip"] == ping["public_ip"]:
+				return True
+			else:
+				return False
 			         
     @staticmethod
     def initdb(remote_addr, base_url):
