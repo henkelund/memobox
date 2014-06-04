@@ -30,7 +30,7 @@
 			  		</div>
 					<ul id="thumbnails" class="thumbnails">
 						<li class="span3" ng-repeat="item in items">
-							<div id="{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div timestamp="{{item.created_at}}" style="background-image: url(/static/images/{{item.background}})" class="preview image" ng-click="infinity.showPicture('{{item.id}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
+							<div id="{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item.id}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
 						</li>
 					</ul>
 			  </div>

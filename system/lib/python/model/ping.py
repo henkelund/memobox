@@ -1,8 +1,6 @@
 import subprocess
 from base import BaseModel
 from helper.db import DBHelper, DBSelect
-import os
-from glob import glob
 
 class PingModel(BaseModel):
     """Model describing a box system info"""
@@ -70,4 +68,25 @@ class PingModel(BaseModel):
 	        i = int(x)
 	        if i < 0 or i > 255:
 	            return False
-	    return True         
+	    return True
+
+    @staticmethod
+    def islocal(request):
+		ping = PingModel.lastping()
+		ping["_ip"] = request.remote_addr
+		ping["_host"] = request.host
+		
+		if PingModel.validate_ip(ping["_host"]):
+			return True
+		else:
+			if ping["_ip"] == ping["public_ip"]:
+				return True
+			else:
+				return False
+			         
+    @staticmethod
+    def initdb(remote_addr, base_url):
+		if PingModel.validate_ip(remote_addr):
+			DBHelper("../data/index.db")
+		else:
+			DBHelper("/backups/"+base_url.split(".")[0].split("//")[1]+"/index.db")

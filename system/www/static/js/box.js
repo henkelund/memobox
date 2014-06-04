@@ -91,8 +91,8 @@
 				} else {
 					$("#modalVideo").hide();
 					$("#modalImage").show();
-					$("#modalDownload").attr("href", "/files/stream/"+result._id+"/"+result.name);
-					$("#modalImage").attr("src", "/static/images/"+result.thumbnail);
+					$("#modalDownload").attr("href", "/files/stream/"+result._id+"/"+result.name+"/full/-1");
+					$("#modalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/thumbnail/520");
 				}
 		
 		        $('#filesDetailModal').modal('show');				

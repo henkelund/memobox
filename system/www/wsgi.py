@@ -1,8 +1,12 @@
 from __future__ import division
+import uwsgi
 import math
 import datetime as dt, time
+import os
+from datetime import date
+from subprocess import call
+from datetime import date
 from flask import Flask, render_template, request, jsonify, abort, Response, redirect
-#from flask_debugtoolbar import DebugToolbarExtension
 from helper.db import DBHelper, DBSelect
 from helper.filter import FilterHelper
 from helper.image import ImageHelper
@@ -10,59 +14,28 @@ from model.device import DeviceModel
 from model.box import BoxModel
 from model.ping import PingModel
 from model.file import FileModel
-from datetime import date
-from subprocess import call
-import os
 
+db = "../data/index.db"
+ImageHelper('static/images', 'mint')
 app = Flask(__name__)
 app.debug = True
 t = dt.datetime(2011, 10, 21, 0, 0)
 now = dt.datetime.now()
 b=BoxModel()
-DBHelper('../data/index.db')
-ImageHelper('static/images', 'mint')
-DeviceModel.install()
-
-try:
-	PingModel.install()
-except:
-    print "table already exists"
-
-try:
-	BoxModel.install()
-except:
-    print "table already exists"
-
-b.init()
-
-FileModel.install()
-FilterHelper.install()
 
 # Start page route
 @app.route('/')
 def index_action():
-	ping = PingModel.lastping()
-	ping["_ip"] = request.remote_addr
-	ping["_host"] = request.host
+	PingModel.initdb(request.host, request.base_url)
 	
-	if PingModel.validate_ip(ping["_host"]):
-		ping["islocal"] = "yes"
+	if False and PingModel.islocal(request):
+		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
 	else:
-		if ping["_ip"] == ping["public_ip"]:
-			ping["islocal"] = "yes"
-			return redirect("http://"+ping["local_ip"]+"/", code=302)
-		else:
-			ping["islocal"] = "no"
-			return render_template('index.html', cloud=True)
-	
-	if ping["islocal"] is "yes":
 		return render_template('index.html', cloud=False)
-	else:
-		return jsonify(ping)
-
+		
 @app.route('/files')
 def files_action():
-
+    PingModel.initdb(request.host, request.base_url)
     after = 1
     
     if (request.args.get('after') is not None) and (int(request.args.get('after')) > 0):
@@ -112,6 +85,7 @@ def file_info_action():
 
 @app.route('/ping')
 def file_ping_action():
+	PingModel.initdb(request.host, request.base_url)
 	#try:
 	PingModel.ping(request.args.get('local_ip'), request.args.get('public_ip'), request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'));
 	#except:
@@ -121,6 +95,7 @@ def file_ping_action():
 
 @app.route('/device/update')
 def file_devicedetail_action():
+    PingModel.initdb(request.host, request.base_url)
     device = DeviceModel().load(str(request.args.get('id')))
     device.add_data({"product_name" : str(request.args.get('product_name'))})
     device.save()
@@ -128,12 +103,13 @@ def file_devicedetail_action():
 
 @app.route('/device/detail')
 def file_deviceupdate_action():
+    PingModel.initdb(request.host, request.base_url)
     device = DeviceModel().load(str(request.args.get('id')))
     return jsonify(device.get_data())
 
 @app.route('/devices')
 def file_devices_action():
-
+    PingModel.initdb(request.host, request.base_url)
     devices = []
     for device in DeviceModel.all():
     	states = { -1 : 'Error', 1 : 'Preparing', 2 : 'Transfering files', 3 : 'Preparing images', 4 : 'Ready' }
@@ -179,7 +155,7 @@ def file_devices_action():
 
 @app.route('/files/details')
 def file_details_action():
-
+    PingModel.initdb(request.host, request.base_url)
     model = FileModel().load(request.args.get('id'))
     thumbnails = DBSelect('file').join('file_thumbnail', 'file._id = file_thumbnail.file', "thumbnail").where("file._id = "+str(request.args.get('id'))).where("file_thumbnail.width = 520").query()
 
@@ -196,6 +172,7 @@ def file_details_action():
 
 @app.route('/files/hide')
 def file_hide_action():
+	PingModel.initdb(request.host, request.base_url)
 	if request.args.get('id') is None:
 		return "error"
 	DBSelect('file').where("file._id = "+str(request.args.get('id'))).query_update({'is_hidden': 1});
@@ -203,7 +180,7 @@ def file_hide_action():
 
 @app.route('/files/calendar')
 def file_calendar_action():
-
+    PingModel.initdb(request.host, request.base_url)
     months = DBSelect('file',"strftime('%Y-%m', datetime(created_at, 'unixepoch')) as date").distinct(True).order('date','DESC')
     
     if request.args.get('device') is not None:
@@ -222,18 +199,28 @@ def file_calendar_action():
     return jsonify(_data)
 
 
-@app.route('/files/stream/<file_id>/<display_name>')
-def file_stream_action(file_id=None, display_name=None):
+@app.route('/files/stream/<file_id>/<display_name>/<type>/<size>')
+def file_stream_action(file_id=None, display_name=None, type=None, size=None):
+    PingModel.initdb(request.host, request.base_url)
 
     if not file_id:
         abort(404)
 
-    model = FileModel().load(file_id)
+    model = FileModel().load(file_id);
+
     if not model.id():
         abort(404)
 
-    filename = '%s/%s' % (model.abspath(), model.name())
-    mimetype = '%s/%s' % (model.type(), model.subtype())
+    if type == "thumbnail":
+	    thumbnails = DBSelect('file_thumbnail').where("file = "+str(file_id)).where("width = "+size).query()
+	    
+	    for thumbnail in thumbnails:
+	    	#thumbnail["thumbnail"]
+		    filename = '%s/%s' % ("/HDD/cache", thumbnail["thumbnail"])
+		    mimetype = '%s/%s' % (model.type(), model.subtype())
+    else:    
+	    filename = '%s/%s' % (model.abspath(), model.name())
+	    mimetype = '%s/%s' % (model.type(), model.subtype())
 
     if not os.path.isfile(filename):
         abort(404)
@@ -242,4 +229,3 @@ def file_stream_action(file_id=None, display_name=None):
                 file(filename),
                 direct_passthrough=True,
                 content_type=mimetype)
-
