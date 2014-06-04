@@ -13,12 +13,12 @@ rm /HDD/tmp.db
 EOF
 
 # Backup all content
-rdiff-backup --force --exclude /HDD/index.db /HDD/ root@$BOXUSER.backupbox.se::/HDD/
+rdiff-backup --force --exclude /HDD/index.db /HDD/ root@$BOXUSER.backupbox.se::/backups/$BOXUSER
 
 # Copy database
-ssh $BOXUSER.backupbox.se 'cp /HDD/tmp.db /HDD/index.db && chmod 777 /HDD/index.db'
+ssh $BOXUSER.backupbox.se 'cp /backups/$BOXUSER/tmp.db /backups/$BOXUSER/index.db && chmod 777 /backups/$BOXUSER/index.db'
 
 # Restart uwsgi on remote server in order to reload database
-ssh $BOXUSER.backupbox.se '/etc/init.d/uwsgi restart'
+# ssh $BOXUSER.backupbox.se '/etc/init.d/uwsgi restart'
 
 #done
