@@ -1,0 +1,9 @@
+#!/bin/bash
+
+###
+# Definitions of system directories.
+# To find script file name when source'd we need to use
+# $BASH_SOURCE instead of $0.
+#
+
+BOXUSER="nordkvist"
