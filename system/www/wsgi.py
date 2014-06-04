@@ -15,7 +15,6 @@ from model.box import BoxModel
 from model.ping import PingModel
 from model.file import FileModel
 
-db = "../data/index.db"
 ImageHelper('static/images', 'mint')
 app = Flask(__name__)
 app.debug = True
@@ -28,7 +27,7 @@ b=BoxModel()
 def index_action():
 	PingModel.initdb(request.host, request.base_url)
 	
-	if False and PingModel.islocal(request):
+	if PingModel.islocal(request):
 		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
 	else:
 		return render_template('index.html', cloud=False)
@@ -216,8 +215,14 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	    
 	    for thumbnail in thumbnails:
 	    	#thumbnail["thumbnail"]
-		    filename = '%s/%s' % ("/HDD/cache", thumbnail["thumbnail"])
-		    mimetype = '%s/%s' % (model.type(), model.subtype())
+	    	cache_dir = "/HDD/cache"
+	    	
+	    	if PingModel.islocal(request) == False:
+	    		cache_dir = "/backups/"+request.base_url.split(".")[0].split("//")[1]+"/cache"
+	    		print cache_dir
+	    	
+	    	filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
+	    	mimetype = '%s/%s' % (model.type(), model.subtype())
     else:    
 	    filename = '%s/%s' % (model.abspath(), model.name())
 	    mimetype = '%s/%s' % (model.type(), model.subtype())
