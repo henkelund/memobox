@@ -72,7 +72,6 @@ class PingModel(BaseModel):
 
     @staticmethod
     def islocal(request):
-		return False    	
 		ping = PingModel.lastping()
 		ping["_ip"] = request.remote_addr
 		ping["_host"] = request.host
