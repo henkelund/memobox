@@ -93,6 +93,7 @@ class PingModel(BaseModel):
 			         
     @staticmethod
     def islocal():
+    	return False
     	config = PingModel.loadconfig()
     	
     	if config["LOCAL"] and config["LOCAL"] == "true":
@@ -135,11 +136,15 @@ class PingModel(BaseModel):
 		FilterHelper.install() 
 
     @staticmethod
-    def loadconfig():
+    def loadconfig(username=None):
 		config = {}
 		
-		with open("../data/local.cfg") as f:
-			content = f.readlines()
+		if username is not None:
+			with open("/backups/"+username+"/local.cfg") as f:
+				content = f.readlines()
+		else:
+			with open("../data/local.cfg") as f:
+				content = f.readlines()
 		
 		for line in content:
 			if len(line.split("=")) == 2:

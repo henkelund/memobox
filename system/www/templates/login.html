@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="box">
+    <head>
+        <meta charset='utf-8' />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+        <title>Backupbox.se</title>
+        <link href="/static/css/bootstrap/bootstrap.css" rel="stylesheet">
+        <link href="/static/css/bootstrap/bootstrap-responsive.css" rel="stylesheet">
+        <link href="/static/css/box.css" rel="stylesheet">
+		<link rel="icon" type="image/png" href="/static/images/icons/favicon.ico">        
+        <!--[if lte IE 8]>
+        <script src="/static/js/ie/json2.js"></script>
+        <![endif]-->
+	<style>
+	{% if islocal == false %}
+	  .jumbotron {
+	  	background-color: #2a00ff;
+		box-shadow: 0px 10px 0px #2705d1;
+	  }
+	{% endif %}
+	</style>
+    </head>
+    <body>
+        <header class="jumbotron">
+            <div class="container">
+                <h1><a href="#" title="Backupbox.se">Backupbox.se</a><a class="box-info icon-white icon-info-sign" href="/info" target="_blank"></a></h1>
+            </div>
+        </header>
+        {% raw %}
+        <div ng-app="box">
+            	<form action="/login" method="GET" style="text-align: left;">
+            		<div style="margin-top: 5%;width: 400px; height: 400px; margin-left: auto; margin-right: auto; ">
+	            		<p class="text">Browsing picutres and videos through the cloud requires a password. Enter your password to continue.</p>
+	            		<div style="margin-top: 10%; text-align: center;">
+		            		<input type="hidden" name="action" value="post" />
+			            	<span class="form-description"></span>
+			            	<input class="text" type="text" name="password" style="width: 80%; text-align: center;" />
+			            	<br style="clear:both;" />
+			            	<input style="margin-top: 3%;" type="submit" value="Get me there!" />
+		            	</div>
+            		</div>
+		        </form>
+        </div>
+        {% endraw %}
+        <script type="text/javascript" src="/static/js/bootstrap/bootstrap.js"></script>
+    </body>
+</html>
+

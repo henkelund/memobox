@@ -16,6 +16,11 @@ body {
 	color: white; 
 }
 
+p.text {
+	font-size: 130%;
+	line-height: 150%;
+}
+
 .box-info {
 	margin-top: 10px; 
 	margin-left: 5px; 

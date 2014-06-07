@@ -6,10 +6,11 @@ import os
 from datetime import date
 from subprocess import call
 from datetime import date
-from flask import Flask, render_template, request, jsonify, abort, Response, redirect
+from flask import Flask, session, render_template, request, jsonify, abort, Response, redirect
 from helper.db import DBHelper, DBSelect
 from helper.filter import FilterHelper
 from helper.image import ImageHelper
+from helper.access import AccessHelper
 from model.device import DeviceModel
 from model.box import BoxModel
 from model.ping import PingModel
@@ -21,17 +22,35 @@ app.debug = True
 t = dt.datetime(2011, 10, 21, 0, 0)
 now = dt.datetime.now()
 b=BoxModel()
+app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 
 # Start page route
 @app.route('/')
 def index_action():
+	print "ayayaya"
 	PingModel.initdb(request.host, request.base_url)
 	PingModel.dbinstall();
+	print "neyeyey"
 	
-	if PingModel.haslocalaccess(request):
+	if False and PingModel.haslocalaccess(request):
 		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
 	else:
-		return render_template('index.html', cloud=False)
+		if AccessHelper.authorized():
+			print "ney"
+			return render_template('index.html', islocal=False)
+		else:
+			print "yey"
+			return render_template('login.html', islocal=False)
+
+# Start page route
+@app.route('/login')
+def login_action():
+	PingModel.initdb(request.host, request.base_url)
+	if request.args.get('password') == PingModel.loadconfig(AccessHelper.requestuser(request.base_url))["PASSWORD"]:
+		session["verified"] = True
+		return redirect("/")
+	else:
+		return render_template('login.html', islocal=False)	
 		
 @app.route('/files')
 def files_action():
@@ -218,7 +237,7 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	    for thumbnail in thumbnails:
 	    	#thumbnail["thumbnail"]
 	    	cache_dir = "/HDD/cache"
-	    	config = PingModel.loadconfig()	    	
+	    	config = PingModel.loadconfig(AccessHelper.requestuser(request.base_url))	    	
 
 	    	if PingModel.islocal() == False:
 	    		cache_dir = "/backups/"+config["BOXUSER"]+"/cache"
@@ -227,7 +246,7 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	    	filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
 	    	mimetype = '%s/%s' % (model.type(), model.subtype())
     else:    
-	    config = PingModel.loadconfig()
+	    config = PingModel.loadconfig(AccessHelper.requestuser(request.base_url))
 	    if PingModel.islocal() == False:
 	    	filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+config["BOXUSER"]), model.name())
 	    else:
