@@ -29,7 +29,7 @@ class PingModel(BaseModel):
                 """)
         )
     @staticmethod
-    def ping(local_ip, public_ip, uuid, capacity, used_space):
+    def ping(local_ip, public_ip, uuid, capacity, used_space, username):
          config = PingModel.loadconfig()
          pings = DBSelect('ping','count(*) as pingcount').where("uuid = '%s'" % uuid).query()
          pingcount = 0; 
@@ -41,12 +41,12 @@ class PingModel(BaseModel):
 	         DBHelper().query(
 	                    """
 	                        INSERT INTO ping (local_ip, public_ip, uuid, capacity, used_space, last_ping, username) VALUES("%s", "%s", "%s", "%s", "%s", datetime(), "%s")
-	                    """ % (local_ip, public_ip, uuid, capacity, used_space, config["BOXUSER"]))
+	                    """ % (local_ip, public_ip, uuid, capacity, used_space, username))
          else:
 	         DBHelper().query(
 	                    """
 	                        UPDATE ping SET local_ip = "%s", public_ip = "%s", capacity = "%s", used_space = "%s", last_ping = datetime(), username = "%s" WHERE uuid = "%s"
-	                    """ % (local_ip, public_ip, capacity, used_space, config["BOXUSER"], uuid))
+	                    """ % (local_ip, public_ip, capacity, used_space, username, uuid))
 
     @staticmethod
     def lastping():

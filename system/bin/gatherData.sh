@@ -1,9 +1,12 @@
 #!/bin/bash
-
 INFOFILE=/tmp/info.txt
 PINGFILE=/tmp/ping.txt
 
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SYSTEM_DIR="$(dirname "$BIN_DIR")"
+BACKUP_DIR="$(dirname "$SYSTEM_DIR")/data"
+source "$BACKUP_DIR/local.cfg"
+
 
 # Load helper functions for getting system data
 source $BIN_DIR/pinghelper.sh
@@ -46,5 +49,8 @@ echo "local_ip=$lip&" >> $PINGFILE
 #Load Unique ID of backup hard drive
 uuid=`blkid -s UUID -o value /dev/sda1`
 echo "uuid=$uuid&" >> $PINGFILE
+
+#Append username to 
+echo "username=$BOXUSER&" >> $PINGFILE
 
 freespace computer /HDD >> $PINGFILE

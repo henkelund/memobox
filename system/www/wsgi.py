@@ -26,12 +26,11 @@ b=BoxModel()
 @app.route('/')
 def index_action():
 	PingModel.initdb(request.host, request.base_url)
-	PingModel.dbinstall()
-	print "debug 0"	
+	
 	if PingModel.haslocalaccess(request):
 		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
 	else:
-		return render_template('index.html', islocal=PingModel.islocal())
+		return render_template('index.html', cloud=False)
 		
 @app.route('/files')
 def files_action():
@@ -86,9 +85,8 @@ def file_info_action():
 @app.route('/ping')
 def file_ping_action():
 	PingModel.initdb(request.host, request.base_url)
-	PingModel.dbinstall()
 	#try:
-	PingModel.ping(request.args.get('local_ip'), request.args.get('public_ip'), request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'));
+	PingModel.ping(request.args.get('local_ip'), request.args.get('public_ip'), request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'), request.args.get('username'));
 	#except:
 	#    return "error"
 	    
@@ -219,7 +217,7 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	    	#thumbnail["thumbnail"]
 	    	cache_dir = "/HDD/cache"
 	    	
-	    	if PingModel.islocal() == False:
+	    	if PingModel.islocal(request) == False:
 	    		cache_dir = "/backups/"+request.base_url.split(".")[0].split("//")[1]+"/cache"
 	    		print cache_dir
 	    	
