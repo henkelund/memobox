@@ -26,6 +26,7 @@ b=BoxModel()
 @app.route('/')
 def index_action():
 	PingModel.initdb(request.host, request.base_url)
+	PingModel.dbinstall();
 	
 	if PingModel.haslocalaccess(request):
 		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
@@ -85,6 +86,7 @@ def file_info_action():
 @app.route('/ping')
 def file_ping_action():
 	PingModel.initdb(request.host, request.base_url)
+	PingModel.dbinstall();	
 	#try:
 	PingModel.ping(request.args.get('local_ip'), request.args.get('public_ip'), request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'), request.args.get('username'));
 	#except:
