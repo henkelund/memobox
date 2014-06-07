@@ -27,19 +27,15 @@ app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 # Start page route
 @app.route('/')
 def index_action():
-	print "ayayaya"
 	PingModel.initdb(request.host, request.base_url)
 	PingModel.dbinstall();
-	print "neyeyey"
 	
 	if False and PingModel.haslocalaccess(request):
 		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
 	else:
-		if AccessHelper.authorized():
-			print "ney"
+		if AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
 			return render_template('index.html', islocal=False)
 		else:
-			print "yey"
 			return render_template('login.html', islocal=False)
 
 # Start page route
@@ -47,8 +43,10 @@ def index_action():
 def login_action():
 	PingModel.initdb(request.host, request.base_url)
 	if request.args.get('password') == PingModel.loadconfig(AccessHelper.requestuser(request.base_url))["PASSWORD"]:
-		session["verified"] = True
+		session["verified_"+AccessHelper.requestuser(request.base_url)] = True
 		return redirect("/")
+	elif request.args.get('password') != PingModel.loadconfig(AccessHelper.requestuser(request.base_url))["PASSWORD"]:
+		return render_template('login.html', islocal=False, message="Ops! Wrong password.")			
 	else:
 		return render_template('login.html', islocal=False)	
 		
@@ -82,13 +80,9 @@ def files_action():
             endtime = time.mktime(et.timetuple())
             models.where('m.created_at < ?', endtime)   
         elif (arg == 'format') and (len(vals) > 0) and (str(vals[0]) != "null"):
-            print "Arg: "+arg
-            print "Arg: "+str(vals[0])
             models.where("m.type = '"+str(vals[0])+"'")
         elif arg == 'device' and (len(vals) > 0) and vals[0] != "-1":
             models.where('m.device = '+str(vals[0]))
-
-    print models.render()
 
     for model in models:
         data.append(model.get_data())
@@ -212,7 +206,6 @@ def file_calendar_action():
     counter = 0
     
     for month in months:
-    	print month["date"]
      	_data[counter] = month["date"]
      	counter = counter + 1
     
@@ -241,7 +234,6 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 
 	    	if PingModel.islocal() == False:
 	    		cache_dir = "/backups/"+config["BOXUSER"]+"/cache"
-	    		print cache_dir
 	    	
 	    	filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
 	    	mimetype = '%s/%s' % (model.type(), model.subtype())

@@ -107,14 +107,11 @@ class PingModel(BaseModel):
     	config = PingModel.loadconfig()
     	
     	if config["LOCAL"] and config["LOCAL"] == "true":
-			print "../data/index.db"
 			DBHelper("../data/index.db")
     	else:
     		if config["BOXUSER"] and config["BOXUSER"] != "null":
-				print "/backups/"+config["BOXUSER"]+"/index.db bbb"
 				DBHelper("/backups/"+config["BOXUSER"]+"/index.db")
     		else:
-				print "/backups/"+base_url.split(".")[0].split("//")[1]+"/index.db 2s"
 				DBHelper("/backups/"+base_url.split(".")[0].split("//")[1]+"/index.db")
 			
     @staticmethod

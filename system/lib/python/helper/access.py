@@ -7,9 +7,9 @@ class AccessHelper(object):
     """Helper class for user access management"""
 
     @staticmethod
-    def authorized():
+    def authorized(username):
 		print "Hello World!"
-		if(PingModel.islocal() == False and (("verified" not in session) or (session["verified"] == False))):
+		if(PingModel.islocal() == False and (("verified_"+username not in session) or (session["verified_"+username] == False))):
 			return False
 		else:
 			return True
