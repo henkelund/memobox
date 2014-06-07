@@ -218,15 +218,20 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	    for thumbnail in thumbnails:
 	    	#thumbnail["thumbnail"]
 	    	cache_dir = "/HDD/cache"
-	    	
-	    	if PingModel.islocal(request) == False:
-	    		cache_dir = "/backups/"+request.base_url.split(".")[0].split("//")[1]+"/cache"
+	    	config = PingModel.loadconfig()	    	
+
+	    	if PingModel.islocal() == False:
+	    		cache_dir = "/backups/"+config["BOXUSER"]+"/cache"
 	    		print cache_dir
 	    	
 	    	filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
 	    	mimetype = '%s/%s' % (model.type(), model.subtype())
     else:    
-	    filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+request.base_url.split(".")[0].split("//")[1]), model.name())
+	    config = PingModel.loadconfig()
+	    if PingModel.islocal() == False:
+	    	filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+config["BOXUSER"]), model.name())
+	    else:
+	    	filename = '%s/%s' % (model.abspath(), model.name())
 	    mimetype = '%s/%s' % (model.type(), model.subtype())
 
     if not os.path.isfile(filename):
