@@ -30,7 +30,7 @@ def index_action():
 	PingModel.initdb(request.host, request.base_url)
 	PingModel.dbinstall();
 	
-	if False and PingModel.haslocalaccess(request):
+	if PingModel.haslocalaccess(request):
 		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
 	else:
 		if AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
