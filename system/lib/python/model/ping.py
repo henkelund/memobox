@@ -93,7 +93,6 @@ class PingModel(BaseModel):
 			         
     @staticmethod
     def islocal():
-    	return False
     	config = PingModel.loadconfig()
     	
     	if config["LOCAL"] and config["LOCAL"] == "true":
