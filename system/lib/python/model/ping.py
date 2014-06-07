@@ -1,6 +1,11 @@
 import subprocess
 from base import BaseModel
 from helper.db import DBHelper, DBSelect
+from helper.filter import FilterHelper
+from model.device import DeviceModel
+from model.box import BoxModel
+from model.file import FileModel
+
 
 class PingModel(BaseModel):
     """Model describing a box system info"""
@@ -18,12 +23,14 @@ class PingModel(BaseModel):
                         "uuid"         TEXT NOT NULL DEFAULT '',
                         "capacity"     TEXT NOT NULL DEFAULT '',
                         "used_space"   TEXT NOT NULL DEFAULT '', 
-                        "last_ping"	   DATETIME
+                        "last_ping"	   DATETIME, 
+                        "username"     TEXT NOT NULL DEFAULT ''
                     )
                 """)
         )
     @staticmethod
     def ping(local_ip, public_ip, uuid, capacity, used_space):
+         config = Pingmodel.loadconfig()
          pings = DBSelect('ping','count(*) as pingcount').where("uuid = '%s'" % uuid).query()
          pingcount = 0; 
 
@@ -33,13 +40,13 @@ class PingModel(BaseModel):
          if pingcount == 0:
 	         DBHelper().query(
 	                    """
-	                        INSERT INTO ping (local_ip, public_ip, uuid, capacity, used_space, last_ping) VALUES("%s", "%s", "%s", "%s", "%s", datetime())
-	                    """ % (local_ip, public_ip, uuid, capacity, used_space))
+	                        INSERT INTO ping (local_ip, public_ip, uuid, capacity, used_space, last_ping, username) VALUES("%s", "%s", "%s", "%s", "%s", datetime(), "%s")
+	                    """ % (local_ip, public_ip, uuid, capacity, used_space, config["BOXUSER"]))
          else:
 	         DBHelper().query(
 	                    """
-	                        UPDATE ping SET local_ip = "%s", public_ip = "%s", capacity = "%s", used_space = "%s", last_ping = datetime() WHERE uuid = "%s"
-	                    """ % (local_ip, public_ip, capacity, used_space, uuid))
+	                        UPDATE ping SET local_ip = "%s", public_ip = "%s", capacity = "%s", used_space = "%s", last_ping = datetime(), username = "%s" WHERE uuid = "%s"
+	                    """ % (local_ip, public_ip, capacity, used_space, config["BOXUSER"], uuid))
 
     @staticmethod
     def lastping():
@@ -71,36 +78,68 @@ class PingModel(BaseModel):
 	    return True
 
     @staticmethod
-    def islocal(request):
-		ping = PingModel.lastping()
-		ping["_ip"] = request.remote_addr
-		ping["_host"] = request.host
-		
-		if PingModel.validate_ip(ping["_host"]):
-			return True
-		else:
-			if ping["_ip"] == ping["public_ip"]:
-				return True
-			else:
-				return False
-
-    @staticmethod
     def haslocalaccess(request):
 		ping = PingModel.lastping()
-		ping["_ip"] = request.remote_addr
-		ping["_host"] = request.host
+		ping["user_public_ip"] = request.remote_addr
+		ping["user_host"] = request.host
 		
-		if PingModel.validate_ip(ping["_host"]):
+		if PingModel.validate_ip(ping["user_host"]):
 			return False
 		else:
-			if ping["_ip"] == ping["public_ip"]:
+			if ping["user_public_ip"] == ping["public_ip"]:
 				return True
 			else:
 				return False
 			         
     @staticmethod
+    def islocal():
+    	config = PingModel.loadconfig()
+    	
+    	if config["LOCAL"] and config["LOCAL"] == "true":
+    		return True
+    	else:
+    		if config["LOCAL"] and config["LOCAL"] == "false":
+				return False
+
+    @staticmethod
     def initdb(remote_addr, base_url):
-		if PingModel.validate_ip(remote_addr):
+    	config = PingModel.loadconfig()
+    	
+    	if config["LOCAL"] and config["LOCAL"] == "true":
 			DBHelper("../data/index.db")
-		else:
-			DBHelper("/backups/"+base_url.split(".")[0].split("//")[1]+"/index.db")
+    	else:
+    		if config["BOXUSER"]:
+				DBHelper("/backups/"+config["BOXUSER"]+"/index.db")
+    		else:
+				DBHelper("/backups/"+base_url.split(".")[0].split("//")[1]+"/index.db")
+			
+    @staticmethod
+    def dbinstall():
+		DeviceModel.install()
+
+		try:
+			PingModel.install()
+		except:
+		    print "table already exists"
+		
+		try:
+			BoxModel.install()
+		except:
+		    print "table already exists"
+		
+		BoxModel.init()		
+		FileModel.install()
+		FilterHelper.install() 
+
+    @staticmethod
+    def loadconfig():
+		config = {}
+		
+		with open("../data/local.cfg") as f:
+			content = f.readlines()
+		
+		for line in content:
+			if len(line.split("=")) == 2:
+				config[line.split("=")[0]] = line.split("=")[1].replace('"', '').replace('\n', '')
+		
+		return config

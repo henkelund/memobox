@@ -4,6 +4,9 @@ BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SYSTEM_DIR="$(dirname "$BIN_DIR")"
 BACKUP_DIR="$(dirname "$SYSTEM_DIR")/data"
 source "$BACKUP_DIR/local.cfg"
+echo "$BACKUP_DIR/local.cfg"
+echo "$BOXUSER"
+exit
 
 # Create backup of main database
 rm /HDD/tmp.db
