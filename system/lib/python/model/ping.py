@@ -30,7 +30,7 @@ class PingModel(BaseModel):
         )
     @staticmethod
     def ping(local_ip, public_ip, uuid, capacity, used_space):
-         config = Pingmodel.loadconfig()
+         config = PingModel.loadconfig()
          pings = DBSelect('ping','count(*) as pingcount').where("uuid = '%s'" % uuid).query()
          pingcount = 0; 
 
@@ -51,7 +51,7 @@ class PingModel(BaseModel):
     @staticmethod
     def lastping():
          _ping = {}
-         pings = DBSelect('ping','*').where("uuid not null AND uuid is not 'None' AND uuid is not ''").query()
+         pings = DBSelect('ping','*').where("uuid not null AND uuid is not 'None' AND uuid is not '' AND uuid is not 'null'").query()
          pingcount = 0; 
 
          for ping in pings:
@@ -106,11 +106,14 @@ class PingModel(BaseModel):
     	config = PingModel.loadconfig()
     	
     	if config["LOCAL"] and config["LOCAL"] == "true":
+			print "../data/index.db"
 			DBHelper("../data/index.db")
     	else:
-    		if config["BOXUSER"]:
+    		if config["BOXUSER"] and config["BOXUSER"] != "null":
+				print "/backups/"+config["BOXUSER"]+"/index.db bbb"
 				DBHelper("/backups/"+config["BOXUSER"]+"/index.db")
     		else:
+				print "/backups/"+base_url.split(".")[0].split("//")[1]+"/index.db 2s"
 				DBHelper("/backups/"+base_url.split(".")[0].split("//")[1]+"/index.db")
 			
     @staticmethod
