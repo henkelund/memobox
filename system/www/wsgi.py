@@ -229,17 +229,17 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	    
 	    for thumbnail in thumbnails:
 	    	#thumbnail["thumbnail"]
-	    	cache_dir = "/HDD/cache"
-	    	config = PingModel.loadconfig(AccessHelper.requestuser(request.base_url))	    	
+	    	cache_dir = "/HDD/cache"	    	
 
 	    	if PingModel.islocal() == False:
+	    		config = PingModel.loadconfig(AccessHelper.requestuser(request.base_url))
 	    		cache_dir = "/backups/"+config["BOXUSER"]+"/cache"
 	    	
 	    	filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
 	    	mimetype = '%s/%s' % (model.type(), model.subtype())
     else:    
-	    config = PingModel.loadconfig(AccessHelper.requestuser(request.base_url))
 	    if PingModel.islocal() == False:
+	    	config = PingModel.loadconfig(AccessHelper.requestuser(request.base_url))
 	    	filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+config["BOXUSER"]), model.name())
 	    else:
 	    	filename = '%s/%s' % (model.abspath(), model.name())
