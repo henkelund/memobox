@@ -6,7 +6,6 @@ BACKUP_DIR="$(dirname "$SYSTEM_DIR")/data"
 source "$BACKUP_DIR/local.cfg"
 echo "$BACKUP_DIR/local.cfg"
 echo "$BOXUSER"
-exit
 
 # Create backup of main database
 rm /HDD/tmp.db
