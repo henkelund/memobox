@@ -80,13 +80,13 @@ class PingModel(BaseModel):
     @staticmethod
     def haslocalaccess(request):
 		ping = PingModel.lastping()
-		ping["user_public_ip"] = request.remote_addr
-		ping["user_host"] = request.host
+		user_public_id = request.remote_addr
+		user_host = request.host
 		
-		if PingModel.validate_ip(ping["user_host"]):
+		if PingModel.validate_ip(user_host):
 			return False
 		else:
-			if ping["user_public_ip"] == ping["public_ip"]:
+			if len(ping) > 0 and user_public_ip == ping["public_ip"]:
 				return True
 			else:
 				return False
