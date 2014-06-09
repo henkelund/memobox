@@ -6,4 +6,6 @@
 # $BASH_SOURCE instead of $0.
 #
 
-BOXUSER="nordkvist"
+BOXUSER="{username}"
+LOCAL="true"
+PASSWORD="{password}"
