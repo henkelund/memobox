@@ -20,7 +20,7 @@ echo $COMMAND
 		$BIN_DIR/lights.sh GREEN ON &
 	else
 		echo "$response"
-		$BIN_DIR/lights.sh GREEN BLINK &
+		$BIN_DIR/lights.sh GREEN OFF &
 	fi
 
 #	sleep 60
