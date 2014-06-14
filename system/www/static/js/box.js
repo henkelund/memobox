@@ -250,14 +250,12 @@
             this.detailsResource = $resource('/files/details');
             this.deviceResource = $resource('/devices');
             this.calendarResource = $resource('/files/calendar');
-            this.lastpingResource = $resource('/lastping');
             this.calendar = [];
             this.devices = [];
             this.missingDevices = false; 
             this.files = [];
             this.filters = [];
             this.details = [];
-            this.lastping = [];
         };
         FileService.prototype = {
 
@@ -302,16 +300,6 @@
                     this.details[data['_id']] = data;
                 }
             },
-
-            /**
-             * Successful filters load callback
-             */
-            loadLastpingSuccess: function (data) {
-                if (data['_id'] !== undefined) {
-                    this.details[data['_id']] = data;
-                }
-            },
-
 
             /**
              * Failed load callback
@@ -423,43 +411,10 @@
             },
 
             /**
-             * Load file by id
-             */
-            loadLastping: function (id) {
-                var that = this,
-                    deferred = $q.defer(),
-                    resource;
-
-                if (this.lastping[id] !== undefined) {
-                    deferred.resolve();
-                } else {
-                    resource = this.lastpingResource.get(
-                        {id: id},
-                        function (data) {
-                            that.loadLastpingSuccess(data);
-                            deferred.resolve();
-                        },
-                        function (data) {
-                            that.loadError(data);
-                            deferred.resolve();
-                        }
-                    );
-                }
-
-                return deferred.promise;
-            },
-            /**
              * Get laoded details
              */
             getDetails: function (id) {
                 return this.details[id] || false;
-            },
-
-            /**
-             * Get laoded details
-             */
-            getLastping: function (id) {
-                return this.lastping[id] || false;
             }
         };
 
