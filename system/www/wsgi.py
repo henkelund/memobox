@@ -26,8 +26,10 @@ app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 
 @app.before_request
 def before_request():
-	g.username = request.base_url.split(".")[0].split("//")[1]
+	if not PingModel.validate_ip(request.host):
+		g.username = request.base_url.split(".")[0].split("//")[1]
 	g.host = request.host
+	g.islocal = PingModel.islocal()
 	DBHelper.initdb()
 	g.localaccess = PingModel.haslocalaccess(request)
 
@@ -35,11 +37,20 @@ def before_request():
 # Start page route
 @app.route('/')
 def index_action():
+	print "Yey"
 	PingModel.dbinstall();
 	
-	if PingModel.haslocalaccess(request):
+	if g.localaccess:
+		print "yes, localaccess"
+	if PingModel.islocal():
+		print "yes, islocal"
+	else:
+		print "no, is not local"
+	
+	if g.localaccess:
 		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
 	else:
+<<<<<<< HEAD
 		ping = PingHelper.lastping()
 		cloudbackup-progress = -1
 		
@@ -48,6 +59,10 @@ def index_action():
 		
 		if AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
 			return render_template('index.html', islocal=False, cloudbackup-progress=cloudbackup-progress)
+=======
+		if PingModel.islocal() or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
+			return render_template('index.html', islocal=False)
+>>>>>>> 7bc65e828a1fcc465babffa37b9c51ffe943dad7
 		else:
 			return render_template('login.html', islocal=False)
 
