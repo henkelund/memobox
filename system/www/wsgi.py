@@ -107,7 +107,7 @@ def public_ip():
 def file_ping_action():
 	PingModel.dbinstall();	
 	#try:
-	PingModel.ping(request.args.get('local_ip'), request.args.get('public_ip'), request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'), request.args.get('username'));
+	PingModel.ping(request.args.get('local_ip'), request.args.get('public_ip'), request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'), request.args.get('username'), request.args.get('devicecount'), request.args.get('cachecount'));
 	#except:
 	#    return "error"
 	    
