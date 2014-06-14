@@ -117,14 +117,11 @@ class DBHelper(object):
     	config = DBHelper.loadconfig()
     	
     	if config["LOCAL"] and config["LOCAL"] == "false":
-			print "../data/index.db"
 			DBHelper("../data/index.db")
     	else:
     		if config["BOXUSER"] and config["BOXUSER"] != "null":
-				print "/backups/"+config["BOXUSER"]+"/index.db"
 				DBHelper("/backups/"+config["BOXUSER"]+"/index.db")
     		else:
-				print "/backups/"+g.user+"/index.db"
 				DBHelper("/backups/"+g.user+"/index.db")
 
     @staticmethod
@@ -136,8 +133,6 @@ class DBHelper(object):
 				with open("/backups/"+username+"/local.cfg") as f:
 					content = f.readlines()
 			elif hasattr(g, "username"):
-				print "/backups/"+g.username+"/local.cfg"+"###"
-				
 				with open("/backups/"+g.username+"/local.cfg") as f:
 					content = f.readlines()				
 			else:

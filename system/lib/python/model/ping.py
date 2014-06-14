@@ -113,6 +113,9 @@ class PingModel(BaseModel):
 			         
     @staticmethod
     def islocal():
+    	if hasattr(g, "localaccess"):
+    		return g.localaccess
+    	
     	config = DBHelper.loadconfig()
     	
     	if config["LOCAL"] and config["LOCAL"] == "true":
