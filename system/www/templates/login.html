@@ -28,12 +28,12 @@
         </header>
         <div ng-app="box">
             	<form action="/login" method="GET" style="text-align: left;">
-            		<div style="margin-top: 5%;width: 400px; height: 400px; margin-left: auto; margin-right: auto; ">
-	            		<p class="text">Browsing picutres and videos through the cloud requires a password. Enter your password to continue.</p><p style="color: red;" class="message error">{{message}}</p>
+            		<div class="splashbox">
+	            		<p class="notify">Browsing picutres and videos through the cloud requires a password. Enter your password to continue.</p><p style="color: red;" class="message error">{{message}}</p>
 	            		<div style="margin-top: 10%; text-align: center;">
 		            		<input type="hidden" name="action" value="post" />
 			            	<span class="form-description"></span>
-			            	<input class="text" type="text" name="password" style="width: 80%; text-align: center;" />
+			            	<input class="text" type="password" name="password" style="width: 80%; text-align: center;" />
 			            	<br style="clear:both;" />
 			            	<input style="margin-top: 3%;" type="submit" value="Show me the pictures!" />
 		            	</div>

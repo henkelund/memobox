@@ -40,8 +40,14 @@ def index_action():
 	if PingModel.haslocalaccess(request):
 		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
 	else:
+		ping = PingHelper.lastping()
+		cloudbackup-progress = -1
+		
+		if ping is not None:
+			cloudbackup-progress = int((int(ping["remote_devicecount"])/int(ping["devicecount"]))*100)
+		
 		if AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
-			return render_template('index.html', islocal=False)
+			return render_template('index.html', islocal=False, cloudbackup-progress=cloudbackup-progress)
 		else:
 			return render_template('login.html', islocal=False)
 

@@ -23,7 +23,14 @@
     <body>
         <header class="jumbotron">
             <div class="container">
-                <h1><a href="#" title="Backupbox.se">Backupbox.se</a><a class="box-info icon-white icon-info-sign" href="/info" target="_blank"></a></h1>
+                <h1 class="logo"><a href="#" title="Backupbox.se">Backupbox.se</a><a class="box-info icon-white icon-info-sign" href="/info" target="_blank"></a></h1>
+				<div class="progress-container">
+					Cloud backup progress<div class="progress">
+					  <div class="progress-bar" role="progressbar" aria-valuenow="{{cloudbackup-progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{cloudbackup-progress-size}}%;">
+					    4%
+					  </div>
+					</div>
+				</div>                
             </div>
         </header>
         {% raw %}
