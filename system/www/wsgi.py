@@ -29,6 +29,7 @@ def before_request():
 	g.username = request.base_url.split(".")[0].split("//")[1]
 	g.host = request.host
 	DBHelper.initdb()
+	g.localaccess = PingModel.haslocalaccess(request)
 
 
 # Start page route
@@ -238,11 +239,9 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	    	filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
 	    	mimetype = '%s/%s' % (model.type(), model.subtype())
     else:
-	    print "yes"
 	    if PingModel.islocal() == False:
 	    	config = DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))
 	    	filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+config["BOXUSER"]), model.name())
-	    	print filename
 	    else:
 	    	filename = '%s/%s' % (model.abspath(), model.name())
 	    mimetype = '%s/%s' % (model.type(), model.subtype())
