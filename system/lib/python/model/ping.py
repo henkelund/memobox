@@ -69,6 +69,11 @@ class PingModel(BaseModel):
     @staticmethod
     def lastping():
          _ping = {}
+         tables = DBSelect('sqlite_master', 'count(*) as pingcount').where("type = 'table' AND name='ping'").query();
+         for table in tables:
+         	if table["pingcount"] == 0:
+         		return None
+         
          pings = DBSelect('ping','*').where("uuid not null AND uuid is not 'None' AND uuid is not '' AND uuid is not 'null'").query()
          pingcount = 0; 
 
@@ -99,23 +104,17 @@ class PingModel(BaseModel):
 
     @staticmethod
     def haslocalaccess(request):
-		ping = PingModel.lastping()
 		user_public_ip = request.remote_addr
 		user_host = request.host
-		
-		if PingModel.validate_ip(user_host):
-			return False
+				
+		ping = PingModel.lastping()
+		if ping and len(ping) > 0 and user_public_ip == ping["public_ip"]:
+			return True
 		else:
-			if len(ping) > 0 and user_public_ip == ping["public_ip"]:
-				return True
-			else:
-				return False
+			return False
 			         
     @staticmethod
     def islocal():
-    	if hasattr(g, "localaccess"):
-    		return g.localaccess
-    	
     	config = DBHelper.loadconfig()
     	
     	if config["LOCAL"] and config["LOCAL"] == "true":

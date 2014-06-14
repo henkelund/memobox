@@ -11,18 +11,18 @@ class DBHelper(object):
     def __new__(cls, db=':memory:', *args, **kwargs):
         """Override __new__ to implement singleton pattern"""
 
-        if not g:
-	        if not cls._instance:
-	            cls._instance = super(DBHelper, cls).__new__(cls, *args, **kwargs)
-	            cls._instance._conn = None
-	            cls._instance.set_db(db)
-	        return cls._instance
-        else:
+        if g and not g.islocal:
 	        if not hasattr(g, "sqlite_db"):
 	            g.sqlite_db = super(DBHelper, cls).__new__(cls, *args, **kwargs)
 	            g.sqlite_db._conn = None
 	            g.sqlite_db.set_db(db)
 	        return g.sqlite_db
+        else:
+	        if not cls._instance:
+	            cls._instance = super(DBHelper, cls).__new__(cls, *args, **kwargs)
+	            cls._instance._conn = None
+	            cls._instance.set_db(db)
+	        return cls._instance
 
     def __del__(self):
         """Destructor"""
@@ -122,13 +122,17 @@ class DBHelper(object):
     @staticmethod
     def initdb():
     	config = DBHelper.loadconfig()
+    	dbname = ""
     	
-    	if config["LOCAL"] and config["LOCAL"] == "false":
+    	if config["LOCAL"] and config["LOCAL"] == "true":
+			print "../data/index.db"
 			DBHelper("../data/index.db")
     	else:
     		if config["BOXUSER"] and config["BOXUSER"] != "null":
+				print "/backups/"+config["BOXUSER"]+"/index.db"
 				DBHelper("/backups/"+config["BOXUSER"]+"/index.db")
     		else:
+				print "/backups/"+g.user+"/index.db"
 				DBHelper("/backups/"+g.user+"/index.db")
 
     @staticmethod
