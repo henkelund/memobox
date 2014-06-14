@@ -26,7 +26,9 @@ app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 
 @app.before_request
 def before_request():
-	DBHelper.initdb(request.host, request.base_url)
+	g.username = request.base_url.split(".")[0].split("//")[1]
+	g.host = request.host
+	DBHelper.initdb()
 
 
 # Start page route

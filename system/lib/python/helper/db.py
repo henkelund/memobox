@@ -1,7 +1,7 @@
 import sqlite3 as sqlite
 import re
 from copy import deepcopy
-from flask import g
+from flask import jsonify, g
 
 class DBHelper(object):
     """Helper class for SQLite DB access"""
@@ -113,33 +113,44 @@ class DBHelper(object):
 				return False
 
     @staticmethod
-    def initdb(remote_addr, base_url):
+    def initdb():
     	config = DBHelper.loadconfig()
     	
-    	if config["LOCAL"] and config["LOCAL"] == "true":
+    	if config["LOCAL"] and config["LOCAL"] == "false":
+			print "../data/index.db"
 			DBHelper("../data/index.db")
     	else:
     		if config["BOXUSER"] and config["BOXUSER"] != "null":
+				print "/backups/"+config["BOXUSER"]+"/index.db"
 				DBHelper("/backups/"+config["BOXUSER"]+"/index.db")
     		else:
-				DBHelper("/backups/"+base_url.split(".")[0].split("//")[1]+"/index.db")
+				print "/backups/"+g.user+"/index.db"
+				DBHelper("/backups/"+g.user+"/index.db")
 
     @staticmethod
     def loadconfig(username=None):
 		config = {}
 		
-		if username is not None:
-			with open("/backups/"+username+"/local.cfg") as f:
-				content = f.readlines()
-		else:
-			with open("../data/local.cfg") as f:
-				content = f.readlines()
+		if(not hasattr(g, "config")):
+			if username is not None:
+				with open("/backups/"+username+"/local.cfg") as f:
+					content = f.readlines()
+			elif hasattr(g, "username"):
+				print "/backups/"+g.username+"/local.cfg"+"###"
+				
+				with open("/backups/"+g.username+"/local.cfg") as f:
+					content = f.readlines()				
+			else:
+				with open("../data/local.cfg") as f:
+					content = f.readlines()
+			
+			for line in content:
+				if len(line.split("=")) == 2:
+					config[line.split("=")[0]] = line.split("=")[1].replace('"', '').replace('\n', '')
+			
+			g.config = config
 		
-		for line in content:
-			if len(line.split("=")) == 2:
-				config[line.split("=")[0]] = line.split("=")[1].replace('"', '').replace('\n', '')
-		
-		return config
+		return g.config
         
 class DBSelect(object):
     """Helper for building SQLite SELECT queries"""

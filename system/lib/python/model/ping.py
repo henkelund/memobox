@@ -5,7 +5,7 @@ from helper.filter import FilterHelper
 from model.device import DeviceModel
 from model.box import BoxModel
 from model.file import FileModel
-
+from flask import g, jsonify
 
 class PingModel(BaseModel):
     """Model describing a box system info"""
@@ -26,13 +26,29 @@ class PingModel(BaseModel):
                         "last_ping"	   DATETIME, 
                         "username"     TEXT NOT NULL DEFAULT '', 
                         "devicecount"  INT, 
-                        "cachecount"   INT
+                        "cachecount"   INT,
+                        "remote_devicecount"  INT, 
+                        "remote_cachecount"   INT
                     )
                 """)
         )
     @staticmethod
     def ping(local_ip, public_ip, uuid, capacity, used_space, username, devicecount, cachecount):
          config = DBHelper.loadconfig()
+
+         # Count files in cache folder
+         find = subprocess.Popen(['find', '/backups/'+config["BOXUSER"]+'/cache', '-type', 'f'],stdout=subprocess.PIPE)
+         wc = subprocess.Popen(['wc', '-l'], stdin = find.stdout, stdout=subprocess.PIPE)
+         remote_cachecount = wc.stdout.readline()
+
+         # Count files in cache folder
+         find = subprocess.Popen(['find', '/backups/'+config["BOXUSER"]+'/devices', '-type', 'f'],stdout=subprocess.PIPE)
+         wc = subprocess.Popen(['wc', '-l'], stdin = find.stdout, stdout=subprocess.PIPE)
+         remote_devicecount = wc.stdout.readline()
+
+         print "removedev:"+remote_devicecount
+         print "removecache:"+remote_cachecount
+         
          pings = DBSelect('ping','count(*) as pingcount').where("uuid = '%s'" % uuid).query()
          pingcount = 0; 
 
@@ -42,13 +58,13 @@ class PingModel(BaseModel):
          if pingcount == 0:
 	         DBHelper().query(
 	                    """
-	                        INSERT INTO ping (local_ip, public_ip, uuid, capacity, used_space, last_ping, username, devicecount, cachecount) VALUES("%s", "%s", "%s", "%s", "%s", datetime(), "%s", "%s", "%s")
-	                    """ % (local_ip, public_ip, uuid, capacity, used_space, username, devicecount, cachecount))
+	                        INSERT INTO ping (local_ip, public_ip, uuid, capacity, used_space, last_ping, username, devicecount, cachecount, remote_devicecount, remote_cachecount) VALUES("%s", "%s", "%s", "%s", "%s", datetime(), "%s", "%s", "%s", "%s", "%s")
+	                    """ % (local_ip, public_ip, uuid, capacity, used_space, username, devicecount, cachecount, remote_devicecount, remote_cachecount))
          else:
 	         DBHelper().query(
 	                    """
-	                        UPDATE ping SET local_ip = "%s", public_ip = "%s", capacity = "%s", used_space = "%s", last_ping = datetime(), username = "%s", devicecount = "%s", cachecount = "%s" WHERE uuid = "%s"
-	                    """ % (local_ip, public_ip, capacity, used_space, username, uuid, devicecount, cachecount))
+	                        UPDATE ping SET local_ip = "%s", public_ip = "%s", capacity = "%s", used_space = "%s", last_ping = datetime(), username = "%s", devicecount = "%s", cachecount = "%s", remote_devicecount = "%s", remote_cachecount = "%s" WHERE uuid = "%s"
+	                    """ % (local_ip, public_ip, capacity, used_space, username, devicecount, cachecount, remote_devicecount, remote_cachecount, uuid))
 
     @staticmethod
     def lastping():
