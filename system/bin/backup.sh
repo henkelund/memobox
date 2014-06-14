@@ -15,23 +15,18 @@ rm /HDD/tmp.db
 .backup /HDD/tmp.db
 EOF
 
-# Backup all content
-#rdiff-backup --force --exclude /HDD/index.db /HDD/ root@$BOXUSER.backupbox.se::/backups/$BOXUSER
 # First copy config file and thumbnails
-echo "Backup config file"
-rsync -avz -e ssh --progress --exclude index.db /HDD/local.cfg root@$BOXUSER.backupbox.se:/backups/$BOXUSER
-#rsync -avz --progress --exclude index.db /HDD/cache root@$BOXUSER.backupbox.se:/backups/$BOXUSER/cache
+echo "Backup config file and database"
+rsync -avz -e ssh --progress /HDD/tmp.db root@$BOXUSER.backupbox.se:/backups/$BOXUSER
+rsync -avz -e ssh --progress /HDD/local.cfg root@$BOXUSER.backupbox.se:/backups/$BOXUSER
 
-# Second, copy the database and fix permissions
+echo "Secondly, backup thumbnails"
+rsync -avz --progress --exclude index.db /HDD/cache root@$BOXUSER.backupbox.se:/backups/$BOXUSER
+
+# Once thumbnails are uploaded, activate database
 echo "Copy DB and fix permissions"
 ssh $BOXUSER.backupbox.se "cp /backups/$BOXUSER/tmp.db /backups/$BOXUSER/index.db && chmod 777 /backups/$BOXUSER/index.db && chown www-data:www-data /backups/$BOXUSER/index.db"
 
-# Third, copy the actual files
+# Last, backup all original files
 echo "Backup content"
-rsync -avz -e ssh --progress --exclude index.db /HDD/devices root@$BOXUSER.backupbox.se:/backups/$BOXUSER/devices
-
-
-# Restart uwsgi on remote server in order to reload database
-# ssh $BOXUSER.backupbox.se '/etc/init.d/uwsgi restart'
-
-#done
+rsync -avz -e ssh --progress --exclude index.db /HDD/devices root@$BOXUSER.backupbox.se:/backups/$BOXUSER
