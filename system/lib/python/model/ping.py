@@ -86,6 +86,8 @@ class PingModel(BaseModel):
          	_ping["uuid"] = ping["uuid"];
          	_ping["devicecount"] = ping["devicecount"];
          	_ping["cachecount"] = ping["cachecount"];
+         	_ping["remote_devicecount"] = ping["remote_devicecount"];
+         	_ping["remote_cachecount"] = ping["remote_cachecount"];
          
          return _ping
 

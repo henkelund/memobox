@@ -3,6 +3,8 @@ import uwsgi
 import math
 import datetime as dt, time
 import os
+import json
+import urllib2
 from datetime import date
 from subprocess import call
 from datetime import date
@@ -29,33 +31,33 @@ def before_request():
 	if not PingModel.validate_ip(request.host):
 		g.username = request.base_url.split(".")[0].split("//")[1]
 	g.host = request.host
-	g.islocal = PingModel.islocal()
-	DBHelper.initdb()
-	g.localaccess = PingModel.haslocalaccess(request)
+	#g.islocal = DBHelper.islocal()
+	g.islocal = False
+	
+	if request.path.startswith("/ping") or request.path.startswith("/lastping"):
+		DBHelper.initdb("ping.db")
+	else:
+		DBHelper.initdb()
+	#g.localaccess = PingModel.haslocalaccess(request)
+	g.localaccess = False
 
 
 # Start page route
 @app.route('/')
 def index_action():
-	print "Yey"
-	PingModel.dbinstall();
+	DeviceModel.install()
+	try:
+		BoxModel.install()
+	except:
+	    print "table already exists"
 	
-	if g.localaccess:
-		print "yes, localaccess"
-	if PingModel.islocal():
-		print "yes, islocal"
-	else:
-		print "no, is not local"
+	BoxModel.init()		
+	FileModel.install()
+	FilterHelper.install() 
 	
 	if g.localaccess:
 		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
 	else:
-		ping = PingHelper.lastping()
-		cloudbackup-progress = -1
-		
-		if ping is not None:
-			cloudbackup-progress = int((int(ping["remote_devicecount"])/int(ping["devicecount"]))*100)
-		
 		if PingModel.islocal() or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
 			return render_template('index.html', islocal=False)
 		else:
@@ -121,10 +123,23 @@ def file_info_action():
 def public_ip():
 	return request.remote_addr
 
+@app.route('/lastping')
+def lastping():
+	try:
+		PingModel.install();	
+	except:
+		print "Ping table already exists"
+
+	ping = PingModel.lastping()
+	return jsonify(ping)
+
 
 @app.route('/ping')
 def file_ping_action():
-	PingModel.dbinstall();	
+	try:
+		PingModel.install();	
+	except:
+		print "Ping table already exists"
 	#try:
 	PingModel.ping(request.args.get('local_ip'), request.args.get('public_ip'), request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'), request.args.get('username'), request.args.get('devicecount'), request.args.get('cachecount'));
 	#except:
@@ -248,18 +263,20 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	    	#thumbnail["thumbnail"]
 	    	cache_dir = "/HDD/cache"	    	
 
-	    	if PingModel.islocal() == False:
+	    	if g.islocal == False:
 	    		config = DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))
 	    		cache_dir = "/backups/"+config["BOXUSER"]+"/cache"
 	    	
 	    	filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
 	    	mimetype = '%s/%s' % (model.type(), model.subtype())
     else:
-	    if PingModel.islocal() == False:
+	    if g.islocal == False:
 	    	config = DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))
 	    	filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+config["BOXUSER"]), model.name())
+	    	print "----"+filename
 	    else:
 	    	filename = '%s/%s' % (model.abspath(), model.name())
+	    	print "####"+filename
 	    mimetype = '%s/%s' % (model.type(), model.subtype())
 
     if not os.path.isfile(filename):

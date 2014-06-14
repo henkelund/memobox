@@ -111,7 +111,7 @@ class DBHelper(object):
         
     @staticmethod
     def islocal():
-    	config = DBHelper.loadconfig()
+    	config = DBHelper.loadconfig(None, "/HDD/local.cfg")
     	
     	if config["LOCAL"] and config["LOCAL"] == "true":
     		return True
@@ -120,26 +120,36 @@ class DBHelper(object):
 				return False
 
     @staticmethod
-    def initdb():
-    	config = DBHelper.loadconfig()
+    def initdb(filename="index.db"):
+    	config = DBHelper.loadconfig(None, "/HDD/local.cfg")
     	dbname = ""
     	
     	if config["LOCAL"] and config["LOCAL"] == "true":
-			print "../data/index.db"
-			DBHelper("../data/index.db")
+			print "../data/"+filename
+			DBHelper("../data/"+filename)
     	else:
     		if config["BOXUSER"] and config["BOXUSER"] != "null":
-				print "/backups/"+config["BOXUSER"]+"/index.db"
-				DBHelper("/backups/"+config["BOXUSER"]+"/index.db")
+				print "/backups/"+config["BOXUSER"]+"/"+filename
+				DBHelper("/backups/"+config["BOXUSER"]+"/"+filename)
     		else:
-				print "/backups/"+g.user+"/index.db"
-				DBHelper("/backups/"+g.user+"/index.db")
+				print "/backups/"+g.username+"/"+filename
+				DBHelper("/backups/"+g.username+"/"+filename)
 
     @staticmethod
-    def loadconfig(username=None):
+    def loadconfig(username=None, dbfile=""):
 		config = {}
 		
-		if(not hasattr(g, "config")):
+		if dbfile is not "":
+			# Override detection and load hard coded file
+			with open(dbfile) as f:
+				content = f.readlines()
+			for line in content:
+				if len(line.split("=")) == 2:
+					config[line.split("=")[0]] = line.split("=")[1].replace('"', '').replace('\n', '')
+			
+			return config
+							
+		elif(not hasattr(g, "config")):
 			if username is not None:
 				with open("/backups/"+username+"/local.cfg") as f:
 					content = f.readlines()
