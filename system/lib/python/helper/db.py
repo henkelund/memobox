@@ -101,7 +101,46 @@ class DBHelper(object):
             ids.append(self.query(sql, row.values()).lastrowid)
 
         return ids
+        
+    @staticmethod
+    def islocal():
+    	config = DBHelper.loadconfig()
+    	
+    	if config["LOCAL"] and config["LOCAL"] == "true":
+    		return True
+    	else:
+    		if config["LOCAL"] and config["LOCAL"] == "false":
+				return False
 
+    @staticmethod
+    def initdb(remote_addr, base_url):
+    	config = DBHelper.loadconfig()
+    	
+    	if config["LOCAL"] and config["LOCAL"] == "true":
+			DBHelper("../data/index.db")
+    	else:
+    		if config["BOXUSER"] and config["BOXUSER"] != "null":
+				DBHelper("/backups/"+config["BOXUSER"]+"/index.db")
+    		else:
+				DBHelper("/backups/"+base_url.split(".")[0].split("//")[1]+"/index.db")
+
+    @staticmethod
+    def loadconfig(username=None):
+		config = {}
+		
+		if username is not None:
+			with open("/backups/"+username+"/local.cfg") as f:
+				content = f.readlines()
+		else:
+			with open("../data/local.cfg") as f:
+				content = f.readlines()
+		
+		for line in content:
+			if len(line.split("=")) == 2:
+				config[line.split("=")[0]] = line.split("=")[1].replace('"', '').replace('\n', '')
+		
+		return config
+        
 class DBSelect(object):
     """Helper for building SQLite SELECT queries"""
 

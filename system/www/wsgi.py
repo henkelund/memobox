@@ -26,7 +26,7 @@ app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 
 @app.before_request
 def before_request():
-	PingModel.initdb(request.host, request.base_url)
+	DBHelper.initdb(request.host, request.base_url)
 
 
 # Start page route
@@ -45,10 +45,10 @@ def index_action():
 # Start page route
 @app.route('/login')
 def login_action():
-	if request.args.get('password') == PingModel.loadconfig(AccessHelper.requestuser(request.base_url))["PASSWORD"]:
+	if request.args.get('password') == DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))["PASSWORD"]:
 		session["verified_"+AccessHelper.requestuser(request.base_url)] = True
 		return redirect("/")
-	elif request.args.get('password') != PingModel.loadconfig(AccessHelper.requestuser(request.base_url))["PASSWORD"]:
+	elif request.args.get('password') != DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))["PASSWORD"]:
 		return render_template('login.html', islocal=False, message="Ops! Wrong password.")			
 	else:
 		return render_template('login.html', islocal=False)	
@@ -97,6 +97,11 @@ def file_info_action():
 	with open ("/tmp/info.txt", "r") as myfile:
 		data=myfile.read().replace('\n', '<br />')
 	return data
+
+@app.route('/public_ip')
+def public_ip():
+	return request.remote_addr
+
 
 @app.route('/ping')
 def file_ping_action():
@@ -225,15 +230,17 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	    	cache_dir = "/HDD/cache"	    	
 
 	    	if PingModel.islocal() == False:
-	    		config = PingModel.loadconfig(AccessHelper.requestuser(request.base_url))
+	    		config = DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))
 	    		cache_dir = "/backups/"+config["BOXUSER"]+"/cache"
 	    	
 	    	filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
 	    	mimetype = '%s/%s' % (model.type(), model.subtype())
-    else:    
+    else:
+	    print "yes"
 	    if PingModel.islocal() == False:
-	    	config = PingModel.loadconfig(AccessHelper.requestuser(request.base_url))
+	    	config = DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))
 	    	filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+config["BOXUSER"]), model.name())
+	    	print filename
 	    else:
 	    	filename = '%s/%s' % (model.abspath(), model.name())
 	    mimetype = '%s/%s' % (model.type(), model.subtype())

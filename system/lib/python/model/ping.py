@@ -80,7 +80,7 @@ class PingModel(BaseModel):
     @staticmethod
     def haslocalaccess(request):
 		ping = PingModel.lastping()
-		user_public_id = request.remote_addr
+		user_public_ip = request.remote_addr
 		user_host = request.host
 		
 		if PingModel.validate_ip(user_host):
@@ -93,25 +93,13 @@ class PingModel(BaseModel):
 			         
     @staticmethod
     def islocal():
-    	config = PingModel.loadconfig()
+    	config = DBHelper.loadconfig()
     	
     	if config["LOCAL"] and config["LOCAL"] == "true":
     		return True
     	else:
     		if config["LOCAL"] and config["LOCAL"] == "false":
 				return False
-
-    @staticmethod
-    def initdb(remote_addr, base_url):
-    	config = PingModel.loadconfig()
-    	
-    	if config["LOCAL"] and config["LOCAL"] == "true":
-			DBHelper("../data/index.db")
-    	else:
-    		if config["BOXUSER"] and config["BOXUSER"] != "null":
-				DBHelper("/backups/"+config["BOXUSER"]+"/index.db")
-    		else:
-				DBHelper("/backups/"+base_url.split(".")[0].split("//")[1]+"/index.db")
 			
     @staticmethod
     def dbinstall():
@@ -130,20 +118,3 @@ class PingModel(BaseModel):
 		BoxModel.init()		
 		FileModel.install()
 		FilterHelper.install() 
-
-    @staticmethod
-    def loadconfig(username=None):
-		config = {}
-		
-		if username is not None:
-			with open("/backups/"+username+"/local.cfg") as f:
-				content = f.readlines()
-		else:
-			with open("../data/local.cfg") as f:
-				content = f.readlines()
-		
-		for line in content:
-			if len(line.split("=")) == 2:
-				config[line.split("=")[0]] = line.split("=")[1].replace('"', '').replace('\n', '')
-		
-		return config
