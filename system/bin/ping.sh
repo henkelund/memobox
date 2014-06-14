@@ -12,7 +12,7 @@ echo $COMMAND
 
 #while ! test -f /tmp/stop-my-script
 #do
-	$BIN_DIR/gatherData.sh $BACKUP_DIR
+	$BIN_DIR/gatherData.sh &&
 	response=`$BIN_DIR/timeout.sh -t 5 $COMMAND`
 
 	if [ "$?" = "0" ] && [ "$response" = "ok" ]; then
