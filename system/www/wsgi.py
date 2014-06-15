@@ -30,6 +30,9 @@ app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 def before_request():
 	if not PingModel.validate_ip(request.host):
 		g.username = request.base_url.split(".")[0].split("//")[1]
+	else:
+		g.username = DBHelper.loadconfig()["BOXUSER"]
+		
 	g.host = request.host
 	g.islocal = DBHelper.islocal()
 	
@@ -124,14 +127,19 @@ def public_ip():
 
 @app.route('/lastping')
 def lastping():
-	try:
-		PingModel.install();	
-	except:
-		print "Ping table already exists"
-
-	ping = PingModel.lastping()
-	return jsonify(ping)
-
+	if g.islocal:
+		response = urllib2.urlopen('http://'+g.username+'.backupbox.se/lastping')
+		json = response.read()
+		response.close()
+		return json
+	else:
+		try:
+			PingModel.install();	
+		except:
+			print "Ping table already exists"
+	
+		ping = PingModel.lastping()
+		return jsonify(ping)
 
 @app.route('/ping')
 def file_ping_action():

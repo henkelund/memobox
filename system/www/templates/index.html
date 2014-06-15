@@ -54,6 +54,7 @@
         <script>
 			var uploadComplete = false; 
 			var progressInterval; 
+			
 			$( document ).ready(function() {
 				loadCloudBackupProgress();
 				progressInterval = setInterval(function(){loadCloudBackupProgress()}, 10000);
@@ -76,7 +77,9 @@
 					  if(progress == 100) {
 						  uploadComplete = true; 
 						  clearInterval(progressInterval);
-						  $("#progressContainer").hide();
+						  $("#progressContainer").show();
+						  $("#progressContainer").css("padding-top", "20px");
+						  $("#progressContainer").html("All of your data is 100% safe in the cloud.");
 					  } else {
 						  var progressWidth = progress; 
 						  if(progressWidth < 15) {
