@@ -79,7 +79,7 @@
 						  clearInterval(progressInterval);
 						  $("#progressContainer").show();
 						  $("#progressContainer").css("padding-top", "20px");
-						  $("#progressContainer").html("All of your data is 100% safe in the cloud.");
+						  $("#progressContainer").html('<a class="btn" id="modalDownload" href="#"><span class="icon-check"></span> All of your data now safe in the cloud</a>');
 					  } else {
 						  var progressWidth = progress; 
 						  if(progressWidth < 15) {
