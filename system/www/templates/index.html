@@ -52,26 +52,41 @@
         <script type="text/javascript" src="/static/js/box.js"></script>
         <script type="text/javascript" src="/static/js/datebar.js"></script>
         <script>
+			var uploadComplete = false; 
+			var progressInterval; 
 			$( document ).ready(function() {
 				loadCloudBackupProgress();
-				setInterval(function(){loadCloudBackupProgress()}, 10000);
+				progressInterval = setInterval(function(){loadCloudBackupProgress()}, 10000);
 			});
 
         	function loadCloudBackupProgress() {
-				$.getJSON( "/lastping", function( data ) {
-				  var items = [];
-				  $.each( data, function( key, val ) {
-				    items[key] = val; //.push( "<li id='" + key + "'>" + val + "</li>" );
-				  });
-				 
-				  var remote_devicecount = items["remote_devicecount"];
-				  var devicecount = items["devicecount"];
-				  var progress = Math.round((remote_devicecount/devicecount)*100);
-				  $("#cloudbackupprogress").html(progress+"%");
-				  $("#cloudbackupprogress").attr("aria-valuenow", progress);
-				  $("#cloudbackupprogress").css("width", progress+"%");
-				  $("#progressContainer").show();
-				});
+        		if(!uploadComplete) {
+					$.getJSON( "/lastping", function( data ) {
+					  var items = [];
+					  $.each( data, function( key, val ) {
+					    items[key] = val; //.push( "<li id='" + key + "'>" + val + "</li>" );
+					  });
+					 
+					  var remote_devicecount = items["remote_devicecount"];
+					  var devicecount = items["devicecount"];
+					  var progress = Math.round((remote_devicecount/devicecount)*100);
+					  $("#cloudbackupprogress").html(progress+"%");
+					  $("#cloudbackupprogress").attr("aria-valuenow", progress);
+					  
+					  if(progress == 100) {
+						  uploadComplete = true; 
+						  clearInterval(progressInterval);
+						  $("#progressContainer").hide();
+					  } else {
+						  var progressWidth = progress; 
+						  if(progressWidth < 15) {
+							  progressWidth = 15;
+						  }
+						  $("#cloudbackupprogress").css("width", progressWidth+"%");
+						  $("#progressContainer").show();						  
+					  }					  
+					});
+				}
 			}
         </script>
     </body>

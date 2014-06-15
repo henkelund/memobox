@@ -69,27 +69,32 @@ class PingModel(BaseModel):
     @staticmethod
     def lastping():
          _ping = {}
-         tables = DBSelect('sqlite_master', 'count(*) as pingcount').where("type = 'table' AND name='ping'").query();
-         for table in tables:
-         	if table["pingcount"] == 0:
-         		return None
          
-         pings = DBSelect('ping','*').where("uuid not null AND uuid is not 'None' AND uuid is not '' AND uuid is not 'null'").query()
-         pingcount = 0; 
-
-         for ping in pings:
-         	_ping["local_ip"] = ping["local_ip"];
-         	_ping["public_ip"] = ping["public_ip"];
-         	_ping["last_ping"] = ping["last_ping"];
-         	_ping["capacity"] = ping["capacity"];
-         	_ping["used_space"] = ping["used_space"];
-         	_ping["uuid"] = ping["uuid"];
-         	_ping["devicecount"] = ping["devicecount"];
-         	_ping["cachecount"] = ping["cachecount"];
-         	_ping["remote_devicecount"] = ping["remote_devicecount"];
-         	_ping["remote_cachecount"] = ping["remote_cachecount"];
+         _sqlite = subprocess.Popen(['sqlite3', '/backups/'+g.username+'/ping.db', 'SELECT * FROM ping WHERE LENGTH(uuid) > 10 ORDER BY last_ping DESC LIMIT 1'], stdout=subprocess.PIPE)
+         _db_ping = _sqlite.stdout.readline()
          
-         return _ping
+         if not _db_ping or len(_db_ping) == 0:
+         	return None
+         else:
+	         _ping_array = _db_ping.split("|")
+	         
+	         if len(_ping_array) != 12:
+	         	return None
+	         	
+	         else:
+	         	_ping["local_ip"] = _ping_array[1];
+	         	_ping["public_ip"] = _ping_array[2];
+	         	_ping["uuid"] = _ping_array[3];
+	         	_ping["capacity"] = _ping_array[4];
+	         	_ping["used_space"] = _ping_array[5];
+	         	_ping["last_ping"] = _ping_array[6];
+	         	_ping["username"] = _ping_array[7];
+	         	_ping["devicecount"] = _ping_array[8];
+	         	_ping["cachecount"] = _ping_array[9];
+	         	_ping["remote_devicecount"] = _ping_array[10];
+	         	_ping["remote_cachecount"] = _ping_array[11];
+	         
+	         	return _ping
 
     @staticmethod
     def validate_ip(s):
@@ -106,6 +111,9 @@ class PingModel(BaseModel):
 
     @staticmethod
     def haslocalaccess(request):
+		if g.islocal:
+			return False
+		
 		user_public_ip = request.remote_addr
 		user_host = request.host
 				

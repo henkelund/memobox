@@ -31,15 +31,14 @@ def before_request():
 	if not PingModel.validate_ip(request.host):
 		g.username = request.base_url.split(".")[0].split("//")[1]
 	g.host = request.host
-	#g.islocal = DBHelper.islocal()
-	g.islocal = False
+	g.islocal = DBHelper.islocal()
 	
 	if request.path.startswith("/ping") or request.path.startswith("/lastping"):
 		DBHelper.initdb("ping.db")
 	else:
 		DBHelper.initdb()
-	#g.localaccess = PingModel.haslocalaccess(request)
-	g.localaccess = False
+
+	g.localaccess = PingModel.haslocalaccess(request)
 
 
 # Start page route
@@ -58,10 +57,10 @@ def index_action():
 	if g.localaccess:
 		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
 	else:
-		if PingModel.islocal() or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
-			return render_template('index.html', islocal=False)
+		if g.islocal or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
+			return render_template('index.html', islocal=g.islocal)
 		else:
-			return render_template('login.html', islocal=False)
+			return render_template('login.html', islocal=g.islocal)
 
 # Start page route
 @app.route('/login')
