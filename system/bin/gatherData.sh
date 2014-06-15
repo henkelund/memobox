@@ -14,10 +14,10 @@ source $BIN_DIR/pinghelper.sh
 pip=$(curl --connect-timeout 5 -s -X GET http://$BOXUSER.backupbox.se/public_ip)
 echo "Public IP Address: $pip" > $INFOFILE
 # Load the local IP on the router
-lip=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
+lip=$(/sbin/ifconfig eth0 | /bin/grep 'inet addr:' | /usr/bin/cut -d: -f2 | /usr/bin/awk '{ print $1}')
 echo "Local IP Address: $lip" >> $INFOFILE
 #Load Unique ID of backup hard drive
-uuid=`blkid -s UUID -o value /dev/sda1`
+uuid=`/sbin/blkid -s UUID -o value /dev/sda1`
 echo "Unique Device ID: $uuid" >> $INFOFILE
 # Calculate free and total space of the backup drive
 freespace human $BACKUP_DIR >> $INFOFILE
@@ -35,10 +35,8 @@ echo "All Connected Devices" >> $INFOFILE
 # Load the public IP of the memorybox
 echo "public_ip=$pip&" > $PINGFILE
 # Load the local IP on the router
-lip=$(ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')
 echo "local_ip=$lip&" >> $PINGFILE
 #Load Unique ID of backup hard drive
-uuid=`blkid -s UUID -o value /dev/sda1`
 echo "uuid=$uuid&" >> $PINGFILE
 #Append username to 
 echo "username=$BOXUSER&" >> $PINGFILE
