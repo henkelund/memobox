@@ -345,47 +345,51 @@ class FileModelTypeImage(FileModelTypeBase):
         """Gather image specific data from 'filename'"""
 
         model = self.get_file()
-        image = Image.open(filename)
-        if not image:
-            return self
-
-        size = image.size
-        if size and len(size) >= 2:
-            model.width(size[0])
-            model.height(size[1])
-
-        exif = {}
+        
         try:
-            exif = self._get_exif_data(image)
-        except (IOError, AttributeError) as e:
-            logger.notice('Could not read EXIF-data from %s' % filename)
-            return self
-
-        if 'GPSInfo' in exif:
-            latlng = self._gpsinfo_to_latlng(exif['GPSInfo'])
-            if latlng[0] and latlng[1]:
-                model.latitude(latlng[0])
-                model.longitude(latlng[1])
-
-        if 'DateTime' in exif or 'DateTimeOriginal' in exif:
-            if 'DateTime' in exif:
-            	date_str = self._clean_exif_string(exif['DateTime'])
-            elif 'DateTimeOriginal' in exif:
-            	date_str = self._clean_exif_string(exif['DateTimeOriginal'])
-            
-            try:
-                time_struct = time.strptime(date_str, '%Y:%m:%d %H:%M:%S')
-                timestamp = int(time.mktime(time_struct))
-                if timestamp > 0:
-                    model.timestamp(timestamp)
-                    model.created_at(timestamp);
-            except ValueError:
-                logger.notice(
-                    'Could not parse DateTime string "%s" from %s' %
-                        (date_str, filename))
-
-        if 'Orientation' in exif:
-            model.orientation(exif['Orientation'])
+	        image = Image.open(filename)
+	        if not image:
+	            return self
+	
+	        size = image.size
+	        if size and len(size) >= 2:
+	            model.width(size[0])
+	            model.height(size[1])
+	
+	        exif = {}
+	        try:
+	            exif = self._get_exif_data(image)
+	        except (IOError, AttributeError) as e:
+	            logger.notice('Could not read EXIF-data from %s' % filename)
+	            return self
+	
+	        if 'GPSInfo' in exif:
+	            latlng = self._gpsinfo_to_latlng(exif['GPSInfo'])
+	            if latlng[0] and latlng[1]:
+	                model.latitude(latlng[0])
+	                model.longitude(latlng[1])
+	
+	        if 'DateTime' in exif or 'DateTimeOriginal' in exif:
+	            if 'DateTime' in exif:
+	            	date_str = self._clean_exif_string(exif['DateTime'])
+	            elif 'DateTimeOriginal' in exif:
+	            	date_str = self._clean_exif_string(exif['DateTimeOriginal'])
+	            
+	            try:
+	                time_struct = time.strptime(date_str, '%Y:%m:%d %H:%M:%S')
+	                timestamp = int(time.mktime(time_struct))
+	                if timestamp > 0:
+	                    model.timestamp(timestamp)
+	                    model.created_at(timestamp);
+	            except ValueError:
+	                logger.notice(
+	                    'Could not parse DateTime string "%s" from %s' %
+	                        (date_str, filename))
+	
+	        if 'Orientation' in exif:
+	            model.orientation(exif['Orientation'])
+        except IOError:
+	    	return self
 
         return self
 
