@@ -342,6 +342,10 @@ div.video .typecontent {
 	min-height: 400px;
 }
 
+#progressContainer div.tooltip-inner {
+	padding: 10px; 
+}
+
 div.tooltip-inner {
 	width: 200px;
 	height: 100px;
