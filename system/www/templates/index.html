@@ -62,7 +62,7 @@
 
         	function loadCloudBackupProgress() {
         		if(!uploadComplete) {
-					$.getJSON( "http://{{username}}.backupbox.se/lastping", function( data ) {
+					$.getJSON( "/lastping", function( data ) {
 					  var items = [];
 					  $.each( data, function( key, val ) {
 					    items[key] = val; //.push( "<li id='" + key + "'>" + val + "</li>" );
