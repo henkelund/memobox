@@ -5,6 +5,10 @@ SYSTEM_DIR="$(dirname "$BIN_DIR")"
 BACKUP_DIR="$(dirname "$SYSTEM_DIR")/data"
 source "$BACKUP_DIR/local.cfg"
 
+echo "$BACKUP_DIR/local.cfg"
+
+echo "BOXUSER: $BOXUSER"
+
 rm /root/.ssh/id_rsa
 rm /root/.ssh/id_rsa.pub
 echo -e "\n\n\n" | ssh-keygen -N ""

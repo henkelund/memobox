@@ -54,7 +54,7 @@
         <script>
 			var uploadComplete = false; 
 			var progressInterval; 
-			
+						
 			$( document ).ready(function() {
 				loadCloudBackupProgress();
 				progressInterval = setInterval(function(){loadCloudBackupProgress()}, 10000);
@@ -62,7 +62,7 @@
 
         	function loadCloudBackupProgress() {
         		if(!uploadComplete) {
-					$.getJSON( "/lastping", function( data ) {
+					$.getJSON( "http://{{username}}.backupbox.se/lastping", function( data ) {
 					  var items = [];
 					  $.each( data, function( key, val ) {
 					    items[key] = val; //.push( "<li id='" + key + "'>" + val + "</li>" );
