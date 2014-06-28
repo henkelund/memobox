@@ -49,10 +49,9 @@ def before_request():
 def index_action():
 	DeviceModel.install()
 	try:
-		BoxModel.install()
+		BoxModel.install()	
 	except:
-	    print "table already exists"
-	
+		print "Box table already exist"
 	BoxModel.init()		
 	FileModel.install()
 	FilterHelper.install() 
@@ -61,7 +60,7 @@ def index_action():
 		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
 	else:
 		if g.islocal or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
-			return render_template('index.html', islocal=g.islocal)
+			return render_template('index.html', islocal=g.islocal, username=g.username)
 		else:
 			return render_template('login.html', islocal=g.islocal)
 
