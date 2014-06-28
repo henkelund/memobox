@@ -74,7 +74,11 @@
 					  $("#cloudbackupprogress").html(progress+"%");
 					  $("#cloudbackupprogress").attr("aria-valuenow", progress);
 					  
-					  if(progress == 100) {
+					  if((remote_devicecount == 0 && devicecount == 0) {
+						  clearInterval(progressInterval);
+						  $("#progressContainer").hide();
+						  
+					  } else if (progress == 100) {
 						  uploadComplete = true; 
 						  clearInterval(progressInterval);
 						  $("#progressContainer").show();
