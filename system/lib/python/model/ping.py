@@ -39,12 +39,12 @@ class PingModel(BaseModel):
          # Count files in cache folder
          find = subprocess.Popen(['find', '/backups/'+config["BOXUSER"]+'/cache', '-type', 'f'],stdout=subprocess.PIPE)
          wc = subprocess.Popen(['wc', '-l'], stdin = find.stdout, stdout=subprocess.PIPE)
-         remote_cachecount = wc.stdout.readline().replace("\n", "")
+         remote_cachecount = wc.stdout.readline().replace("\\n", "")
 
          # Count files in cache folder
          find = subprocess.Popen(['find', '/backups/'+config["BOXUSER"]+'/devices', '-type', 'f'],stdout=subprocess.PIPE)
          wc = subprocess.Popen(['wc', '-l'], stdin = find.stdout, stdout=subprocess.PIPE)
-         remote_devicecount = wc.stdout.readline().replace("\n", "")
+         remote_devicecount = wc.stdout.readline().replace("\\n", "")
 
          print "removedev:"+remote_devicecount
          print "removecache:"+remote_cachecount
@@ -82,17 +82,17 @@ class PingModel(BaseModel):
 	         	return None
 	         	
 	         else:
-	         	_ping["local_ip"] = _ping_array[1];
-	         	_ping["public_ip"] = _ping_array[2];
-	         	_ping["uuid"] = _ping_array[3];
-	         	_ping["capacity"] = _ping_array[4];
-	         	_ping["used_space"] = _ping_array[5];
-	         	_ping["last_ping"] = _ping_array[6];
-	         	_ping["username"] = _ping_array[7];
-	         	_ping["devicecount"] = _ping_array[8];
-	         	_ping["cachecount"] = _ping_array[9];
-	         	_ping["remote_devicecount"] = _ping_array[10];
-	         	_ping["remote_cachecount"] = _ping_array[11];
+	         	_ping["local_ip"] = _ping_array[1]
+	         	_ping["public_ip"] = _ping_array[2]
+	         	_ping["uuid"] = _ping_array[3]
+	         	_ping["capacity"] = _ping_array[4]
+	         	_ping["used_space"] = _ping_array[5]
+	         	_ping["last_ping"] = _ping_array[6]
+	         	_ping["username"] = _ping_array[7]
+	         	_ping["devicecount"] = _ping_array[8]
+	         	_ping["cachecount"] = _ping_array[9]
+	         	_ping["remote_devicecount"] = _ping_array[10].rstrip()
+	         	_ping["remote_cachecount"] = _ping_array[11].rstrip()
 	         
 	         	return _ping
 
