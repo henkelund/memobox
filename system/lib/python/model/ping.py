@@ -39,12 +39,12 @@ class PingModel(BaseModel):
          # Count files in cache folder
          find = subprocess.Popen(['find', '/backups/'+config["BOXUSER"]+'/cache', '-type', 'f'],stdout=subprocess.PIPE)
          wc = subprocess.Popen(['wc', '-l'], stdin = find.stdout, stdout=subprocess.PIPE)
-         remote_cachecount = wc.stdout.readline()
+         remote_cachecount = wc.stdout.readline().replace("\n", "")
 
          # Count files in cache folder
          find = subprocess.Popen(['find', '/backups/'+config["BOXUSER"]+'/devices', '-type', 'f'],stdout=subprocess.PIPE)
          wc = subprocess.Popen(['wc', '-l'], stdin = find.stdout, stdout=subprocess.PIPE)
-         remote_devicecount = wc.stdout.readline()
+         remote_devicecount = wc.stdout.readline().replace("\n", "")
 
          print "removedev:"+remote_devicecount
          print "removecache:"+remote_cachecount
