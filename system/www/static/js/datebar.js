@@ -16,6 +16,10 @@ function stopVideo() {
 
 }
 
+function downloadFile() {
+	window.open($("#originalImage").attr("src"),'_blank');
+}
+
 function hideFile() {
 	var file_id = $("#filesDetailModalLabel").attr("file");
 	$.get( "/files/hide?id="+file_id, function( data ) {

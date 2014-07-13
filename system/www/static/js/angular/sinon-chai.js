@@ -13,7 +13,7 @@
         });
     } else {
         // Other environment (usually <script> tag): plug in to global chai instance directly.
-        chai.use(sinonChai);
+        //chai.use(sinonChai);
     }
 }(function sinonChai(chai, utils) {
     "use strict";

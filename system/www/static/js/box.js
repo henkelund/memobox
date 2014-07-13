@@ -1,4 +1,4 @@
-(function (exports, ng, $, console) {
+(function (exports, ng, $) {
     'use strict';
 
     /**
@@ -92,6 +92,8 @@
 					$("#modalVideo").hide();
 					$("#modalImage").show();
 					$("#modalDownload").attr("href", "/files/stream/"+result._id+"/"+result.name+"/full/-1");
+					//document.getElementById("modalDownload").href 
+					$("#originalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/full/-1");
 					$("#modalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/thumbnail/520");
 				}
 		
@@ -264,7 +266,7 @@
              */
             loadFilesSuccess: function (resource) {
                 this.files = resource.files;
-                console.log(resource.sql);
+                //console.log(resource.sql);
             },
 
             /**
@@ -305,7 +307,7 @@
              * Failed load callback
              */
             loadError: function (data) {
-                console.log(data);
+                //console.log(data);
             },
 
             /**
@@ -440,14 +442,14 @@
              */
             loadDevicesSuccess: function (resource) {
                 this.devices = resource.devices;
-                console.log(resource.sql);
+                //console.log(resource.sql);
             },
 
             /**
              * Failed load callback
              */
             loadError: function (data) {
-                console.log(data);
+                //console.log(data);
             },
 
             /**
@@ -545,5 +547,5 @@
         return this;
     });
 
-}(window, angular, jQuery, console || {log: function () { 'use strict'; return; }}));
+}(window, angular, jQuery || {log: function () { 'use strict'; return; }}));
 
