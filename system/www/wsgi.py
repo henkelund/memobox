@@ -34,7 +34,8 @@ def before_request():
 		g.username = DBHelper.loadconfig()["BOXUSER"]
 		
 	g.host = request.host
-	g.islocal = DBHelper.islocal()
+	g.islocalbox = DBHelper.islocal()
+	g.iscloudbox = not g.islocalbox
 	
 	if request.path.startswith("/ping") or request.path.startswith("/lastping"):
 		DBHelper.initdb("ping.db")
@@ -59,10 +60,10 @@ def index_action():
 	if g.localaccess:
 		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
 	else:
-		if g.islocal or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
-			return render_template('index.html', islocal=g.islocal, username=g.username)
+		if g.islocalbox or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
+			return render_template('index.html', islocal=g.islocalbox, username=g.username)
 		else:
-			return render_template('login.html', islocal=g.islocal)
+			return render_template('login.html', islocal=g.islocalbox)
 
 # Start page route
 @app.route('/login')
@@ -126,7 +127,7 @@ def public_ip():
 
 @app.route('/lastping')
 def lastping():
-	if g.islocal:
+	if g.islocalbox:
 		response = urllib2.urlopen('http://'+g.username+'.backupbox.se/lastping')
 		json = response.read()
 		response.close()
@@ -269,14 +270,14 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	    	#thumbnail["thumbnail"]
 	    	cache_dir = "/HDD/cache"	    	
 
-	    	if g.islocal == False:
+	    	if g.islocalbox == False:
 	    		config = DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))
 	    		cache_dir = "/backups/"+config["BOXUSER"]+"/cache"
 	    	
 	    	filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
 	    	mimetype = '%s/%s' % (model.type(), model.subtype())
     else:
-	    if g.islocal == False:
+	    if g.islocalbox == False:
 	    	config = DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))
 	    	filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+config["BOXUSER"]), model.name())
 	    	print "----"+filename

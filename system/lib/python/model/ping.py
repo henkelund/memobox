@@ -111,7 +111,7 @@ class PingModel(BaseModel):
 
     @staticmethod
     def haslocalaccess(request):
-		if g.islocal:
+		if g.islocalbox:
 			return False
 		
 		user_public_ip = request.remote_addr

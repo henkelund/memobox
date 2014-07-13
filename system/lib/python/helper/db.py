@@ -11,7 +11,7 @@ class DBHelper(object):
     def __new__(cls, db=':memory:', *args, **kwargs):
         """Override __new__ to implement singleton pattern"""
 
-        if g and not g.islocal:
+        if g and not g.islocalbox:
 	        if not hasattr(g, "sqlite_db"):
 	            g.sqlite_db = super(DBHelper, cls).__new__(cls, *args, **kwargs)
 	            g.sqlite_db._conn = None

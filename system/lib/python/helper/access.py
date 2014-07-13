@@ -8,7 +8,7 @@ class AccessHelper(object):
 
     @staticmethod
     def authorized(username):
-		if(g.islocal == False and (("verified_"+username not in session) or (session["verified_"+username] == False))):
+		if(g.islocalbox == False and (("verified_"+username not in session) or (session["verified_"+username] == False))):
 			return False
 		else:
 			return True
