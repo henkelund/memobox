@@ -33,6 +33,8 @@ def before_request():
 	else:
 		g.username = DBHelper.loadconfig()["BOXUSER"]
 		
+	print g.username
+	
 	g.host = request.host
 	g.islocalbox = DBHelper.islocal()
 	g.iscloudbox = not g.islocalbox
