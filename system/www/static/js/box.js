@@ -424,68 +424,6 @@
     });
 
     /**
-     * Device service
-     */
-    box.factory('DeviceService', function ($resource, $window, $q) {
-
-        /**
-         *
-         */
-        var DeviceService = function () {
-            this.devicesResource = $resource('/devices');
-            this.devices = [];
-        };
-        DeivceService.prototype = {
-
-            /**
-             * Successful devices load callback
-             */
-            loadDevicesSuccess: function (resource) {
-                this.devices = resource.devices;
-                //console.log(resource.sql);
-            },
-
-            /**
-             * Failed load callback
-             */
-            loadError: function (data) {
-                //console.log(data);
-            },
-
-            /**
-             * Load devices passing 'devices'
-             */
-            loadDevices: function (filter, complete) {
-                var that = this,
-                    args = {}, // arguments
-                    fk;        // filter key
-
-
-                this.devicesResource.get(
-                    args,
-                    function (data) {
-                        that.loadDevicesSuccess(data);
-                        if (typeof complete === 'function') {
-                            complete(data);
-                        }
-                    },
-                    function (data) {
-                        that.loadError(data);
-                        if (typeof complete === 'function') {
-                            complete(data);
-                        }
-                    }
-                );
-                return this;
-            },
-
-        };
-
-        return new DeviceService();
-    });
-
-
-    /**
      * File thumbnail directive
      */
     box.directive('fileThumbnail', function ($window) {
@@ -548,4 +486,3 @@
     });
 
 }(window, angular, jQuery || {log: function () { 'use strict'; return; }}));
-

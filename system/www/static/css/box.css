@@ -2,6 +2,17 @@ body {
 /*    background-color: #EDF4F5;*/ /* #054950 #789A9F #EDF4F5 #FFFFFF #F78F1E */
 }
 
+#browserError {
+	display: none;
+}
+
+.browserMessage {
+	text-align: center; 
+	font-size: 42px; 
+	line-height: 50px; 
+	padding-top: 10%;	
+}
+
 .logo {
 	float: left; 
 }
