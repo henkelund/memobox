@@ -149,10 +149,7 @@ class DBHelper(object):
 			
 			return config
 							
-		elif(not hasattr(g, "config")):
-			if g.config:
-				return config
-			
+		elif(not hasattr(g, "config")):			
 			if username is not None:
 				with open("/backups/"+username+"/local.cfg") as f:
 					content = f.readlines()

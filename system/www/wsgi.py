@@ -5,6 +5,7 @@ import datetime as dt, time
 import os
 import json
 import urllib2
+import re
 from datetime import date
 from subprocess import call
 from datetime import date
@@ -110,10 +111,27 @@ def files_action():
             models.where('m.device = '+str(vals[0]))
 
     for model in models:
-        data.append(model.get_data())
+        data_list = model.get_data()
+    	for key, value in data_list.items():
+    		if key == "name" or key == "thumbnail":
+    			new_value = value.decode('unicode-escape')
+    			data_list[key] = new_value
+    			#data_list[key] = value.decode('iso-8859-1')
+        
+        data.append(data_list)
 
+    #for item in data: # returns the dictionary as a list of value pairs -- a tuple.
+    #	for key, value in item.items():
+    #		if key == "name":
+    #			item[key] = "nada" #value.decode('iso-8859-1').encode('utf8')
+    #			print item[key]
+    			#print value
+    			
+    		#print key
+			#print jsonify(key)
+    
+    #print json.dumps(data, "ISO-8859-1")
     return jsonify({'files': data, 'sql': models.render()})
-
 
 @app.route('/info')
 def file_info_action():
@@ -272,6 +290,7 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 
 	    	if g.islocalbox == False:
 	    		config = DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))
+	    		print jsonify(config)
 	    		cache_dir = "/backups/"+config["BOXUSER"]+"/cache"
 	    	
 	    	filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
