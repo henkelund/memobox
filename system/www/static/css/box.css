@@ -136,7 +136,9 @@ p.text {
 	}
 
 	.selectedDevice, .navbar-inverse .nav > li > a.selectedDevice {
-		text-decoration: underline; 
+		/*text-decoration: underline; */
+		border-bottom: 2px solid white; 
+		padding-bottom: 2px; 
 		color: white; 	
 	}
 	
