@@ -84,16 +84,23 @@
 				
 				if(result.type == "video") {
 					$("#moddalVideoContainer").html('<video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay"><source id="modalSource" src="" type="video/mp4" /></video>');
-					$("#modalVideo > source").attr("src", result.abspath.replace("/backupbox/data/devices/", "/static/devices/")+"/"+result.name);
+					
+					if(isLocal) {
+						$("#modalVideo > source").attr("src", result.abspath.replace("/backupbox/data/devices/", "/static/devices/")+"/"+result.name);
+					} else {
+						$("#modalVideo > source").attr("src", result.abspath.replace("/backupbox/data/devices/", "/backups/" + username + "/devices/")+"/"+result.name);
+					}
+					
+					$("#originalImage").attr("src", result.abspath.replace("/backupbox/data/devices/", "/backups/" + username + "/devices/")+"/"+result.name);
 					$("#modalVideo").load();
 					$("#modalVideo").show();
 					$("#modalImage").hide();
 				} else {
 					$("#modalVideo").hide();
 					$("#modalImage").show();
-					$("#modalDownload").attr("href", "/files/stream/"+result._id+"/"+result.name+"/full/-1");
+					$("#modalDownload").attr("href", "/files/stream/"+result._id+"/"+result.name+"/full/0");
 					//document.getElementById("modalDownload").href 
-					$("#originalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/full/-1");
+					$("#originalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/full/0");
 					$("#modalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/thumbnail/520");
 				}
 		

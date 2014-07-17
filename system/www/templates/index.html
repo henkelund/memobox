@@ -9,30 +9,22 @@
         <link href="/static/css/box.css" rel="stylesheet">
 		<link rel="icon" type="image/png" href="/static/images/icons/favicon.ico">        
         <script>var browserStatus = 0;</script>
+		<script>
+			var isLocal = true;
+			var username = "{{ username }}";
+		</script>
         <!--[if lte IE 7]>
 			<style>#browserError { display: block; }</style>
 			<script>browserStatus = -1;</script>
 		<![endif]-->
         <!--[if lte IE 8]>
         <script src="/static/js/ie/json2.js"></script>
-		<script>
-		  document.createElement('ng-include');
-		  document.createElement('ng-pluralize');
-		  document.createElement('ng-view');
-		  document.createElement('ng-app');
-		  document.createElement('ui-view');
-		
-		  // Optionally these for CSS
-		  document.createElement('ng:include');
-		  document.createElement('ng:pluralize');
-		  document.createElement('ng:view');
-		</script>
 		<script>browserStatus = -1;</script>
 		<style>#browserError { display: block; }</style>
 		<![endif]-->
 		<!--[if IE 8]><!--> <meta http-equiv="X-UA-Compatible" content="IE=8" /> <!--<![endif]-->
-	<style>
 	{% if islocal == false %}
+	<style>
 	  .jumbotron {
 	  	background-color: #2a00ff;
 		box-shadow: 0px 10px 0px #2705d1;
@@ -41,8 +33,11 @@
 	  #modalDelete {
 		  display: none; 
 	  }
-	{% endif %}
 	</style>
+	<script>
+		isLocal = false;
+	</script>
+	{% endif %}
     </head>
     <body>
         <div class="jumbotron">

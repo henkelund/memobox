@@ -285,16 +285,17 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	    thumbnails = DBSelect('file_thumbnail').where("file = "+str(file_id)).where("width = "+size).query()
 	    
 	    for thumbnail in thumbnails:
-	    	#thumbnail["thumbnail"]
 	    	cache_dir = "/HDD/cache"	    	
 
 	    	if g.islocalbox == False:
 	    		config = DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))
-	    		print jsonify(config)
 	    		cache_dir = "/backups/"+config["BOXUSER"]+"/cache"
+	    		print cache_dir
 	    	
 	    	filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
 	    	mimetype = '%s/%s' % (model.type(), model.subtype())
+	    	print filename
+	    	print mimetype
     else:
 	    if g.islocalbox == False:
 	    	config = DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))
@@ -307,10 +308,19 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 
     if not os.path.isfile(filename):
         abort(404)
+    
+    t = os.stat(filename)
+    sz = str(t.st_size)
 
     _headers = {}
     _headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
     _headers['Cache-Control'] = 'public, max-age=0'
+    _headers["Content-Type"] = "video/mp4"
+    _headers["Content-Disposition"] = "inline"
+    _headers["Content-Transfer-Enconding"] = "binary"
+    _headers["Content-Length"] = "video/mp4"
+    _headers["Content-Type"] = sz
+    mimetype = "video/mp4"
 
     return Response(
                 file(filename),
