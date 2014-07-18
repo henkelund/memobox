@@ -7,7 +7,7 @@
     var box = ng.module('box', ['ngResource', 'ui.router', 'infinite-scroll', 'ngSanitize']);
     exports.box = box;
 	
-	/* Repeat directive that activates tooltip  on loaded devices */
+	/* Repeat directive that activates tooltip  on loaded devices for device info on mouseover*/
 	box.directive('deviceRepeatDirective', function ($timeout) {
         return {
             restrict: 'A',
@@ -40,6 +40,7 @@
 		this.imageCount = -1; 
 	};
 
+	  // Todo, move this from infinity to device 
 	  Infinity.prototype.editDevice = function(device) {
 		  $('#deviceDetailModal').attr("device", device);					  
 		  $.ajax({
@@ -53,6 +54,7 @@
 		  });	  	
 	  }
 
+	  // Todo, move this from infinity to device 
 	  Infinity.prototype.updateDevice = function() {
 		$.ajax({
 		    url : "/device/update?id="+$('#deviceDetailModal').attr("device")+"&product_name="+$("#deviceDetailModalInput").val(),
@@ -63,7 +65,8 @@
 		    }
 		});	  	
 	  }
-	  
+
+	  // Todo, move this from infinity to device 	  
 	  Infinity.prototype.showPicture = function(file) {
 		$.ajax({
 		    url : "/files/details?id="+file,
@@ -112,11 +115,21 @@
 	  	//f.loadDetails(file);	  	
 	  }
 	  
+	  /**
+	  * Method that loads next page in the infinite scroll. Device ID and File type ID can be passed as filtering parameters. 
+	  *	  
+	  **/
 	  Infinity.prototype.nextPage = function(_device, _type) {
+	    // Make sure previous request is not running
 	    if (this.busy) return;
+	    
+	    // Flag this method as running
 	    this.busy = true;	
 	    
+	    // Parameter to determine wether content was replaced or appended. replace => chnageState = true
 	    var changedState = false; 
+		
+		// If a device ID was passed, let's filter on device
 		if(_device != null) {
 			if(this.device != _device) {
 				changedState = true;
@@ -132,6 +145,8 @@
 			}
 			
 
+			/*
+			Not used script that is supposed to list all available months of device
 			$.ajax({
 			    url : "/files/calendar?device="+_device,
 				async: false,
@@ -139,9 +154,10 @@
 			    success : function(result){
 					//alert(JSON.stringify(result));
 			    }
-			});
+			});*/
 		}
-
+		
+		// If a file type(Videos or Images) was added, Let's filter on type
 		if(_type != null) {
 			if(this.type != _type) {
 				changedState = true;
@@ -156,7 +172,13 @@
 				this.type = null;
 			}
 		}
+		
+		// Clear visiable area of old images if the state was changed
+		if(changedState == true) {
+			this.me.items = [];
+		}
 	
+		// Lead request
 		$.ajax({
 		    url : "/files?after="+this.after+"&device="+this.device+"&format="+this.type,
 			async: false,
@@ -168,20 +190,20 @@
 						$("#mainNav").removeClass("in");
 						$("#mainNav-btn").addClass("collapsed");
 					}
-					
-					this.me.items = [];
 				}
 
-				
+				// If response resulted in no images, show error message
 				if(result.files.length == 0 && this.me.items.length == 0) {
 					this.me.missingImages = true; 	
 				} else {
 					this.me.missingImages = false; 
 				}
-
+				
+				// Loop JSON response and add images to ng-repeat array
 			    for(var i = 0; i < result.files.length; i++) {
 			      var type_content = ""; 
 			      
+			      // If current item is a video, add info about lenght in thumbnail. 
 			      if(result.files[i].type == "video" && result.files[i].value != null) {
 			      	  var video_length = result.files[i].value.split(" ")
 			      	  var suffix = "ms"; 
@@ -190,10 +212,13 @@
 			      	  	if(video_length[ind].indexOf(suffix, video_length[ind].length - suffix.length) == -1)
 							type_content += video_length[ind].replace("mn", "min")+" ";
 					  }
-			      }			      
+			      }		
+			      
+			      // Push thumbnail item to ng-repeat array	      
 			      this.me.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});
 			    }			    
-
+				
+				// Increase current page number(for next request)
 		        this.after = this.after + 1;
 		        this.busy = false;		        
 		    }
@@ -209,7 +234,8 @@
     box.config(function ($stateProvider, $urlRouterProvider) {
 
         $urlRouterProvider.otherwise('/');
-
+		
+		// When the application starts we are lading device list and first page of the result. 
         $stateProvider
             .state('devices', {
                 url: '/devices',
@@ -227,21 +253,23 @@
      * Run the box app
      */
     box.run(function ($window) {
-
         ng.element($window).bind('scroll', function () {
-            var winHeight = $($window).height();
-            $('.preview.image').each(function () {
-                var rect = this.getBoundingClientRect(),
-                    el = $(this),
-                    pos,
-                    percent;
-                if (rect.bottom >= 0 && rect.top <= winHeight) {
-                    pos = rect.top / (winHeight - el.height());
-                    percent = Math.round(Math.min(100, Math.max(0,
-                                pos * 100)));
-                    el.css('backgroundPosition', '50% ' + percent + '%');
-                }
-            });
+        	// If the appliaction is running on a desktop computer, add fancy paralax scroll to images
+            if (window.matchMedia && (window.matchMedia("(min-width: 980px)").matches)) {
+	            var winHeight = $($window).height();
+	            $('.preview.image').each(function () {
+	                var rect = this.getBoundingClientRect(),
+	                    el = $(this),
+	                    pos,
+	                    percent;
+	                if (rect.bottom >= 0 && rect.top <= winHeight) {
+	                    pos = rect.top / (winHeight - el.height());
+	                    percent = Math.round(Math.min(100, Math.max(0,
+	                                pos * 100)));
+	                    el.css('backgroundPosition', '50% ' + percent + '%');
+	                }
+	            });
+			}
         });
     });
 
@@ -428,43 +456,6 @@
         };
 
         return new FileService();
-    });
-
-    /**
-     * File thumbnail directive
-     */
-    box.directive('fileThumbnail', function ($window) {
-        return {
-            restrict: 'A',
-            link: function (scope, element) {
-                var el = ng.element(element),
-                    file = scope.file,
-                    imgUrl = '/static/images/';
-                if (file.thumbnail) {
-                    el.addClass('image')
-                        .css('backgroundImage',
-                                'url(' + imgUrl + file.thumbnail + ')')
-			.find('img').attr('src', imgUrl + file.icon_small).hide();
-			$($window).scroll(); // provoke background re-positioning
-                } else {
-                    el.addClass('icon')
-                        .find('img').attr('src', imgUrl + file.icon_large);
-                }
-            }
-        };
-    });
-
-    /**
-     * File extension trim filter
-     */
-    box.filter('trimFileExtension', function () {
-        return function (fileName) {
-            var parts = fileName.split('.');
-            if (parts.length >= 2) {
-                parts.pop();
-            }
-            return parts.join('.');
-        };
     });
 
     /**
