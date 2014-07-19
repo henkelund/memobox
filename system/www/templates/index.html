@@ -70,56 +70,6 @@
         <script type="text/javascript" src="/static/js/angular/angular-sanitize.min.js"></script>
         <script type="text/javascript" src="/static/js/box.js"></script>
         <script type="text/javascript" src="/static/js/datebar.js"></script>
-        <script>
-			var uploadComplete = false; 
-			var progressInterval; 
-						
-			$( document ).ready(function() {
-				loadCloudBackupProgress();
-				progressInterval = setInterval(function(){loadCloudBackupProgress()}, 10000);
-			});
-
-        	function loadCloudBackupProgress() {
-        		if(!uploadComplete && browserStatus >= 0) {
-					$.getJSON( "/lastping", function( data ) {
-					  var items = [];
-					  $.each( data, function( key, val ) {
-					    items[key] = val; //.push( "<li id='" + key + "'>" + val + "</li>" );
-					  });
-					 
-					  var remote_devicecount = items["remote_devicecount"];
-					  var devicecount = items["devicecount"];
-					  var progress = Math.round((remote_devicecount/devicecount)*100);
-					  $("#cloudbackupprogress").html(progress+"%");
-					  $("#cloudbackupprogress").attr("aria-valuenow", progress);
-					  
-					  if(remote_devicecount == 0 && devicecount == 0) {
-						  clearInterval(progressInterval);
-						  $("#progressContainer").hide();
-						  
-					  } else if (progress >= 100) {
-						  uploadComplete = true; 
-						  clearInterval(progressInterval);
-						  $("#progressContainer").show();
-						  $("#progressContainer").css("padding-top", "20px");
-						  $("#progressContainer").html('<a style="color: white;" id="modalDownload" href="#"><span class="icon-white icon-check"></span> All of your data is now safe in the cloud.</a>');
-					  } else {
-						  var progressWidth = 15; 
-						  if(progressWidth > 15) {
-							  progressWidth = progress;
-						  }
-						  
-						  $("#cloudbackupprogress").css("width", progressWidth+"%");
-						  $("#progressContainer").show();
-						  if (!window.matchMedia || (window.matchMedia("(min-width: 767px)").matches)) {
-						  	$(".progress").attr("title", "There are <b>"+items["devicecount"]+"</b> files on your backupbox, of which <b>"+items["remote_devicecount"]+"</b> have been uploaded to the cloud so far. There are <b>"+(items["devicecount"]-items["remote_devicecount"])+"</b> files left to transfer.");
-	                        $(".progress").tooltip();
-                        }					  
-					  }					  
-					});
-				}
-			}
-        </script>
     </body>
 </html>
 

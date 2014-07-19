@@ -117,3 +117,94 @@ function refreshDate() {
 }
 
 setTimeout("refreshDate()", 500);*/
+
+var uploadComplete = false; 
+var progressInterval; 
+			
+$( document ).ready(function() {
+	loadCloudBackupProgress();
+	progressInterval = setInterval(function(){loadCloudBackupProgress()}, 10000);
+});
+
+function loadCloudBackupProgress() {
+	if(!uploadComplete && browserStatus >= 0) {
+		$.getJSON( "/lastping", function( data ) {
+		  var items = [];
+		  $.each( data, function( key, val ) {
+		    items[key] = val; //.push( "<li id='" + key + "'>" + val + "</li>" );
+		  });
+		 
+		  var remote_devicecount = items["remote_devicecount"];
+		  var devicecount = items["devicecount"];
+		  var progress = Math.round((remote_devicecount/devicecount)*100);
+		  $("#cloudbackupprogress").html(progress+"%");
+		  $("#cloudbackupprogress").attr("aria-valuenow", progress);
+		  
+		  if(remote_devicecount == 0 && devicecount == 0) {
+			  clearInterval(progressInterval);
+			  $("#progressContainer").hide();
+			  
+		  } else if (progress >= 100) {
+			  uploadComplete = true; 
+			  clearInterval(progressInterval);
+			  $("#progressContainer").show();
+			  $("#progressContainer").css("padding-top", "20px");
+			  $("#progressContainer").html('<a style="color: white;" id="modalDownload" href="#"><span class="icon-white icon-check"></span> All of your data is now safe in the cloud.</a>');
+		  } else {
+			  var progressWidth = 15; 
+			  if(progressWidth > 15) {
+				  progressWidth = progress;
+			  }
+			  
+			  $("#cloudbackupprogress").css("width", progressWidth+"%");
+			  $("#progressContainer").show();
+			  if (!window.matchMedia || (window.matchMedia("(min-width: 767px)").matches)) {
+			  	$(".progress").attr("title", "There are <b>"+items["devicecount"]+"</b> files on your backupbox, of which <b>"+items["remote_devicecount"]+"</b> have been uploaded to the cloud so far. There are <b>"+(items["devicecount"]-items["remote_devicecount"])+"</b> files left to transfer.");
+                $(".progress").tooltip();
+            }					  
+		  }					  
+		});
+	}
+}
+
+var lastTimstamp = Math.pow(2, 53); 
+var lastMonth = -1; 
+var lastYear = -1; 
+
+function resetDate() {
+	lastTimstamp = Math.pow(2, 53); 
+	lastMonth = -1; 
+	lastYear = -1; 
+}
+
+function parseDate() {
+	var counter = 0; 
+	var _months = Array("January","February","March","April","May","June","July","August","September","October","November","December");
+	var firstLeft = -1; 
+
+	$(".thumbnails .image").each(function( index ) {
+		if(counter == 0)
+			firstLeft = $( this ).position().left;
+			
+		var time = new Date($( this ).parent().attr("timestamp")*1000);
+		var viewMonth = String(_months[time.getMonth()]).substr(0, 3);
+		var viewYear = time.getFullYear().toString();
+		var viewDate = time.getDate();
+
+		if(counter == 3) {
+			//alert(time.getTime() + " /// " + lastTimstamp);
+		}
+
+		if(time.getTime() < lastTimstamp && lastMonth != viewMonth) {
+			alert(time.getTime() + " /// " + lastTimstamp);
+			$( this ).append('<div class="dateHolder" style="left: '+(firstLeft - $( this ).position().left - 90)+'px; top: 0px; "><div class="month">'+viewMonth + '</div><div class="year">' + viewYear +'</div></div>');
+			lastTimstamp = time.getTime(); 
+			lastMonth = viewMonth;
+			lastYear = viewYear;
+		}
+		
+		counter++;
+	})
+}
+
+//alert($(".thumbnails .image:in-viewport").first().attr("timestamp"));

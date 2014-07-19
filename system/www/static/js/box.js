@@ -25,6 +25,21 @@
             }
         }
      });
+
+	/* Repeat directive that manages thumbnail repeats */
+	box.directive('thumbnailRepeatDone', function ($timeout) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attr) {
+                if (scope.$last === true) {
+                    $timeout(function () {
+                        //scope.$emit('thumbnailRepeatDirective');
+                        eval(attr.thumbnailRepeatDone);
+                    });
+                }
+            }
+        }
+     });
 	
 	// Infinity constructor function to encapsulate HTTP and pagination logic
 	box.factory('Infinity', function($http) {
@@ -177,6 +192,7 @@
 		// Clear visiable area of old images if the state was changed
 		if(changedState == true) {
 			this.me.items = [];
+			resetDate();
 		}
 	
 		// Lead request
@@ -221,7 +237,7 @@
 				
 				// Increase current page number(for next request)
 		        this.after = this.after + 1;
-		        this.busy = false;		        
+		        this.busy = false;
 		    }
 		});
 	  };
