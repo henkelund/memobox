@@ -6,12 +6,6 @@ body {
 	display: none;
 }
 
-.navbar-inverse .nav > li > a {
-	color: white; 
-	text-shadow: none;
-	opacity: 0.75;
-}
-
 .browserMessage {
 	text-align: center; 
 	font-size: 42px; 
@@ -131,6 +125,20 @@ p.text {
 #libContainer {
 	margin-left: 30px; 
 }
+
+.navbar-inverse .nav > li > a {
+	color: #CCC; 
+	text-shadow: none;
+}
+
+.navbar-inverse .nav > li > a .icon-white { 
+	opacity: 0.75;
+}
+
+.navbar-inverse .nav > li > a span { 
+	padding: 2px 4px 2px;
+}
+
 
 #device-list {
 	margin-left: -30px; 
