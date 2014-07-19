@@ -183,6 +183,9 @@ p.text {
 	  visibility: hidden;
 }
 
+.navbar-inner {
+	padding: 0px;
+}	
 	
 .date-navbar {
 	margin-bottom: 0px;
@@ -280,6 +283,12 @@ div.video .typecontent {
 	}
 
 
+#devicenav {
+	width: 82%;
+	max-height: 40px;
+	overflow: hidden;
+}
+
 @media (max-width: 1199px) {
 	#libContainer {
 		margin-left: 20px; 	
@@ -289,10 +298,25 @@ div.video .typecontent {
 		margin-left: -20px; 
 		margin-right: 0px; 	
 	}
+	
+	#devicenav {
+	width: 78%;
+	}
 
 }
 
-@media (max-width: 767px) {
+@media (max-width: 980px) {
+	#filternav {
+		display: none;		
+	}
+	
+	#devicenav {
+		max-height: none;
+		overflow: visible;
+	}
+}
+
+@media (max-width: 767px) {	
     .jumbotron {
         padding: 20px 10px;
         margin-right: -20px;
