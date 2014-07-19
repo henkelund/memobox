@@ -231,6 +231,7 @@ def file_devices_action():
 
 @app.route('/files/details')
 def file_details_action():
+    data = []
     model = FileModel().load(request.args.get('id'))
     thumbnails = DBSelect('file').join('file_thumbnail', 'file._id = file_thumbnail.file', "thumbnail").where("file._id = "+str(request.args.get('id'))).where("file_thumbnail.width = 520").query()
 
@@ -241,9 +242,15 @@ def file_details_action():
 
     for device in devices:
     	model.set_data('product_name', device["product_name"])
-    
+
+    data_list = model.get_data()
+    for key, value in data_list.items():
+		if key == "name" or key == "thumbnail":
+			new_value = value.decode('unicode-escape')
+			data_list[key] = new_value
+			#data_list[key] = value.decode('iso-8859-1')
     	    
-    return jsonify(model.get_data())
+    return jsonify(data_list)
 
 @app.route('/files/hide')
 def file_hide_action():
