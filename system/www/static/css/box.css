@@ -6,6 +6,11 @@ body {
 	display: none;
 }
 
+.navbar-inverse .nav > li > a {
+	color: white; 
+	text-shadow: none;
+}
+
 .browserMessage {
 	text-align: center; 
 	font-size: 42px; 
@@ -134,18 +139,14 @@ p.text {
 	.device {
 		background-color: transparent; 
 	}
-
-	.selectedDevice, .navbar-inverse .nav > li > a.selectedDevice {
-		/*text-decoration: underline; */
-		border-bottom: 2px solid white; 
-		padding-bottom: 2px; 
-		color: white; 	
-	}
 	
-	.device .label {
+	.device .label, #formatFilter .label {
 		font-size: 100%; 
 		font-weight: normal;
 		padding: 4px;
+		padding-bottom: 2px;
+		padding-top: 2px;
+		color: white; 
 	}
 	
 	.device span {
@@ -259,11 +260,6 @@ div.video .typecontent {
 
 	#formatFilter .type {
 		display: inline; 
-		padding-left: 30px; 
-		padding-bottom: 0px; 
-		background-repeat: no-repeat; 
-		background-size: 20px; 
-		background-position: left 10px;
 	}
 	
 	#formatFilter .photo {

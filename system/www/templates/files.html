@@ -12,7 +12,7 @@
 				        <li ng-repeat="device in FilesCtrl.fileService.devices" device-repeat-directive class="dropdown">
 				        	<a href="javascript:void(0)" id="{{device.id}}" data-placement="bottom" data-trigger="hover" nng-click="infinity.editDevice('{{device.id}}')" data-html="true" ng-attr-title="<div class='imageContainer'><img src='/static/images/icons/{{device.symbol}}.png' /></div>{{device.thumbnails}} photos<br />{{device.videos}} videos<br />Status: {{device.message}}" class="device" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span></a>
 				        </li>
-						<li id="formatFilter"><a href="#" ng-click="infinity.nextPage(null,'image')" id="type-image" title="Show only photos" class="type photo">Photo</a><a href="#" ng-click="infinity.nextPage(null,'video')" id="type-video" title="Show only videos" class="type video">Video</a></li>
+						<li style="border-left: 1px solid grey; padding-left: 20px;" id="formatFilter"><a  href="javascript:void(0)"ng-click="infinity.nextPage(null,'image')" id="type-image" title="Show only photos" class="type"><span><div class="icon-white icon-picture"></div> Photo</span></a><a  href="javascript:void(0)" ng-click="infinity.nextPage(null,'video')" id="type-video" title="Show only videos" class="type"><span><div class="icon-white icon-facetime-video"></div> Video</span></a></li>
 					</ul>
 				</div>
 			</div>

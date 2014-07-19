@@ -162,13 +162,13 @@
 			if(this.type != _type) {
 				changedState = true;
 				this.after = 1; 
-				$(".type").removeClass("selectedDevice");
-				$("#type-"+_type).addClass("selectedDevice");
+				$(".type span").removeClass("label label-success");
+				$("#type-"+_type+" span").addClass("label label-success");
 				this.type = _type; 				
 			} else {
 				changedState = true;
 				this.after = 1; 
-				$(".type").removeClass("selectedDevice");
+				$(".type span").removeClass("label label-success");
 				this.type = null;
 			}
 		}
