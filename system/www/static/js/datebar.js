@@ -196,7 +196,6 @@ function parseDate() {
 		}
 
 		if(time.getTime() < lastTimstamp && lastMonth != viewMonth) {
-			alert(time.getTime() + " /// " + lastTimstamp);
 			$( this ).append('<div class="dateHolder" style="left: '+(firstLeft - $( this ).position().left - 90)+'px; top: 0px; "><div class="month">'+viewMonth + '</div><div class="year">' + viewYear +'</div></div>');
 			lastTimstamp = time.getTime(); 
 			lastMonth = viewMonth;

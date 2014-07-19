@@ -272,7 +272,7 @@
     box.run(function ($window) {
         ng.element($window).bind('scroll', function () {
         	// If the appliaction is running on a desktop computer, add fancy paralax scroll to images
-            if (window.matchMedia && (window.matchMedia("(min-width: 1025px)").matches)) {
+            if (false && window.matchMedia && (window.matchMedia("(min-width: 1025px)").matches)) {
 	            var winHeight = $($window).height();
 	            $('.preview.image').each(function () {
 	                var rect = this.getBoundingClientRect(),
