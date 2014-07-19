@@ -86,7 +86,7 @@
 				$("#filesDetailModalLabel").attr("file", file);
 				
 				if(result.type == "video") {
-					$("#moddalVideoContainer").html('<video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay"><source id="modalSource" src="" type="video/mp4" /></video>');
+					$("#moddalVideoContainer").html('<video id="modalVideo" style="display: none;" width="100%" height="520" controls="controls" autoplay="autoplay"><source id="modalSource" src="" type="video/mp4" /></video>');
 					
 					if(isLocal) {
 						$("#modalVideo > source").attr("src", result.abspath.replace("/backupbox/data/devices/", "/static/devices/")+"/"+result.name);
@@ -134,12 +134,12 @@
 			if(this.device != _device) {
 				changedState = true;
 				this.after = 1; 
-				$(".device span").removeClass("selectedDevice");
-				$("#"+_device+" span").addClass("selectedDevice");
+				$(".device span").removeClass("label label-success");
+				$("#"+_device+" span").addClass("label label-success");
 				this.device = _device; 
 			} else {
 				this.device = -1; 
-				$(".device span").removeClass("selectedDevice");
+				$(".device span").removeClass("label label-success");
 				this.after = 1; 
 				changedState = true; 
 			}
@@ -255,7 +255,7 @@
     box.run(function ($window) {
         ng.element($window).bind('scroll', function () {
         	// If the appliaction is running on a desktop computer, add fancy paralax scroll to images
-            if (window.matchMedia && (window.matchMedia("(min-width: 980px)").matches)) {
+            if (window.matchMedia && (window.matchMedia("(min-width: 1025px)").matches)) {
 	            var winHeight = $($window).height();
 	            $('.preview.image').each(function () {
 	                var rect = this.getBoundingClientRect(),

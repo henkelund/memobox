@@ -142,6 +142,16 @@ p.text {
 		color: white; 	
 	}
 	
+	.device .label {
+		font-size: 100%; 
+		font-weight: normal;
+		padding: 4px;
+	}
+	
+	.device span {
+		padding: 4px;
+	}
+	
 
 #dateHolder {
       background: #f7e635;
