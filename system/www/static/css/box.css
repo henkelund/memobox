@@ -286,7 +286,7 @@ div.video .typecontent {
 #devicenav {
 	width: 82%;
 	max-height: 40px;
-	overflow: hidden;
+	/*overflow: hidden;*/
 }
 
 @media (max-width: 1199px) {
@@ -396,6 +396,11 @@ div.video .typecontent {
 
 #progressContainer div.tooltip-inner {
 	padding: 10px; 
+}
+
+div.tooltip {
+	position: absolute;
+	z-index: 10000;
 }
 
 div.tooltip-inner {

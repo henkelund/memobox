@@ -15,7 +15,8 @@
                 if (scope.$last === true) {
                     $timeout(function () {
                         scope.$emit('deviceRepeatDirective');
-                        if (!window.matchMedia || (window.matchMedia("(min-width: 767px)").matches)) {
+                        var is_touch_device = 'ontouchstart' in document.documentElement;
+						if(!is_touch_device && window.matchMedia("(min-width: 981px)").matches) {
 	                        //$(".device").on('click',function(){$(this).tooltip('destroy');});
 	                        $(".device").tooltip();
                         }
