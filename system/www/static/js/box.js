@@ -71,8 +71,13 @@
 			        $("#device-message").remove();
 			        if(this.device != -1) {
 			        	var last_backup = new Date(this.device_info.last_backup*1000);
-			        
-			        	$("#infiniteContainer").before("<div id='device-message' style='background-color: #DDD; padding: 5px; padding-left: 15px; margin-bottom: 10px;  '><div style='float: left;'><b>"+this.device_info.product_name+"</b> (<a href='#' onClick=\"$('#deviceDetailModal').modal('show')\">Change name</a>) – "+this.device_info.image_count+" images and "+this.device_info.video_count+" videos. Last backup of this device was: "+ (last_backup.getYear()+1900)+"-"+ ('0' + last_backup.getMonth()).slice(-2)+"-"+('0' + last_backup.getDate()).slice(-2)+"</div><div style='float: right;'></div><br style='clear:both;' /></div>");
+						var last_backup_string = ""; 
+						
+						if(this.device_info.last_backup > 0) {
+							last_backup_string = "Last backup of this device was: "+ (last_backup.getYear()+1900)+"-"+ ('0' + last_backup.getMonth()).slice(-2)+"-"+('0' + last_backup.getDate()).slice(-2);
+						}
+
+			        	$("#infiniteContainer").before("<div id='device-message' style='background-color: #DDD; padding: 5px; padding-left: 15px; margin-bottom: 10px;  '><div style='float: left;'><b>"+this.device_info.product_name+"</b> (<a href='#' onClick=\"$('#deviceDetailModal').modal('show')\">Change name</a>) – "+this.device_info.image_count+" images and "+this.device_info.video_count+" videos. "+last_backup_string+"</div><div style='float: right;'></div><br style='clear:both;' /></div>");
 			        }
 			    }
 		  });	  	
@@ -125,8 +130,6 @@
 				} else {
 					$("#modalVideo").hide();
 					$("#modalImage").show();
-					$("#modalDownload").attr("href", "/files/stream/"+result._id+"/"+result.name+"/full/0");
-					//document.getElementById("modalDownload").href 
 					$("#originalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/full/0");
 					$("#modalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/thumbnail/520");
 				}
