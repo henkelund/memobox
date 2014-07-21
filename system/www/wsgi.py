@@ -160,19 +160,22 @@ def lastping():
 		return jsonify(ping)
 
 @app.route('/ping')
+# Called by the local box client to send box information to the cloud software. Will never be used locally. 
 def file_ping_action():
+	# Call installer script that creats the ping database if it is not present
 	try:
 		PingModel.install();	
 	except:
 		print "Ping table already exists"
-	#try:
+	
+	# Retreive information from the ping request and store that information in the ping database
 	PingModel.ping(request.args.get('local_ip'), request.args.get('public_ip'), request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'), request.args.get('username'), request.args.get('devicecount'), request.args.get('cachecount'));
-	#except:
-	#    return "error"
-	    
+	
+	# If no errors where thrown, respond ok to the local box. Any other response will cause green LED to start blinking. 
 	return "ok"
 
 @app.route('/device/update')
+# Used to change the name of a backup device
 def file_devicedetail_action():
     device = DeviceModel().load(str(request.args.get('id')))
     device.add_data({"product_name" : str(request.args.get('product_name'))})
@@ -180,8 +183,13 @@ def file_devicedetail_action():
     return "ok"
 
 @app.route('/device/detail')
+# Retreivs information about a device
 def file_deviceupdate_action():
     device = DeviceModel().load(str(request.args.get('id')))
+    device_data = device.get_data();
+    device_data["image_count"] = DeviceModel().image_count(str(request.args.get('id')));
+    device_data["video_count"] = DeviceModel().video_count(str(request.args.get('id')));
+    device_data["last_backup"] = DeviceModel().last_backup(str(request.args.get('id')));
     return jsonify(device.get_data())
 
 @app.route('/devices')
@@ -219,7 +227,7 @@ def file_devices_action():
             'state': device.state(),
             'model': device.model(),
             'product_id': device.product_id(),
-            'last_backup': device.last_backup(),
+            'last_backup': DeviceModel().last_backup(str(device.id())),
             'images': imagecount,
             'videos': videocount,
             'thumbnails': thumbnailcount,
@@ -327,7 +335,7 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
     _headers["Content-Transfer-Enconding"] = "binary"
     _headers["Content-Length"] = "video/mp4"
     _headers["Content-Type"] = sz
-    mimetype = "video/mp4"
+    #mimetype = "video/mp4"
 
     return Response(
                 file(filename),

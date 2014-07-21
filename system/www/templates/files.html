@@ -1,5 +1,10 @@
 <div ng-controller='FilesCtrl' class="container">
 	<div id="libContainer">
+        <!-- ul class="nav nav-tabs nav-justified" role="tablist">
+			<li><a>Backupbox</a></li>
+			<li><a>Cloudbox</a></li>
+			<li><a>Printouts</a></li>
+  		</ul -->
 		<div id="device-list" class="navbar navbar-inverse navbar-static-top">
 		    <div class="navbar-inner">
 		        <a id="mainNav-btn" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
@@ -10,7 +15,7 @@
 			    <div id="mainNav" class="nav-collapse collapse navbar-inverse-collapse">
 					<ul id="devicenav" class="nav">
 				        <li ng-repeat="device in FilesCtrl.fileService.devices" device-repeat-directive class="dropdown">
-				        	<a href="javascript:void(0)" id="{{device.id}}" data-placement="bottom" data-trigger="hover" nng-click="infinity.editDevice('{{device.id}}')" data-html="true" ng-attr-title="<div class='imageContainer'><img src='/static/images/icons/{{device.symbol}}.png' /></div>{{device.thumbnails}} photos<br />{{device.videos}} videos<br />Status: {{device.message}}" class="device" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span></a>
+					        	<a href="javascript:void(0)" id="{{device.id}}" data-placement="bottom" data-trigger="hover" nng-click="infinity.editDevice('{{device.id}}')" data-html="true" ng-attr-title="<div class='imageContainer'><img src='/static/images/icons/{{device.symbol}}.png' /></div>{{device.thumbnails}} photos<br />{{device.videos}} videos<br />Status: {{device.message}}" class="device" ng-click="infinity.nextPage('{{device.id}}');infinity.editDevice('{{device.id}}')"><span>{{device.product_name}}</span></a>
 				        </li>
 					</ul>
 					<ul id="filternav" class="nav" style="float: right;">
@@ -23,7 +28,7 @@
 		<!-- div class="navbar date-navbar"><div class="navbar-inner" id="dateHolder"></div></div -->
 	    <ul class="thumbnails">
 			<div ng-app='box'>
-			  <div infinite-scroll='infinity.nextPage()' infinite-scroll-disabled='infinity.busy' infinite-scroll-distance='1'>
+			  <div id="infiniteContainer" infinite-scroll='infinity.nextPage()' infinite-scroll-disabled='infinity.busy' infinite-scroll-distance='1'>
 			  		<div ng-show="FilesCtrl.fileService.missingDevices" class="browserMessage">
 			  			Start using your Backupbox by connecting any USB-compatible device the the USB port on your box. 
 			  		</div>

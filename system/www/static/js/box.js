@@ -54,6 +54,7 @@
 		this.device = -1; 
 		this.type = null;
 		this.imageCount = -1; 
+		this.device_info = null;
 	};
 
 	  // Todo, move this from infinity to device 
@@ -65,7 +66,14 @@
 				context: this,
 			    success : function(result){
 			        $("#deviceDetailModalInput").attr("value", result.product_name);
-			        $('#deviceDetailModal').modal('show');				
+			        //$('#deviceDetailModal').modal('show');				
+			        this.device_info = result; 
+			        $("#device-message").remove();
+			        if(this.device != -1) {
+			        	var last_backup = new Date(this.device_info.last_backup*1000);
+			        
+			        	$("#infiniteContainer").before("<div id='device-message' style='background-color: #DDD; padding: 5px; padding-left: 15px; margin-bottom: 10px;  '><div style='float: left;'><b>"+this.device_info.product_name+"</b> (<a onClick=\"$('#deviceDetailModal').modal('show')\">Change name</a>) – "+this.device_info.image_count+" images and "+this.device_info.video_count+" videos. Last backup of this device was: "+ (last_backup.getYear()+100)+"-"+last_backup.getMonth()+"-"+last_backup.getDate()+"</div><div style='float: right;'></div><br style='clear:both;' /></div>");
+			        }
 			    }
 		  });	  	
 	  }
@@ -158,6 +166,7 @@
 				$(".device span").removeClass("label label-success");
 				this.after = 1; 
 				changedState = true; 
+				$("#device-message").remove();
 			}
 			
 

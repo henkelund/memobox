@@ -149,7 +149,7 @@ function loadCloudBackupProgress() {
 			  clearInterval(progressInterval);
 			  $("#progressContainer").show();
 			  $("#progressContainer").css("padding-top", "20px");
-			  $("#progressContainer").html('<a style="color: white;" id="modalDownload" href="#"><span class="icon-white icon-check"></span> All of your data is now safe in the cloud.</a>');
+			  $("#progressContainer").html('<div style="color: white;" id="modalDownload"><span class="icon-white icon-check"></span> All of your data is now safe in the cloud.</div>');
 		  } else {
 			  var progressWidth = 15; 
 			  if(progressWidth > 15) {
@@ -182,21 +182,22 @@ function parseDate() {
 	var _months = Array("January","February","March","April","May","June","July","August","September","October","November","December");
 	var firstLeft = -1; 
 
-	$(".thumbnails .image").each(function( index ) {
+	$(".thumbnails .preview").each(function( index ) {
 		if(counter == 0)
 			firstLeft = $( this ).position().left;
 			
-		var time = new Date($( this ).parent().attr("timestamp")*1000);
+		var time = new Date($( this ).attr("timestamp")*1000);
 		var viewMonth = String(_months[time.getMonth()]).substr(0, 3);
 		var viewYear = time.getFullYear().toString();
 		var viewDate = time.getDate();
 
 		if(counter == 3) {
+			//alert($( this ).html() + "--" + $( this ).attr("timestamp"));
 			//alert(time.getTime() + " /// " + lastTimstamp);
 		}
 
 		if(time.getTime() < lastTimstamp && lastMonth != viewMonth) {
-			$( this ).append('<div class="dateHolder" style="left: '+(firstLeft - $( this ).position().left - 90)+'px; top: 0px; "><div class="month">'+viewMonth + '</div><div class="year">' + viewYear +'</div></div>');
+			$( this ).append('<div class="dateHolder" style="left: '+(firstLeft - $( this ).position().left - 90)+'px; top: -5px; "><div class="month">'+viewMonth + '</div><div class="year">' + viewYear +'</div></div>');
 			lastTimstamp = time.getTime(); 
 			lastMonth = viewMonth;
 			lastYear = viewYear;
@@ -204,6 +205,7 @@ function parseDate() {
 		
 		counter++;
 	})
+	//alert(counter);
 }
 
 //alert($(".thumbnails .image:in-viewport").first().attr("timestamp"));

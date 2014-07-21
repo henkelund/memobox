@@ -58,6 +58,21 @@ class DeviceModel(BaseModel):
         self.save()
         return self
 
+    def image_count(self, device_id):
+	    counts = DBHelper().query("SELECT COUNT(*) as image_count FROM file WHERE device = %s AND type = 'image'" % device_id);
+	    for count in counts:
+	    	return count['image_count']
+
+    def video_count(self, device_id):
+	    counts = DBHelper().query("SELECT COUNT(*) as video_count FROM file WHERE device = %s AND type = 'video'" % device_id);
+	    for count in counts:
+	    	return count['video_count']
+
+    def last_backup(self, device_id):
+	    backups = DBHelper().query("SELECT indexed_at as last_backup FROM file WHERE device = %s ORDER BY indexed_at DESC LIMIT 1;" % device_id);
+	    for backup in backups:
+	    	return backup['last_backup']
+
     @classmethod
     def _install(cls):
         """Define install routines for this model"""
