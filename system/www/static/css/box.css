@@ -421,3 +421,17 @@ div.tooltip-inner .imageContainer {
 	margin-right: 20px;
 	height: 80px;
 }
+
+/* Box customizations of justified nav */
+
+.tablist  a {
+	color: white; 
+}
+
+.tablist li.active a {
+	font-weight: bold; 
+}
+
+/*.tablist li {
+	background-color: #2705d1;
+}*/
