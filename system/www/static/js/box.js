@@ -45,15 +45,14 @@
 	box.factory('Infinity', function($http) {
 	  var Infinity = function($scope) {
 	  	this.me = $scope;
-	    this.images = [];
-	    this.cart = new Object();
 	    this.busy = false;
-	    this.after = 1;
-	    this.viewMonth = null;
-	    this.viewYear = null; 
-		this.monthArr = "Alert";
+	    this.page = 1;
 		this.device = -1; 
 		this.type = null;
+
+		this.price = 0.11;
+		this.shipping = 5;
+
 		this.imageCount = -1; 
 		this.device_info = null;
 	};
@@ -96,30 +95,37 @@
 		});	  	
 	  }
 
+	  Infinity.prototype.nextCheckoutStep = function(){
+		this.me.checkoutstep++;
+	  }
+
+	  Infinity.prototype.updateCart = function(event){
+		this.price = event.target.attributes.price.value;
+		$(".photosize button").removeClass("active");
+		$(event.target).addClass('active');
+		
+		$(".price").html(this.price);
+		$(".shipping").html(this.shipping);
+		$(".totals").html(this.me.cart.length*this.price + this.shipping);
+		
+		this.me.checkoutstep = 2;
+	  }
+
 	  Infinity.prototype.addToCart = function(image, url){
-		//alert(id + " " + image);
 		if(this.me.cart == null) {
 			this.me.cart = [];
 		}
 		var obj = JSON.parse(image);
 		
 		this.me.cart.push(obj);
-		
-		/*this.cart[id] = image;
-		var count = 0; 
-		
-		alert(id);
-		alert(id.id);
-		
-		for (var k in this.cart) {
-			if (this.cart.hasOwnProperty(k)) {
-			    //alert('key is: ' + k + ', value is: ' + cart[k]);
-			    count++;
-			}
-		} */
-		
+		this.me.checkoutstep = 0;
+				
 		$("#cart").html("("+this.me.cart.length+")");
-		  
+		$(".photocount").html(this.me.cart.length);
+		$(".price").html(this.price);
+		$(".shipping").html(this.shipping);
+		$(".rowtotals").html(this.me.cart.length*this.price);
+		$(".totals").html(this.me.cart.length*this.price + this.shipping);
 	  }
 
 	  // Todo, move this from infinity to device 	  
@@ -187,14 +193,14 @@
 		if(_device != null) {
 			if(this.device != _device) {
 				changedState = true;
-				this.after = 1; 
+				this.page = 1; 
 				$(".device span").removeClass("label label-success");
 				$("#"+_device+" span").addClass("label label-success");
 				this.device = _device; 
 			} else {
 				this.device = -1; 
 				$(".device span").removeClass("label label-success");
-				this.after = 1; 
+				this.page = 1; 
 				changedState = true; 
 				$("#device-message").remove();
 			}
@@ -216,13 +222,13 @@
 		if(_type != null) {
 			if(this.type != _type) {
 				changedState = true;
-				this.after = 1; 
+				this.page = 1; 
 				$(".type span").removeClass("label label-success");
 				$("#type-"+_type+" span").addClass("label label-success");
 				this.type = _type; 				
 			} else {
 				changedState = true;
-				this.after = 1; 
+				this.page = 1; 
 				$(".type span").removeClass("label label-success");
 				this.type = null;
 			}
@@ -236,7 +242,7 @@
 	
 		// Lead request
 		$.ajax({
-		    url : "/files?after="+this.after+"&device="+this.device+"&format="+this.type,
+		    url : "/files?after="+this.page+"&device="+this.device+"&format="+this.type,
 			async: false,
 			context: this,
 		    success : function(result){
@@ -275,7 +281,7 @@
 			    }			    
 				
 				// Increase current page number(for next request)
-		        this.after = this.after + 1;
+		        this.page = this.page + 1;
 		        this.busy = false;
 		    }
 		});

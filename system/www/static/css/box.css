@@ -465,3 +465,37 @@ div.tooltip-inner .imageContainer {
 #printouts {
 	display: none;
 }
+
+.print-form {
+	display: none;
+}
+
+.summary table td {
+	padding: 10px;
+}
+
+
+/* Bootstrap fix */
+.form-horizontal input {
+	margin-bottom: 10px;
+}
+
+.print {
+	position: absolute;
+	margin-top: -50px; 
+	margin-left: 210px; 	
+	display: none; 
+}
+
+.thumbnail:hover .print {
+	display: block;
+}
+
+.nav-tabs > li > a, .nav-tabs > li > a {
+	background-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
+	background-color: rgba(255, 255, 255, 0.5);
+	border-color: transparent;
+}
