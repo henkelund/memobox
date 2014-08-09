@@ -208,4 +208,25 @@ function parseDate() {
 	//alert(counter);
 }
 
+function displayTab(id) {
+	$(".tablist li").each(function() {
+		$(this).removeClass("active");
+	});
+	
+	$(".tablist li a div").each(function() {
+		$(this).removeClass("icon");
+		$(this).addClass("icon-white");
+	});
+	
+	
+	$("#"+id).addClass("active");
+	$("#"+id+" a div").removeClass("icon-white");
+	$("#"+id+" a div").addClass("icon");
+	
+	//Hide and Show related elements
+	$($("#"+id).attr("show")).show();
+	$($("#"+id).attr("hide")).hide();
+	
+}
+
 //alert($(".thumbnails .image:in-viewport").first().attr("timestamp"));

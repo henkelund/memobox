@@ -424,14 +424,44 @@ div.tooltip-inner .imageContainer {
 
 /* Box customizations of justified nav */
 
-.tablist  a {
+.tablist {
+	padding-left: 8%; 
+	padding-right: 15%; 
+	width: 84%; 
+	background-color: #2a00ff;	
+}
+
+.tablist h1 {
+	padding-top: 20px; 
+	padding-bottom: 20px; 
 	color: white; 
+	font-weight: bold;	
+	font-size: 18px; 
+	margin: 0px; 
+	padding: 0px; 
+	margin-left: 15px; 
+	margin-top: 20px; 
+	margin-bottom: 10px; 
+}
+
+.tablist  li a {
+	color: white; 
+	padding-left: 100px;
+	padding-right: 100px;
 }
 
 .tablist li.active a {
 	font-weight: bold; 
 }
 
+.tablist  li a:hover {
+	background: transparent;
+}
+
 /*.tablist li {
 	background-color: #2705d1;
 }*/
+
+#printouts {
+	display: none;
+}

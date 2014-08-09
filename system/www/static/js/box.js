@@ -46,6 +46,7 @@
 	  var Infinity = function($scope) {
 	  	this.me = $scope;
 	    this.images = [];
+	    this.cart = new Object();
 	    this.busy = false;
 	    this.after = 1;
 	    this.viewMonth = null;
@@ -93,6 +94,32 @@
 		        window.location = "/"; 
 		    }
 		});	  	
+	  }
+
+	  Infinity.prototype.addToCart = function(image, url){
+		//alert(id + " " + image);
+		if(this.me.cart == null) {
+			this.me.cart = [];
+		}
+		var obj = JSON.parse(image);
+		
+		this.me.cart.push(obj);
+		
+		/*this.cart[id] = image;
+		var count = 0; 
+		
+		alert(id);
+		alert(id.id);
+		
+		for (var k in this.cart) {
+			if (this.cart.hasOwnProperty(k)) {
+			    //alert('key is: ' + k + ', value is: ' + cart[k]);
+			    count++;
+			}
+		} */
+		
+		$("#cart").html("("+this.me.cart.length+")");
+		  
 	  }
 
 	  // Todo, move this from infinity to device 	  
