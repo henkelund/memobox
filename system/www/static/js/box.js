@@ -118,12 +118,31 @@
 			this.me.cart = [];
 		}
 		
-		$(event.target).parent().addClass("visible");
 		var obj = JSON.parse(image);
-		this.me.cart.push(obj);
+		var inCart = false; 
+		var cartIndex = 0; 
+		
+		for (var index = 0; index < this.me.cart.length; ++index) {
+		    if(this.me.cart[index].id == obj.id) {
+			    inCart = true; 
+			    cartIndex = index; 
+		    }
+		}
+		
+		if(!inCart) {
+			$(event.target).parent().addClass("visible");
+			this.me.cart.push(obj);
+		} else {
+			$(event.target).parent().removeClass("visible");			
+			this.me.cart.splice(cartIndex, 1);
+		}
+		
 		this.me.checkoutstep = 0;
-				
-		$("#cart").html("("+this.me.cart.length+")");
+		
+		if(this.me.cart.length > 0)
+			$("#cart").html("("+this.me.cart.length+")");
+		else 
+			$("#cart").html("");
 	  }
 
 	  // Todo, move this from infinity to device 	  
