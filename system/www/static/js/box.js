@@ -17,7 +17,6 @@
                         scope.$emit('deviceRepeatDirective');
                         var is_touch_device = 'ontouchstart' in document.documentElement;
 						if(!is_touch_device && window.matchMedia("(min-width: 981px)").matches) {
-	                        //$(".device").on('click',function(){$(this).tooltip('destroy');});
 	                        $(".device").tooltip();
                         }
                     });
@@ -50,7 +49,6 @@
 		this.device = -1; 
 		this.type = null;
 		this.photolist = new Object();
-
 		this.price = 0.11;
 		this.shipping = 5;
 
@@ -100,6 +98,10 @@
 		this.publish.checkoutstep++;
 	  }
 
+	  Infinity.prototype.nextCheckoutStep = function(){
+		this.publish.checkoutstep++;
+	  }
+
 	  Infinity.prototype.updateCart = function(event){
 		this.price = event.target.attributes.price.value;
 		$(".photosize button").removeClass("active");
@@ -113,12 +115,22 @@
 		this.publish.checkoutstep = 2;
 	  }
 
-	  Infinity.prototype.addToCart = function(image, url, event){
+	  Infinity.prototype.addToCart = function(image, event){	    
 		if(this.publish.cart == null) {
 			this.publish.cart = [];
 		}
 		
-		var obj = JSON.parse(image);
+		var obj = null; 
+		
+		if(image != null) {
+			obj = JSON.parse(image);
+		} else {
+			if(this.publish.currentFile == null)
+				return;
+			else
+				obj = this.publish.currentFile;
+		}
+		
 		var inCart = false; 
 		var cartIndex = 0; 
 		
@@ -130,28 +142,43 @@
 		}
 		
 		if(!inCart) {
-			$(event.target).parent().addClass("visible");
+			$("#photo-"+obj.id+" .print").addClass("visible");
 			this.publish.cart.push(obj);
 		} else {
-			$(event.target).parent().removeClass("visible");			
 			this.publish.cart.splice(cartIndex, 1);
 			$("#photo-"+obj.id+" .print").removeClass("visible");	
 		}
 		
 		this.publish.checkoutstep = 0;
 		
-		if(this.publish.cart.length > 0)
+		if(this.publish.cart.length > 0) {
 			$("#cart").html("("+this.publish.cart.length+")");
-		else  {
+		} else  {
 			$("#cart").html("");
 			this.publish.checkoutstep = -1; 
 		}
+		
+		$('#filesDetailModal').modal('hide');
 	  }
 
 	  // Todo, move this from infinity to device 	  
 	  Infinity.prototype.showPicture = function(file) {
+	  	var obj = JSON.parse(file);
+	  	this.publish.currentFile = obj; 
+		var inCart = false; 
+		var cartIndex = 0; 
+		
+		if(this.publish.cart) {
+			for (var index = 0; index < this.publish.cart.length; ++index) {
+			    if(this.publish.cart[index].id == obj.id) {
+				    inCart = true; 
+				    cartIndex = index; 
+			    }
+			}
+		}
+	  	
 		$.ajax({
-		    url : "/files/details?id="+file,
+		    url : "/files/details?id="+obj.id,
 			async: false,
 			context: this,
 		    success : function(result){
@@ -165,7 +192,7 @@
 				var month = Array("January","February","March","April","May","June","July","August","September","October","November","December");
 				
 				$("#filesDetailModalLabel").html(result.name+" – "+viewDate +" "+ month[viewMonth] + ", "+viewYear+" – "+result.product_name);
-				$("#filesDetailModalLabel").attr("file", file);
+				$("#filesDetailModalLabel").attr("file", obj.id);
 				
 				if(result.type == "video") {
 					$("#moddalVideoContainer").html('<video id="modalVideo" style="display: none;" width="100%" height="520" controls="controls" autoplay="autoplay"><source id="modalSource" src="" type="video/mp4" /></video>');
@@ -185,6 +212,10 @@
 					$("#modalImage").show();
 					$("#originalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/full/0");
 					$("#modalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/thumbnail/520");
+				}
+				
+				if(inCart) {
+					$("#print-label").html("Remove from print queue");
 				}
 		
 		        $('#filesDetailModal').modal('show');				

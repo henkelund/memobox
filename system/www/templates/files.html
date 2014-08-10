@@ -48,7 +48,7 @@
 					  		<hr />
 							<ul class="thumbnails">
 								<li class="span3" ng-repeat="item in cart">
-									<div id="{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div ng-click="infinity.addToCart('{{item}}', '/files/stream/{{item.id}}/jpg/thumbnail/260', $event)" style="display: block; " class="print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item.id}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
+									<div id="{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div ng-click="infinity.addToCart('{{item}}', $event)" class="visible print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
 								</li>
 							</ul>  		 
 				  		</div>
@@ -150,7 +150,7 @@
 					</div>
 					<ul id="thumbnails" class="thumbnails">
 						<li class="span3" ng-repeat="item in items" thumbnail-repeat-done="parseDate()">
-							<div id="photo-{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div ng-click="infinity.addToCart('{{item}}', '/files/stream/{{item.id}}/jpg/thumbnail/260', $event)" ng-show="item.type == 'image'" class="print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item.id}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
+							<div id="photo-{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div ng-click="infinity.addToCart('{{item}}', $event)" ng-show="item.type == 'image'" class="print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
 						</li>
 					</ul>
 			  </div>
@@ -170,9 +170,12 @@
                     <a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 10px;" class="btn" id="modalDownload" target="_blank" onClick="downloadFile()" href="">
 					    <span class="icon-download-alt"></span> Download
 					</a>
-                    <a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 130px;" class="btn" id="modalDelete" target="_blank" onClick="hideFile()" href="">
-					    <span class="icon-remove"></span> Delete
+					<a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 130px;" class="btn" id="modalPrint" ng-click="infinity.addToCart()" href="#">
+					    <span class="icon-picture"></span> <span id="print-label">Print Photo</span>
 					</a>
+                    <!--a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 130px;" class="btn" id="modalDelete" target="_blank" onClick="hideFile()" href="">
+					    <span class="icon-remove"></span> Delete
+					</a-->
 					<img id="modalImage" style="display: none; position: relative; z-index: 9999;" src="" />
 					<img id="originalImage" style="display: none;" src="" />
 					<div id="moddalVideoContainer"><video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay">
