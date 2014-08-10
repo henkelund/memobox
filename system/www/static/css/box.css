@@ -487,20 +487,21 @@ div.tooltip-inner .imageContainer {
 	display: none; 
 }
 
-.thumbnail:hover .print {
+/*.thumbnail:hover .print {
 	display: block;
-}
+}*/
 
 .thumbnail .visible {
 	display: block;
 }
 
-.thumbnail:hover .print img {
+/*.thumbnail:hover .print img {
 	padding: 3px; 
 	border: 2px solid transparent;		
-}
+}*/
 
-.thumbnail:hover .print img:hover, .thumbnail .visible img {
+/*.thumbnail:hover .print img:hover, .thumbnail .visible img {*/
+.thumbnail .visible img {
 	padding: 3px;
 	border: 2px solid white; 
 	background-color: white; 
