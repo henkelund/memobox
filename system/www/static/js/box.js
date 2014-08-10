@@ -44,7 +44,7 @@
 	// Infinity constructor function to encapsulate HTTP and pagination logic
 	box.factory('Infinity', function($http) {
 	  var Infinity = function($scope) {
-	  	this.me = $scope;
+	  	this.publish = $scope;
 	    this.busy = false;
 	    this.page = 1;
 		this.device = -1; 
@@ -97,7 +97,7 @@
 	  }
 
 	  Infinity.prototype.nextCheckoutStep = function(){
-		this.me.checkoutstep++;
+		this.publish.checkoutstep++;
 	  }
 
 	  Infinity.prototype.updateCart = function(event){
@@ -107,23 +107,23 @@
 		
 		$(".price").html(this.price);
 		$(".shipping").html(this.shipping);
-		$(".totals").html(this.me.cart.length*this.price + this.shipping);
-		$(".photocount").html(this.me.cart.length);
+		$(".totals").html(this.publish.cart.length*this.price + this.shipping);
+		$(".photocount").html(this.publish.cart.length);
 		
-		this.me.checkoutstep = 2;
+		this.publish.checkoutstep = 2;
 	  }
 
 	  Infinity.prototype.addToCart = function(image, url, event){
-		if(this.me.cart == null) {
-			this.me.cart = [];
+		if(this.publish.cart == null) {
+			this.publish.cart = [];
 		}
 		
 		var obj = JSON.parse(image);
 		var inCart = false; 
 		var cartIndex = 0; 
 		
-		for (var index = 0; index < this.me.cart.length; ++index) {
-		    if(this.me.cart[index].id == obj.id) {
+		for (var index = 0; index < this.publish.cart.length; ++index) {
+		    if(this.publish.cart[index].id == obj.id) {
 			    inCart = true; 
 			    cartIndex = index; 
 		    }
@@ -131,18 +131,21 @@
 		
 		if(!inCart) {
 			$(event.target).parent().addClass("visible");
-			this.me.cart.push(obj);
+			this.publish.cart.push(obj);
 		} else {
 			$(event.target).parent().removeClass("visible");			
-			this.me.cart.splice(cartIndex, 1);
+			this.publish.cart.splice(cartIndex, 1);
+			$("#photo-"+obj.id+" .print").removeClass("visible");	
 		}
 		
-		this.me.checkoutstep = 0;
+		this.publish.checkoutstep = 0;
 		
-		if(this.me.cart.length > 0)
-			$("#cart").html("("+this.me.cart.length+")");
-		else 
+		if(this.publish.cart.length > 0)
+			$("#cart").html("("+this.publish.cart.length+")");
+		else  {
 			$("#cart").html("");
+			this.publish.checkoutstep = -1; 
+		}
 	  }
 
 	  // Todo, move this from infinity to device 	  
@@ -253,7 +256,7 @@
 		
 		// Clear visiable area of old images if the state was changed
 		if(changedState == true) {
-			this.me.items = [];
+			this.publish.items = [];
 			resetDate();
 		}
 	
@@ -272,10 +275,10 @@
 				}
 
 				// If response resulted in no images, show error message
-				if(result.files.length == 0 && this.me.items.length == 0) {
-					this.me.missingImages = true; 	
+				if(result.files.length == 0 && this.publish.items.length == 0) {
+					this.publish.missingImages = true; 	
 				} else {
-					this.me.missingImages = false; 
+					this.publish.missingImages = false; 
 				}
 				
 				// Loop JSON response and add images to ng-repeat array
@@ -294,7 +297,7 @@
 			      }		
 			      
 			      // Push thumbnail item to ng-repeat array	      
-			      this.me.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});
+			      this.publish.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});
 			    }			    
 				
 				// Increase current page number(for next request)
