@@ -1,0 +1,12 @@
+Metadata-Version: 1.1
+Name: pwinty
+Version: 0.3
+Summary: Python client for the Pwinty photo printing API
+Home-page: https://github.com/samwillis/py-pwinty
+Author: Sam Willis
+Author-email: sam.willis@gmail.com
+License: UNKNOWN
+Download-URL: https://github.com/samwillis/py-pwinty/tarball/0.3
+Description: UNKNOWN
+Keywords: printing
+Platform: UNKNOWN

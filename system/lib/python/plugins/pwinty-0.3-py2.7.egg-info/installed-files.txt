@@ -1,0 +1,8 @@
+../pwinty/__init__.py
+../pwinty/__init__.pyc
+./
+requires.txt
+SOURCES.txt
+dependency_links.txt
+top_level.txt
+PKG-INFO

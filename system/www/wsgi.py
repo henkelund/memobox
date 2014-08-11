@@ -6,6 +6,7 @@ import os
 import json
 import urllib2
 import re
+import pwinty
 from datetime import date
 from subprocess import call
 from datetime import date
@@ -270,6 +271,34 @@ def file_hide_action():
 		return "error"
 	DBSelect('file').where("file._id = "+str(request.args.get('id'))).query_update({'is_hidden': 1});
 	return "ok"
+
+@app.route('/print')
+def print_action():
+	pwinty.apikey = "0537a38f-d2b4-4360-842d-e254a7161128"
+	pwinty.merchantid = "2260a6b6-f261-4e86-8f18-81597a3637f6"
+	order = pwinty.Order.create(
+	    recipient_name =            'Hans-Peter Kurtz/Helene Brumagne',
+	    address_1 =                 'Gammelgrdsvagen 54, lgh 1101',
+	    address_2 =                 '',
+	    address_town_or_city =      'Stockholm',
+	    state_or_county =           'Sweden',
+	    postal_or_zip_code =        '11264',
+	    destination_country_code =  'SE',
+	    country_code =              'SE',
+	    qualityLevel =              'Standard'
+	)
+	photo = order.photos.create(
+	    type =      '13x19_cm',
+	    url =       'http://nordkvist.backupbox.se/static/images/felicie.jpg',
+	    md5Hash =   '79054025255fb1a26e4bc422aef54eb4',
+	    copies =    '1',
+	    sizing =    'Crop'
+	)	
+	order_status = order.get_submission_status()
+	if not order_status.is_valid:
+	    return "Invalid Order"
+	#order.submit()
+	return "success"
 
 @app.route('/files/calendar')
 def file_calendar_action():
