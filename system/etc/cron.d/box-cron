@@ -1,0 +1,4 @@
+* * * * * root /bin/bash /backupbox/system/bin/indexer.sh >> /backupbox/data/log/indexer.log 2>&1
+*/1 * * * * root /bin/bash -c '/backupbox/system/bin/gatherData.sh  >> /tmp/pinger.log && /backupbox/system/bin/ping.sh >> /tmp/pinger.log'
+0 0 * * * root /bin/bash /backupbox/system/bin/update.sh >> /tmp/updater.log
+0 */4 * * * root /bin/bash /backupbox/system/bin/backup.sh >> /tmp/backup.log
