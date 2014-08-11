@@ -216,6 +216,8 @@
 				
 				if(inCart) {
 					$("#print-label").html("Remove from print queue");
+				} else {
+					$("#print-label").html("Print Photo");
 				}
 		
 		        $('#filesDetailModal').modal('show');				
