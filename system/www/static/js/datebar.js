@@ -17,7 +17,7 @@ function stopVideo() {
 }
 
 function downloadFile() {
-	window.open($("#originalImage").attr("src"),'_blank');
+	window.open($("#originalImage").attr("src"));
 }
 
 function hideFile() {
@@ -122,8 +122,8 @@ var uploadComplete = false;
 var progressInterval; 
 			
 $( document ).ready(function() {
-	loadCloudBackupProgress();
-	progressInterval = setInterval(function(){loadCloudBackupProgress()}, 10000);
+	//loadCloudBackupProgress();
+	//progressInterval = setInterval(function(){loadCloudBackupProgress()}, 10000);
 });
 
 function loadCloudBackupProgress() {
@@ -230,3 +230,15 @@ function displayTab(id) {
 }
 
 //alert($(".thumbnails .image:in-viewport").first().attr("timestamp"));
+
+function humanFileSize(bytes, si) {
+    var thresh = si ? 1000 : 1024;
+    if(bytes < thresh) return bytes + ' B';
+    var units = si ? ['kB','MB','GB','TB','PB','EB','ZB','YB'] : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+    var u = -1;
+    do {
+        bytes /= thresh;
+        ++u;
+    } while(bytes >= thresh);
+    return bytes.toFixed(1)+' '+units[u];
+};

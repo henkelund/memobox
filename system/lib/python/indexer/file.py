@@ -25,7 +25,6 @@ class FileIndexer(object):
 
     def index_device(self, device):
         """Index all new files for a given device"""
-
         transfer_dirs = device.get_transfer_dirs()
         for transfer_dir in transfer_dirs:
 

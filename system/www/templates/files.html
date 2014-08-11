@@ -20,7 +20,7 @@
 				        </li>
 					</ul>
 					<ul id="filternav" class="nav" style="float: right;">
-						<li style="border-left: 1px solid grey;" id="formatFilter"><a  href="javascript:void(0)"ng-click="infinity.nextPage(null,'image')" id="type-image" title="Show only photos" class="type"><span><div class="icon-white icon-picture"></div> Photo</span></a><a  href="javascript:void(0)" ng-click="infinity.nextPage(null,'video')" id="type-video" title="Show only videos" class="type"><span><div class="icon-white icon-facetime-video"></div> Video</span></a></li>
+						<li style="border-left: 1px solid grey;" id="formatFilter"><a  href="javascript:void(0)"ng-click="infinity.nextPage(null,'image')" id="type-image" title="Show only photos" class="type"><span><div class="icon-white icon-picture"></div> Photo</span></a><a  href="javascript:void(0)" ng-click="infinity.nextPage(null,'video')" id="type-video" title="Show only videos" class="type"><span><div class="icon-white icon-facetime-video"></div> Video</span></a><a  href="javascript:void(0)" ng-click="infinity.nextPage(null,'other')" id="type-other" title="Show only videos" class="type"><span><div class="icon-white icon-facetime-video"></div> Other files</span></a></li>
 					</ul>
 				</div>
 			</div>
@@ -33,7 +33,7 @@
 			  		<div ng-show="FilesCtrl.fileService.missingDevices" class="browserMessage">
 			  			Start using your Backupbox by connecting any USB-compatible device the the USB port on your box. 
 			  		</div>
-			  		<div ng-show="missingImages && !FilesCtrl.fileService.missingDevices" class="browserMessage">
+			  		<div ng-show="missingImages && !FilesCtrl.fileService.missingDevices && !files.length > 0" class="browserMessage">
 			  			Ops! No images or videos were found that matches your selection. 
 			  		</div>
 					<div id="printouts">
@@ -148,11 +148,37 @@
 					  		</div>				  			
 				  		</div>
 					</div>
-					<ul id="thumbnails" class="thumbnails">
+					<ul ng-show="items && items.length > 1" id="thumbnails" class="thumbnails">
 						<li class="span3" ng-repeat="item in items" thumbnail-repeat-done="parseDate()">
-							<div id="photo-{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div ng-click="infinity.addToCart('{{item}}', $event)" ng-show="item.type == 'image'" class="print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
+							<div id="photo-{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div ng-show="item.type == 'image'" class="print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
 						</li>
 					</ul>
+					<table ng-show="files && files.length > 0" id="example" class="otherfiles" cellspacing="0" width="100%">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Date</th>
+								<th>Size</th>
+							</tr>
+						</thead>
+		
+						<!-- tfoot>
+							<tr>
+								<th>ID</th>
+								<th>Name</th>
+								<th>Date</th>
+								<th>Size</th>
+							</tr>
+						</tfoot-->
+		
+						<tbody>
+							<tr ng-repeat="item in files">
+							<td><a href="/files/stream/{{item.id}}/{{item.name}}/full/0">{{item.name}}</a></td>
+							<td>{{item.created_at}}</td>
+							<td>{{item.size}}</td>
+							</tr>
+						</tbody>
+					</table>
 			  </div>
 			</div>
 	        
@@ -167,7 +193,7 @@
                     <h4 class="modal-title" id="filesDetailModalLabel">Modal title</h4>
                 </div>
                 <div class="modal-body">
-                    <a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 10px;" class="btn" id="modalDownload" target="_blank" onClick="downloadFile()" href="">
+                    <a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 10px;" class="btn" id="modalDownload" onClick="downloadFile()" href="">
 					    <span class="icon-download-alt"></span> Download
 					</a>
 					<a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 130px;" class="btn" id="modalPrint" ng-click="infinity.addToCart()" href="#">

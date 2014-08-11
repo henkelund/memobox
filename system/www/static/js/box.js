@@ -211,7 +211,7 @@
 					$("#modalVideo").hide();
 					$("#modalImage").show();
 					$("#originalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/full/0");
-					$("#modalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/thumbnail/520");
+					$("#modalImage").attr("src", "/files/stream/"+result._id+"/null/thumbnail/520");
 				}
 				
 				if(inCart) {
@@ -288,6 +288,7 @@
 		// Clear visiable area of old images if the state was changed
 		if(changedState == true) {
 			this.publish.items = [];
+			this.publish.files = [];
 			resetDate();
 		}
 	
@@ -328,12 +329,24 @@
 			      }		
 			      
 			      // Push thumbnail item to ng-repeat array	      
-			      this.publish.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});
+			      if(this.type == "other") {
+				      var _months = Array("January","February","March","April","May","June","July","August","September","October","November","December");
+				      var time = new Date(result.files[i].created_at*1000);
+					  var viewMonth = String(_months[time.getMonth()]).substr(0, 3);
+					  var viewYear = time.getFullYear().toString();
+					  var viewDate = time.getDate();
+					  var dat = viewYear + "-" + viewMonth + "-" + viewDate;
+					  
+				      this.publish.files.push({id:result.files[i]._id, created_at:dat, type:result.files[i].type, name:result.files[i].name, size:humanFileSize(result.files[i].size)});				      			      
+			      } else {
+				      this.publish.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});				      
+			      }
 			    }			    
 				
 				// Increase current page number(for next request)
 		        this.page = this.page + 1;
 		        this.busy = false;
+		        $('#example').dataTable();
 		    }
 		});
 	  };

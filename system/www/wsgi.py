@@ -66,6 +66,12 @@ def index_action():
 		else:
 			return render_template('login.html', islocal=g.islocalbox)
 
+
+# Start page route
+@app.route('/zero')
+def zero_action():
+	return render_template('zero_configuration.html')
+
 # Start page route
 @app.route('/login')
 def login_action():
@@ -94,8 +100,9 @@ def files_action():
     'name'
     ]
 
-    models = FileModel.all().join("file_thumbnail", "m._id = file_thumbnail.file").left_outer_join("file_attribute_text", "file_attribute_text.parent = m._id", "value").limit(32, (after-1)*32).where("width = 260").where("is_hidden = 0").order('m.created_at', "DESC")
-
+    models = FileModel.all().where("is_hidden = 0").order('m.created_at', "DESC")
+    isMedia = True
+    
     for arg in args.keys():
         vals = args.get(arg).split(',')
         
@@ -106,10 +113,17 @@ def files_action():
             endtime = time.mktime(et.timetuple())
             models.where('m.created_at < ?', endtime)   
         elif (arg == 'format') and (len(vals) > 0) and (str(vals[0]) != "null"):
-            models.where("m.type = '"+str(vals[0])+"'")
+            if str(vals[0]) == "other":
+	            models.where("m.type not in ('image', 'photo')").limit(1000, (after-1)*1000)
+	            isMedia = False
+            else:
+	            models.where("m.type = '"+str(vals[0])+"'")
         elif arg == 'device' and (len(vals) > 0) and vals[0] != "-1":
             models.where('m.device = '+str(vals[0]))
 
+    if isMedia:
+    	models.where("width = 260").join("file_thumbnail", "m._id = file_thumbnail.file").left_outer_join("file_attribute_text", "file_attribute_text.parent = m._id", "value").limit(32, (after-1)*32)
+    
     for model in models:
         data_list = model.get_data()
     	for key, value in data_list.items():
@@ -119,16 +133,6 @@ def files_action():
     			#data_list[key] = value.decode('iso-8859-1')
         
         data.append(data_list)
-
-    #for item in data: # returns the dictionary as a list of value pairs -- a tuple.
-    #	for key, value in item.items():
-    #		if key == "name":
-    #			item[key] = "nada" #value.decode('iso-8859-1').encode('utf8')
-    #			print item[key]
-    			#print value
-    			
-    		#print key
-			#print jsonify(key)
     
     #print json.dumps(data, "ISO-8859-1")
     return jsonify({'files': data, 'sql': models.render()})
@@ -296,6 +300,9 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
     if not model.id():
         abort(404)
 
+
+    _headers = {}
+
     if type == "thumbnail":
 	    thumbnails = DBSelect('file_thumbnail').where("file = "+str(file_id)).where("width = "+size).query()
 	    
@@ -311,11 +318,13 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	    	mimetype = '%s/%s' % (model.type(), model.subtype())
 	    	print filename
 	    	print mimetype
+	    	_headers["Content-Disposition"] = "inline"
     else:
 	    if g.islocalbox == False:
 	    	config = DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))
 	    	filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+config["BOXUSER"]), model.name())
-	    	print "----"+filename
+	    	_headers["Content-Disposition"] = "attachment; filename=Image.jpg"
+	    	print "Bummer!"
 	    else:
 	    	filename = '%s/%s' % (model.abspath(), model.name())
 	    	print "####"+filename
@@ -327,11 +336,8 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
     t = os.stat(filename)
     sz = str(t.st_size)
 
-    _headers = {}
     _headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
     _headers['Cache-Control'] = 'public, max-age=0'
-    _headers["Content-Type"] = "video/mp4"
-    _headers["Content-Disposition"] = "inline"
     _headers["Content-Transfer-Enconding"] = "binary"
     _headers["Content-Length"] = "video/mp4"
     _headers["Content-Type"] = sz
