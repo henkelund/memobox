@@ -6,7 +6,7 @@ import os
 import json
 import urllib2
 import re
-import pwinty
+#import pwinty
 from datetime import date
 from subprocess import call
 from datetime import date
