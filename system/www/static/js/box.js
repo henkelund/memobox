@@ -588,7 +588,7 @@
         $scope.items = [];
         
         if(!$scope.datatable)
-	        $scope.datatable = $('#otherfiles').dataTable({ "iDisplayLength": 30 });
+	        $scope.datatable = $('#otherfiles').dataTable({ "iDisplayLength": 30, "bLengthChange": false });
 
         $scope.render = function(e) {
 			return $(e).html();
