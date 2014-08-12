@@ -1,0 +1,19 @@
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="deviceDetailModalLabel">Edit device information</h4>
+                </div>
+                <div class="modal-body">
+					<form>
+						<input id="deviceDetailModalInput" type="text" name="label" /><br />
+	                    <a style="z-index: 10000; position: absolute; margin-top: 15px;" class="btn" ng-click="infinity.updateDevice()" id="modalSave" target="_blank" href="">
+						    <i class="icon-download-alt"></i> Save
+						</a>						
+					</form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>

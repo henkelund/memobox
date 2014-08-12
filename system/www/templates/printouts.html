@@ -1,0 +1,110 @@
+<div ng-show="!cart || checkoutstep == -1" class="browserMessage">
+				  			You can order beautiful photocopies from your Backupbox directly to your home. Just click print on the photos you would like to order and return to this page to finalize your order. 
+				  		</div>
+						
+						<div ng-show="cart && checkoutstep == 0">
+				  			<h1>Order beautiful photo copies today</h1>
+				  			<p>You can instantly order a printed copy of any of your photos directly from your Backupbox. This is a list of all the photos you have selected for printing. If you are done adding photos to the photo print queue just press the button below to order beautiful print copies of these photos right now.</p>
+					  		<button ng-click="infinity.nextCheckoutStep()" class="btn">Yes, Print These Photos</button>
+					  		<hr />
+							<ul class="thumbnails">
+								<li class="span3" ng-repeat="item in cart">
+									<div id="{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div class="visible print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
+								</li>
+							</ul>  		 
+				  		</div>
+				  						  		
+			  			<div ng-show="checkoutstep >= 1">
+				  			<h1>Order photoprints directly to your home</h1>
+				  			<p>
+				  			You are just a few clicks away of receiving your first batch och beutifully printed copies of your photos. Follow the instructions below and complete your order. 
+				  			</p>
+				  			<br />
+				  			<p><b>1. Choose your print size</b><p>
+				  			<div class="photosize btn-group">
+					  			<button ng-click="infinity.updateCart($event)" price="0.2" class="btn">Small 9x12cm</button>
+					  			<button ng-click="infinity.updateCart($event)" price="0.5" class="btn">Medium 10x15cm</button>
+					  			<button ng-click="infinity.updateCart($event)" price="1.0" class="btn">Large 20x27cm</button>
+				  			</div>
+				  		</div>
+			  			<div ng-show="checkoutstep >= 2">
+				  			<br />
+				  			<br />
+				  			<div class="summary">
+				  				<p><b>2. Summary</b></p>
+					  			<table class="table-bordered table-striped">
+					  				<thead>
+						  				<tr>
+							  				<td><b>Item</b></td>
+							  				<td><b>Price per photo</b></td>
+							  				<td><b>Total</b></td>
+						  				</tr>
+					  				</thead>
+					  				<tr>
+						  				<td><span class="photocount"></span> quality print photos</td>
+						  				<td>€<span class="price"></></td>
+						  				<td>€<span class="rowtotals"></></td>
+					  				</tr>
+					  				<tr>
+						  				<td>Shipping</td>
+						  				<td></td>
+						  				<td>€<span class="shipping"></span></td>
+					  				</tr>
+					  				<tr>
+						  				<td><b>Total cost</b></td>
+						  				<td></td>
+						  				<td><b>€<span class="totals"></span></b></td>
+					  				</tr>
+					  				<!-- tr>
+						  				<td>Tax</td>
+						  				<td><span class="photocount"></span></td>
+					  				</tr -->
+					  			</table>
+				  			</div>
+				  			<br />
+				  			<p><b>3. Address information</b></p>
+					  		<div class="form-horizontal">
+						  		<div class="help-block">
+						  			Recipent name<br />
+						  			<input class="input-append" name="recipientName" type="text" />
+						  		</div>
+						  		<div class="help-block">
+						  			Street address<br />
+						  			<input name="address1" type="text" />
+						  		</div>
+						  		<div class="help-block">
+						  			City/Town<br />
+						  			<input name="stateOrCounty" type="text" />
+						  		</div>
+						  		<div class="help-block">
+						  			Postal code<br />
+						  			<input name="postalOrZipCode" type="text" />
+						  		</div>
+						  		<div class="help-block">
+						  			Country<br />
+						  			<select name="selectCountry" id="selectCountry">
+						  				<option value="AT">AUSTRIA</option>
+						  				<option value="AU">AUSTRALIA</option>
+						  				<option value="BE">BELGIUM</option>
+						  				<option value="BR">BRAZIL</option>
+						  				<option value="CA">CANADA</option>
+						  				<option value="CH">SWITZERLAND</option>
+						  				<option value="CL">CHILE</option>
+						  				<option value="DE">GERMANY</option>
+						  				<option value="DK">DENMARK</option>
+						  				<option value="ES">SPAIN</option>
+						  				<option value="FR">FRANCE</option>
+						  				<option value="GB">UNITED KINGDOM</option>
+						  				<option value="IE">IRELAND</option>
+						  				<option value="IT">ITALY</option>
+						  				<option value="MX">MEXICO</option>
+						  				<option value="NL">NETHERLANDS</option>
+						  				<option selected value="SE">SWEDEN</option>
+						  				<option value="US">UNITED STATES</option>
+						  			</select>
+						  		</div>
+						  		<br />
+						  		<br />
+						  		<button class="btn">Complete Order</button>
+					  		</div>				  			
+				  		</div>

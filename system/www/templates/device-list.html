@@ -1,0 +1,19 @@
+		<div id="device-list" class="navbar navbar-inverse navbar-static-top">
+		    <div class="navbar-inner">
+		        <a id="mainNav-btn" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+		            <span class="icon-bar"></span>
+		            <span class="icon-bar"></span>
+		            <span class="icon-bar"></span>
+		        </a>
+			    <div id="mainNav" class="nav-collapse collapse navbar-inverse-collapse">
+					<ul id="devicenav" class="nav">
+				        <li ng-repeat="device in FilesCtrl.fileService.devices" device-repeat-directive class="dropdown">
+					        	<a href="javascript:void(0)" id="{{device.id}}" data-placement="bottom" data-trigger="hover" nng-click="infinity.editDevice('{{device.id}}')" data-html="true" ng-attr-title="<div class='imageContainer'><img src='/static/images/icons/{{device.symbol}}.png' /></div>{{device.thumbnails}} photos<br />{{device.videos}} videos<br />Status: {{device.message}}" class="device" ng-click="infinity.nextPage('{{device.id}}');infinity.editDevice('{{device.id}}')"><span>{{device.product_name}}</span></a>
+				        </li>
+					</ul>
+					<ul id="filternav" class="nav" style="float: right;">
+						<li style="border-left: 1px solid grey;" id="formatFilter"><a  href="javascript:void(0)"ng-click="infinity.nextPage(null,'image')" id="type-image" title="Show only photos" class="type"><span><div class="icon-white icon-picture"></div> Photo</span></a><a  href="javascript:void(0)" ng-click="infinity.nextPage(null,'video')" id="type-video" title="Show only videos" class="type"><span><div class="icon-white icon-facetime-video"></div> Video</span></a><a  href="javascript:void(0)" ng-click="infinity.nextPage(null,'other')" id="type-other" title="Show only videos" class="type"><span><div class="icon-white icon-facetime-video"></div> Other files</span></a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
