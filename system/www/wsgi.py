@@ -115,7 +115,7 @@ def files_action():
             models.where('m.created_at < ?', endtime)   
         elif (arg == 'format') and (len(vals) > 0) and (str(vals[0]) != "null"):
             if str(vals[0]) == "other":
-	            models.where("m.type not in ('image', 'photo')").limit(100, (after-1)*100)
+	            models.where("m.type not in ('image', 'video')").limit(100, (after-1)*100)
 	            isMedia = False
             else:
 	            models.where("m.type = '"+str(vals[0])+"'")
