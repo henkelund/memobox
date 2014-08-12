@@ -349,12 +349,9 @@
 		        this.page = this.page + 1;
 		        this.busy = false;
 				
-				if(this.type == "other") {
-					var d = $('#otherfiles').dataTable({
-					"iDisplayLength": 30
-					});
-					d.fnClearTable();
-					d.fnAddData(this.publish.files);
+				if(this.type == "other" && this.publish.files.length > 0) {
+					this.publish.datatable.fnClearTable();
+					this.publish.datatable.fnAddData(this.publish.files);
 				}
 			
 		    }
@@ -589,6 +586,8 @@
         this.fileService = FileService.loadFiles().loadDevices();
         $scope.infinity = new Infinity($scope);
         $scope.items = [];
+        $scope.datatable = $('#otherfiles').dataTable({ "iDisplayLength": 30 });
+
         $scope.render = function(e) {
 			return $(e).html();
         }
