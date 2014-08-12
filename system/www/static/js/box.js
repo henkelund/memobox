@@ -339,13 +339,7 @@
 					  var viewDate = time.getDate();
 					  var dat = viewYear + "-" + viewMonth + "-" + viewDate;
 					  
-				      this.publish.files.push(['<a href="/files/stream/'+result.files[i]._id+'/'+result.files[i].name+'/full/0">'+result.files[i].name+'</a>',result.files[i].type, dat, humanFileSize(result.files[i].size)]);
-					  var d = $('#otherfiles').dataTable({
-					    "iDisplayLength": 30
-					  });
-					  d.fnClearTable();
-					  d.fnAddData(this.publish.files);
-				      
+				      this.publish.files.push(['<a href="/files/stream/'+result.files[i]._id+'/'+result.files[i].name+'/full/0">'+result.files[i].name+'</a>',result.files[i].type, dat, humanFileSize(result.files[i].size)]);				      
 			      } else {
 				      this.publish.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});				      
 			      }
@@ -354,6 +348,13 @@
 				// Increase current page number(for next request)
 		        this.page = this.page + 1;
 		        this.busy = false;
+				
+				var d = $('#otherfiles').dataTable({
+				"iDisplayLength": 30
+				});
+				d.fnClearTable();
+				d.fnAddData(this.publish.files);
+
 			
 		    }
 		});
@@ -371,11 +372,6 @@
 		
 		// When the application starts we are lading device list and first page of the result. 
         $stateProvider
-            .state('devices', {
-                url: '/devices',
-                controller: 'DevicesCtrl',
-                templateUrl: '/templates/devices.html'
-            })
             .state('files', {
                 url: '/',
                 controller: 'FilesCtrl',
@@ -417,7 +413,6 @@
          */
         var FileService = function () {
             this.filesResource = $resource('/files');
-            this.filterResource = $resource('/files/filters');
             this.detailsResource = $resource('/files/details');
             this.deviceResource = $resource('/devices');
             this.calendarResource = $resource('/files/calendar');
@@ -425,7 +420,6 @@
             this.devices = [];
             this.missingDevices = false; 
             this.files = [];
-            this.filters = [];
             this.details = [];
         };
         FileService.prototype = {
@@ -439,21 +433,14 @@
             },
 
             /**
-             * Successful filters load callback
-             */
-            loadFiltersSuccess: function (data) {
-                this.filters = data.filters;
-            },
-
-            /**
-             * Successful filters load callback
+             * Successful calendar load callback
              */
             loadCalendarSuccess: function (data) {
                 this.calendar = data;
             },
 
             /**
-             * Successful filters load callback
+             * Successful devices load callback
              */
             loadDevicesSuccess: function (data) {
                 this.devices = data.devices;
@@ -464,7 +451,7 @@
 
 
             /**
-             * Successful filters load callback
+             * Successful file detail load callback
              */
             loadDetailsSuccess: function (data) {
                 if (data['_id'] !== undefined) {
@@ -604,14 +591,6 @@
         $scope.render = function(e) {
 			return $(e).html();
         }
-        
-        this.filterState = {};
-        this.isFilterPending = false;
-        $('#filesDetailModal').modal({show: false})
-                .on('hide.bs.modal', function () {
-            $location.path('/');
-            $scope.$apply();
-        });
 
         $scope.FilesCtrl = this;
         return this;
