@@ -13,9 +13,15 @@
 
                 </div>
                 <div class="modal-footer">
-					<button type="button" class="btn btn-default" onClick="downloadFile()">Download</button>
-					<button type="button" class="btn btn-default" ng-click="infinity.addToCart()">Print</button>
-					<button type="button" class="btn btn-warning" onClick="hideFile()">Delete</button>
+					 <a class="btn btn-default" onClick="downloadFile()" href="">
+					    <span class="icon-download-alt"></span> Download
+					</a>
+					 <a class="btn btn-default" onClick="hideFile()" href="">
+					    <span class="icon-remove"></span> Delete
+					</a>
+					 <a class="btn btn-default" ng-click="infinity.addToCart()" href="">
+					    <span class="icon-remove"></span> <span id="print-label">Print Photo</span>
+					</a>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>

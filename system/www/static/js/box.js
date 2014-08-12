@@ -586,7 +586,9 @@
         this.fileService = FileService.loadFiles().loadDevices();
         $scope.infinity = new Infinity($scope);
         $scope.items = [];
-        $scope.datatable = $('#otherfiles').dataTable({ "iDisplayLength": 30 });
+        
+        if(!$scope.datatable)
+	        $scope.datatable = $('#otherfiles').dataTable({ "iDisplayLength": 30 });
 
         $scope.render = function(e) {
 			return $(e).html();
