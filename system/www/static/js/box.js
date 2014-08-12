@@ -210,7 +210,7 @@
 				} else {
 					$("#modalVideo").hide();
 					$("#modalImage").show();
-					$("#originalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/full/0");
+					$("#originalImage").attr("src", "/files/stream/"+result._id+"/null/full/0");
 					$("#modalImage").attr("src", "/files/stream/"+result._id+"/null/thumbnail/520");
 				}
 				
@@ -339,7 +339,13 @@
 					  var viewDate = time.getDate();
 					  var dat = viewYear + "-" + viewMonth + "-" + viewDate;
 					  
-				      this.publish.files.push({id:result.files[i]._id, created_at:dat, type:result.files[i].type, name:result.files[i].name, size:humanFileSize(result.files[i].size)});				      			      
+				      this.publish.files.push(['<a href="/files/stream/'+result.files[i]._id+'/'+result.files[i].name+'/full/0">'+result.files[i].name+'</a>',result.files[i].type, dat, humanFileSize(result.files[i].size)]);
+					  var d = $('#otherfiles').dataTable({
+					    "iDisplayLength": 30
+					  });
+					  d.fnClearTable();
+					  d.fnAddData(this.publish.files);
+				      
 			      } else {
 				      this.publish.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});				      
 			      }
@@ -348,7 +354,7 @@
 				// Increase current page number(for next request)
 		        this.page = this.page + 1;
 		        this.busy = false;
-		        $('#example').dataTable();
+			
 		    }
 		});
 	  };

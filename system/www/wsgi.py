@@ -290,7 +290,6 @@ def print_action():
 	photo = order.photos.create(
 	    type =      '13x19_cm',
 	    url =       'http://nordkvist.backupbox.se/static/images/felicie.jpg',
-	    md5Hash =   '79054025255fb1a26e4bc422aef54eb4',
 	    copies =    '1',
 	    sizing =    'Crop'
 	)	
@@ -352,11 +351,10 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	    if g.islocalbox == False:
 	    	config = DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))
 	    	filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+config["BOXUSER"]), model.name())
-	    	_headers["Content-Disposition"] = "attachment; filename=Image.jpg"
+	    	_headers["Content-Disposition"] = "attachment; filename="+model.name()
 	    	print "Bummer!"
 	    else:
 	    	filename = '%s/%s' % (model.abspath(), model.name())
-	    	print "####"+filename
 	    mimetype = '%s/%s' % (model.type(), model.subtype())
 
     if not os.path.isfile(filename):

@@ -1,8 +1,8 @@
 <ul class="tablist nav nav-tabs nav-justified" role="tablist">
 	<h1>Backupbox.se</h1>
-	<li id="tabBackupbox" show="#thumbnails, #device-list" hide="#printouts" class="active"><a onClick="displayTab('tabBackupbox')" href="#"><div class="icon icon-home"></div> Backupbox</a></li>
+	<li id="tabBackupbox" show="#thumbnails, #device-list, #otherfiles_wrapper" hide="#printouts" class="active"><a onClick="displayTab('tabBackupbox')" href="#"><div class="icon icon-home"></div> Backupbox</a></li>
 	<!-- li class="active"><a href="#"><div class="icon icon-hdd"></div> Cloudbox</a></li -->
-	<li id="tabPrintouts" hide="#thumbnails, #device-list" show="#printouts"><a onClick="displayTab('tabPrintouts')" href="#"><div class="icon-white icon-print"></div> Photocopies <span id="cart"></span></a></li>
+	<li id="tabPrintouts" hide="#thumbnails, #device-list, #otherfiles_wrapper" show="#printouts"><a onClick="displayTab('tabPrintouts')" href="#"><div class="icon-white icon-print"></div> Photocopies <span id="cart"></span></a></li>
 </ul>
 <div ng-controller='FilesCtrl' class="container">
 	<div id="libContainer">
@@ -48,7 +48,7 @@
 					  		<hr />
 							<ul class="thumbnails">
 								<li class="span3" ng-repeat="item in cart">
-									<div id="{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div ng-click="infinity.addToCart('{{item}}', $event)" class="visible print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
+									<div id="{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div class="visible print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
 								</li>
 							</ul>  		 
 				  		</div>
@@ -153,30 +153,26 @@
 							<div id="photo-{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div ng-show="item.type == 'image'" class="print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
 						</li>
 					</ul>
-					<table ng-show="files && files.length > 0" id="example" class="otherfiles" cellspacing="0" width="100%">
+					<table ng-show="files && files.length > 0" id="otherfiles" class="display otherfiles" cellspacing="0" width="100%">
 						<thead>
 							<tr>
 								<th>Name</th>
+								<th>Type</th>
 								<th>Date</th>
 								<th>Size</th>
 							</tr>
 						</thead>
 		
-						<!-- tfoot>
+						<tfoot>
 							<tr>
-								<th>ID</th>
 								<th>Name</th>
+								<th>Type</th>
 								<th>Date</th>
 								<th>Size</th>
 							</tr>
-						</tfoot-->
+						</tfoot>
 		
 						<tbody>
-							<tr ng-repeat="item in files">
-							<td><a href="/files/stream/{{item.id}}/{{item.name}}/full/0">{{item.name}}</a></td>
-							<td>{{item.created_at}}</td>
-							<td>{{item.size}}</td>
-							</tr>
 						</tbody>
 					</table>
 			  </div>
@@ -193,15 +189,6 @@
                     <h4 class="modal-title" id="filesDetailModalLabel">Modal title</h4>
                 </div>
                 <div class="modal-body">
-                    <a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 10px;" class="btn" id="modalDownload" onClick="downloadFile()" href="">
-					    <span class="icon-download-alt"></span> Download
-					</a>
-					<a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 130px;" class="btn" id="modalPrint" ng-click="infinity.addToCart()" href="#">
-					    <span class="icon-picture"></span> <span id="print-label">Print Photo</span>
-					</a>
-                    <!--a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 130px;" class="btn" id="modalDelete" target="_blank" onClick="hideFile()" href="">
-					    <span class="icon-remove"></span> Delete
-					</a-->
 					<img id="modalImage" style="display: none; position: relative; z-index: 9999;" src="" />
 					<img id="originalImage" style="display: none;" src="" />
 					<div id="moddalVideoContainer"><video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay">
@@ -210,7 +197,10 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-default" onClick="downloadFile()">Download</button>
+					<button type="button" class="btn btn-default" ng-click="infinity.addToCart()">Print</button>
+					<button type="button" class="btn btn-warning" onClick="hideFile()">Delete</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
