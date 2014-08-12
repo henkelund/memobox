@@ -234,7 +234,7 @@
 	  **/
 	  Infinity.prototype.nextPage = function(_device, _type) {
 	    // Make sure previous request is not running
-	    if (this.busy || (!_type && this.type == "other")) return;
+	    if (this.busy || (!_device && !_type && this.type == "other")) return;
 	    
 	    // Flag this method as running
 	    this.busy = true;	
