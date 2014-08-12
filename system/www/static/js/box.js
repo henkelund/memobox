@@ -349,12 +349,13 @@
 		        this.page = this.page + 1;
 		        this.busy = false;
 				
-				var d = $('#otherfiles').dataTable({
-				"iDisplayLength": 30
-				});
-				d.fnClearTable();
-				d.fnAddData(this.publish.files);
-
+				if(this.type == "other") {
+					var d = $('#otherfiles').dataTable({
+					"iDisplayLength": 30
+					});
+					d.fnClearTable();
+					d.fnAddData(this.publish.files);
+				}
 			
 		    }
 		});
