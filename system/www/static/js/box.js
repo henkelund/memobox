@@ -121,28 +121,26 @@
 			this.publish.cart = [];
 		}
 		
-		var obj = null; 
+		var obj = JSON.parse(image);
 		
-		if(image != null) {
-			obj = JSON.parse(image);
-		} else {
+		if(image == null) {
 			if(this.publish.currentFile == null)
 				return;
 			else
 				obj = this.publish.currentFile;
 		}
 		
-		var inCart = false; 
+		var imageInCart = false; 
 		var cartIndex = 0; 
 		
 		for (var index = 0; index < this.publish.cart.length; ++index) {
 		    if(this.publish.cart[index].id == obj.id) {
-			    inCart = true; 
+			    imageInCart = true; 
 			    cartIndex = index; 
 		    }
 		}
 		
-		if(!inCart) {
+		if(!imageInCart) {
 			$("#photo-"+obj.id+" .print").addClass("visible");
 			this.publish.cart.push(obj);
 		} else {
@@ -166,13 +164,13 @@
 	  Infinity.prototype.showPicture = function(file) {
 	  	var obj = JSON.parse(file);
 	  	this.publish.currentFile = obj; 
-		var inCart = false; 
+		var imageInCart = false; 
 		var cartIndex = 0; 
 		
 		if(this.publish.cart) {
 			for (var index = 0; index < this.publish.cart.length; ++index) {
 			    if(this.publish.cart[index].id == obj.id) {
-				    inCart = true; 
+				    imageInCart = true; 
 				    cartIndex = index; 
 			    }
 			}
@@ -216,7 +214,7 @@
 					$("#modalImage").attr("src", "/files/stream/"+result._id+"/null/thumbnail/520");
 				}
 				
-				if(inCart) {
+				if(imageInCart) {
 					$("#print-label").html("Remove from print queue");
 				} else {
 					$("#print-label").html("Order Photocopy");
