@@ -121,9 +121,11 @@
 			this.publish.cart = [];
 		}
 		
-		var obj = JSON.parse(image);
+		var obj = null; 
 		
-		if(image == null) {
+		if(image != null) {
+			obj = JSON.parse(image);
+		} else {
 			if(this.publish.currentFile == null)
 				return;
 			else
