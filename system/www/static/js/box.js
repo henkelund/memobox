@@ -108,6 +108,7 @@
 		$(event.target).addClass('active');
 		
 		$(".price").html(this.price);
+		$(".rowtotals").html(this.publish.cart.length*this.price);
 		$(".shipping").html(this.shipping);
 		$(".totals").html(this.publish.cart.length*this.price + this.shipping);
 		$(".photocount").html(this.publish.cart.length);
@@ -210,6 +211,7 @@
 				} else {
 					$("#modalVideo").hide();
 					$("#modalImage").show();
+					$("#zoomLink").attr("href", "/files/stream/"+result._id+"/null/nodownload/0");
 					$("#originalImage").attr("src", "/files/stream/"+result._id+"/null/full/0");
 					$("#modalImage").attr("src", "/files/stream/"+result._id+"/null/thumbnail/520");
 				}
@@ -217,7 +219,7 @@
 				if(inCart) {
 					$("#print-label").html("Remove from print queue");
 				} else {
-					$("#print-label").html("Print Photo");
+					$("#print-label").html("Order Photocopy");
 				}
 		
 		        $('#filesDetailModal').modal('show');				

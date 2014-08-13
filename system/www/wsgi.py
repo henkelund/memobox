@@ -135,7 +135,6 @@ def files_action():
         
         data.append(data_list)
     
-    #print json.dumps(data, "ISO-8859-1")
     return jsonify({'files': data, 'sql': models.render()})
 
 @app.route('/info')
@@ -340,19 +339,16 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	    	if g.islocalbox == False:
 	    		config = DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))
 	    		cache_dir = "/backups/"+config["BOXUSER"]+"/cache"
-	    		print cache_dir
 	    	
 	    	filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
 	    	mimetype = '%s/%s' % (model.type(), model.subtype())
-	    	print filename
-	    	print mimetype
 	    	_headers["Content-Disposition"] = "inline"
     else:
 	    if g.islocalbox == False:
 	    	config = DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))
 	    	filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+config["BOXUSER"]), model.name())
-	    	_headers["Content-Disposition"] = "attachment; filename="+model.name()
-	    	print "Bummer!"
+	    	if type != "nodownload":
+	    		_headers["Content-Disposition"] = "attachment; filename="+model.name()
 	    else:
 	    	filename = '%s/%s' % (model.abspath(), model.name())
 	    mimetype = '%s/%s' % (model.type(), model.subtype())

@@ -1,11 +1,11 @@
-<div ng-show="!cart || checkoutstep == -1" class="browserMessage">
+						<div ng-show="!cart || checkoutstep == -1" class="browserMessage">
 				  			You can order beautiful photocopies from your Backupbox directly to your home. Just click print on the photos you would like to order and return to this page to finalize your order. 
 				  		</div>
 						
-						<div ng-show="cart && checkoutstep == 0">
+						<div ng-show="cart && checkoutstep >= 0">
 				  			<h1>Order beautiful photo copies today</h1>
 				  			<p>You can instantly order a printed copy of any of your photos directly from your Backupbox. This is a list of all the photos you have selected for printing. If you are done adding photos to the photo print queue just press the button below to order beautiful print copies of these photos right now.</p>
-					  		<button ng-click="infinity.nextCheckoutStep()" class="btn">Yes, Print These Photos</button>
+					  		<!-- button ng-click="infinity.nextCheckoutStep()" class="btn">Yes, Print These Photos</button -->
 					  		<hr />
 							<ul class="thumbnails">
 								<li class="span3" ng-repeat="item in cart">
@@ -14,7 +14,7 @@
 							</ul>  		 
 				  		</div>
 				  						  		
-			  			<div ng-show="checkoutstep >= 1">
+			  			<div ng-show="checkoutstep >= 0">
 				  			<h1>Order photoprints directly to your home</h1>
 				  			<p>
 				  			You are just a few clicks away of receiving your first batch och beutifully printed copies of your photos. Follow the instructions below and complete your order. 

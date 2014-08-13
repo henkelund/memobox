@@ -521,3 +521,7 @@ div.tooltip-inner .imageContainer {
 .otherfiles thead th {
 	text-align: left; 
 }
+
+#modalImage {
+	cursor: -webkit-zoom-in; cursor: -moz-zoom-in;
+}
