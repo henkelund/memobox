@@ -524,7 +524,7 @@ div.tooltip-inner .imageContainer {
 }
 
 .navbar {
-	display: none; 
+	display: block; 
 }
 
 .navbar .brand {
