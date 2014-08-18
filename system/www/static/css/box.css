@@ -530,3 +530,13 @@ div.tooltip-inner .imageContainer {
 .navbar .brand {
 	margin-left: 10px;
 }
+
+.dropdown-menu li .unset-filter {
+	display: none; 
+	float: right;
+	margin-top: -1px;
+}
+
+.dropdown-menu li.active .unset-filter {
+	display: block;
+}

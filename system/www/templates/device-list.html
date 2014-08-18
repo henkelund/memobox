@@ -25,7 +25,7 @@
 	          <li>
 				<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
 					<li ng-repeat="device in FilesCtrl.fileService.devices" id="{{device.id}}" class="device" device-repeat-directive>
-						<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')">{{device.product_name}}</a>
+						<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')">{{device.product_name}}<div class="unset-filter">x</div></a>
 					</li>
 				</ul>
 	          </li>

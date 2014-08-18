@@ -278,7 +278,7 @@
 				$(".device").removeClass("active");
 				this.page = 1; 
 				changedState = true; 
-				$("#device-message").remove();
+				$(".dropdown-menu").hide();
 			}
 		}
 
@@ -440,31 +440,11 @@
              */
             loadDevicesSuccess: function (data) {
                 this.devices = data.devices;
-                if(this.devices.length == 0) {
-	                this.missingDevices = true; 
-                } else {			
-	                var devices = [];
-	                //$(".dropdown-menu").empty();
-
-	                for(var index = 0; index<this.devices.length; index++) {
-	                	devices.push({ id: String(index), label: this.devices[index].product_name, isChecked: true });
-	                	//$(".dropdown-menu").append('<li><a ng-click="infinity.selectTab(\'list\')" tabindex="-1" href="">'+this.devices[index].product_name+'</a></li>');
-	                }
-
-					/*$('.devices').dropdownCheckbox({
-					data: devices,
-					title: "Backedup Devices",
-					hideHeader: true,
-					showNbSelected: true,
-					templateButton: '<a class="dropdown-checkbox-toggle" data-toggle="dropdown" href="#">Devices <span class="dropdown-checkbox-nbselected"></span><b class="caret"></b>'
-					}); */
-
-					$("#deviceCount").html("("+devices.length+")");
-					$(".device-dropdown").click(function() {
-						$(".dropdown-menu").toggle();
-					});
-					$(".navbar").show();
-                }
+				$(".navbar").show();
+				$("#deviceCount").html("("+this.devices.length+")");
+				$(".device-dropdown").click(function() {
+					$(".dropdown-menu").toggle();
+				});				
             },
 
 
