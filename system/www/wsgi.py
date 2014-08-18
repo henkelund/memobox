@@ -114,7 +114,7 @@ def files_action():
             starttime = time.mktime(st.timetuple())
             endtime = time.mktime(et.timetuple())
             models.where('m.created_at < ?', endtime)   
-        elif (arg == 'format') and (len(vals) > 0) and (str(vals[0]) != "null"):
+        elif (arg == 'format') and (len(vals) > 0) and (str(vals[0]) != "null") and (str(vals[0]) != ""):
             if str(vals[0]) == "other":
 	            models.where("m.type not in ('image', 'video')").limit(100, (after-1)*100)
 	            isMedia = False
