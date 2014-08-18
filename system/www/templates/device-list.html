@@ -21,7 +21,14 @@
 	    <div class="navbar-inner">
 	      <a class="brand" href="#">Backupbox.se</a>
 	      <ul class="nav">
-	          <li ng-click="" class="devices dropdown-checkbox dropdown">Devices</li>
+	          <li class="devices dropdown-checkbox dropdown device-dropdown"><a href="#">Devices <span id="deviceCount"></span><b class="caret"></b></a></li>
+	          <li>
+				<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+					<li ng-repeat="device in FilesCtrl.fileService.devices" id="{{device.id}}" class="device" device-repeat-directive>
+						<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')">{{device.product_name}}</a>
+					</li>
+				</ul>
+	          </li>
 	          <!--li>
 	          <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 			    Action

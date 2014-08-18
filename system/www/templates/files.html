@@ -1,4 +1,4 @@
-<div  ng-controller='FilesCtrl' ng-app='box'>
+<div>
 	<ul class="tablist nav nav-tabs nav-justified" role="tablist">
 		<li id="tabBackupbox" ng-class="{active: state == 'list'}"><a ng-click="infinity.selectTab('list')" href="#"><div ng-class="{'icon-home': state == 'list','icon-white icon-home': state != 'list'}"></div> Backupbox</a></li>
 		<!-- li class="active"><a href="#"><div class="icon icon-hdd"></div> Cloudbox</a></li -->
@@ -15,7 +15,7 @@
 
 						<div ng-show="state == 'list'">
 							<div ng-include src=" '/templates/device-list.html' "></div>
-							<ul ng-show="items && items.length > 1" id="thumbnails" class="thumbnails">
+							<ul ng-show="items && items.length > 0" id="thumbnails" class="thumbnails">
 								<li class="span3" ng-repeat="item in items" thumbnail-repeat-done="parseDate()">
 									<div id="photo-{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div ng-show="item.type == 'image'" class="print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
 								</li>

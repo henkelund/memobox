@@ -247,8 +247,7 @@
 	    if(_type == "other") {
 		    $("#filter-"+_type).prop("checked", !$("#filter-"+_type).prop("checked"));
 			$("#filter-image").prop("checked", !$("#filter-other").prop("checked"));
-			$("#filter-video").prop("checked", !$("#filter-other").prop("checked"));				
-
+			$("#filter-video").prop("checked", !$("#filter-other").prop("checked"));
 			filters.push(_type);
 	    } else {
 		    $("#filter-"+_type).prop("checked", !$("#filter-"+_type).prop("checked"));
@@ -265,57 +264,26 @@
 
 	    // Parameter to determine wether content was replaced or appended. replace => chnageState = true
 	    var changedState = false; 
-		
-	    if(_type != null || _device != null) {
-	    	changedState = true; 
-	    	this.page = 1;
-			this.type = filters.join(",");	    	
-	    }
 
 		// If a device ID was passed, let's filter on device
 		if(_device != null) {
 			if(this.device != _device) {
 				changedState = true;
 				this.page = 1; 
-				$(".device span").removeClass("label label-success");
-				$("#"+_device+" span").addClass("label label-success");
+				$(".device").removeClass("active");
+				$("#"+_device).addClass("active");
 				this.device = _device; 
 			} else {
 				this.device = -1; 
-				$(".device span").removeClass("label label-success");
+				$(".device").removeClass("active");
 				this.page = 1; 
 				changedState = true; 
 				$("#device-message").remove();
 			}
-			
-
-			/*
-			Not used script that is supposed to list all available months of device
-			$.ajax({
-			    url : "/files/calendar?device="+_device,
-				async: false,
-				context: this,
-			    success : function(result){
-					//alert(JSON.stringify(result));
-			    }
-			});*/
 		}
 
-		// If a file type(Videos or Images) was added, Let's filter on type
-		/*if(_type != null) {
-			if(this.type != _type) {
-				changedState = true;
-				this.page = 1; 
-				$(".type span").removeClass("label label-success");
-				$("#type-"+_type+" span").addClass("label label-success");
-				this.type = _type; 				
-			} else {
-				changedState = true;
-				this.page = 1; 
-				$(".type span").removeClass("label label-success");
-				this.type = null;
-			}
-		}*/
+		if(_type)
+			changedState = true;
 		
 		// Clear visiable area of old images if the state was changed
 		if(changedState == true) {
@@ -374,7 +342,7 @@
 				      this.publish.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});				      
 			      }
 			    }			    
-				
+
 				// Increase current page number(for next request)
 		        this.page = this.page + 1;
 		        this.busy = false;
@@ -474,30 +442,28 @@
                 this.devices = data.devices;
                 if(this.devices.length == 0) {
 	                this.missingDevices = true; 
-                } else {
-				
-                var devices = [];
+                } else {			
+	                var devices = [];
+	                //$(".dropdown-menu").empty();
 
-                for(var index = 0; index<this.devices.length; index++) {
-                	devices.push({ id: String(index), label: this.devices[index].product_name, isChecked: true });
-                }
+	                for(var index = 0; index<this.devices.length; index++) {
+	                	devices.push({ id: String(index), label: this.devices[index].product_name, isChecked: true });
+	                	//$(".dropdown-menu").append('<li><a ng-click="infinity.selectTab(\'list\')" tabindex="-1" href="">'+this.devices[index].product_name+'</a></li>');
+	                }
 
-				/*var devices = [
-				    { id: "1", label: "Magdalenas iPhone.", isChecked: true },
-				    { id: "2", label: "P-M iPhone 5S", isChecked: true },
-				    { id: "3", label: "iPad", isChecked: true },
-				    { id: "4", label: "Canon G11", isChecked: true },
-				    { id: "5", label: "USB Stick", isChecked: true }
-				 ];*/
+					/*$('.devices').dropdownCheckbox({
+					data: devices,
+					title: "Backedup Devices",
+					hideHeader: true,
+					showNbSelected: true,
+					templateButton: '<a class="dropdown-checkbox-toggle" data-toggle="dropdown" href="#">Devices <span class="dropdown-checkbox-nbselected"></span><b class="caret"></b>'
+					}); */
 
-				  $('.devices').dropdownCheckbox({
-				    data: devices,
-				    title: "Backedup Devices",
-				    hideHeader: true,
-				    showNbSelected: true,
-				    templateButton: '<a class="dropdown-checkbox-toggle" data-toggle="dropdown" href="#">Devices <span class="dropdown-checkbox-nbselected"></span><b class="caret"></b>'
-				  });
-				  $(".navbar").show();
+					$("#deviceCount").html("("+devices.length+")");
+					$(".device-dropdown").click(function() {
+						$(".dropdown-menu").toggle();
+					});
+					$(".navbar").show();
                 }
             },
 
@@ -635,11 +601,10 @@
      * Files controller
      */
     box.controller('FilesCtrl', function ($scope, $location, FileService, Infinity) {
-
-        var that = this;
         this.fileService = FileService.loadFiles().loadDevices();
         $scope.infinity = new Infinity($scope);
         $scope.items = [];
+        $scope.files = [];
         $scope.state = "list"; 
         
         if(!$scope.datatable)
