@@ -6,6 +6,7 @@ import os
 import json
 import urllib2
 import re
+import uuid
 #import pwinty
 from datetime import date
 from subprocess import call
@@ -120,7 +121,7 @@ def files_action():
             else:
 	            models.where("m.type = '"+str(vals[0])+"'")
         elif arg == 'device' and (len(vals) > 0) and vals[0] != "-1":
-            models.where('m.device = '+str(vals[0]))
+            models.where('m.device in ('+str(vals[0])+')')
 
     if isMedia:
     	models.where("width = 260").join("file_thumbnail", "m._id = file_thumbnail.file").left_outer_join("file_attribute_text", "file_attribute_text.parent = m._id", "value").limit(32, (after-1)*32)

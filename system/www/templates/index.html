@@ -10,6 +10,8 @@
 		<link rel="icon" type="image/png" href="/static/images/icons/favicon.ico">        
 		<link rel="stylesheet" type="text/css" href="/static/css/jquery.dataTables.css">
 		<link rel="stylesheet" type="text/css" href="/static/css/shCore.css">
+		<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-dropdown-checkbox.css" />
+
         <script>var browserStatus = 0;</script>
 		<script>
 			var isLocal = true;
@@ -40,6 +42,29 @@
 		isLocal = false;
 	</script>
 	{% endif %}
+  <style>
+	.filters {
+		font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+		font-size: 14px;
+		color: #777;
+		padding-top: 2px;
+		border-left: 1px solid #777;
+		padding-left: 0px;
+		margin-left: 10px;
+		margin-top: 8px;
+	}
+
+	.filters input {
+		margin-bottom: 6px;
+		margin-left: 15px;
+		margin-right: 3px;
+	}
+
+	.navbar .nav > li.filters a {
+		padding: 0px;
+		display: inline;
+	}
+  </style>	
     </head>
     <body>
         <!-- div class="jumbotron">
@@ -53,7 +78,7 @@
 					</div>
 				</div>
             </div>
-        </div -->
+        </div -->     
         {% raw %}
         <div id="ng-app" ng-app="box">
             <div ui-view><span id="browserError" class="browserMessage">This browser is not yet supported by Backupbox. Please use a different web browser.</span></div>
@@ -75,6 +100,7 @@
 		<script type="text/javascript" language="javascript" src="/static/js/jquery.dataTables.js"></script>
 		<script type="text/javascript" language="javascript" src="/static/js/shCore.js"></script>
 		<script type="text/javascript" language="javascript" src="/static/js/demo.js"></script>
+		<script src="/static/js/bootstrap-dropdown-checkbox.min.js"></script>
     </body>
 </html>
 

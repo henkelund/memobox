@@ -1,84 +1,80 @@
-<ul class="tablist nav nav-tabs nav-justified" role="tablist">
-	<h1>Backupbox.se</h1>
-	<li id="tabBackupbox" show="#thumbnails, #device-list, #otherfiles_wrapper" hide="#printouts" class="active"><a onClick="displayTab('tabBackupbox')" href="#"><div class="icon icon-home"></div> Backupbox</a></li>
-	<!-- li class="active"><a href="#"><div class="icon icon-hdd"></div> Cloudbox</a></li -->
-	<li id="tabPrintouts" hide="#thumbnails, #device-list, #otherfiles_wrapper" show="#printouts"><a onClick="displayTab('tabPrintouts')" href="#"><div class="icon-white icon-print"></div> Photocopies <span id="cart"></span></a></li>
-</ul>
-<div ng-controller='FilesCtrl' class="container">
-	<div id="libContainer">
-		<div ng-include src=" '/templates/device-list.html' "></div>
-	    
-		<!-- div class="navbar date-navbar"><div class="navbar-inner" id="dateHolder"></div></div -->
-	    <ul class="thumbnails">
-			<div ng-app='box'>
-			  <div id="infiniteContainer" infinite-scroll='infinity.nextPage()' infinite-scroll-disabled='infinity.busy' infinite-scroll-distance='1'>
-			  		<div ng-show="FilesCtrl.fileService.missingDevices" class="browserMessage">
-			  			Start using your Backupbox by connecting any USB-compatible device the the USB port on your box. 
-			  		</div>
-			  		<div ng-show="missingImages && !FilesCtrl.fileService.missingDevices && !files.length > 0" class="browserMessage">
-			  			Ops! No images or videos were found that matches your selection. 
-			  		</div>
-					<div id="printouts" ng-include src=" '/templates/printouts.html' ">
-						
-					</div>
-					<ul ng-show="items && items.length > 1" id="thumbnails" class="thumbnails">
-						<li class="span3" ng-repeat="item in items" thumbnail-repeat-done="parseDate()">
-							<div id="photo-{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div ng-show="item.type == 'image'" class="print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
-						</li>
-					</ul>
-					<table ng-show="files && files.length > 0" id="otherfiles" class="display otherfiles" cellspacing="0" width="100%">
-						<thead>
-							<tr>
-								<th>Name</th>
-								<th>Type</th>
-								<th>Date</th>
-								<th>Size</th>
-							</tr>
-						</thead>
+<div  ng-controller='FilesCtrl' ng-app='box'>
+	<ul class="tablist nav nav-tabs nav-justified" role="tablist">
+		<li id="tabBackupbox" ng-class="{active: state == 'list'}"><a ng-click="infinity.selectTab('list')" href="#"><div ng-class="{'icon-home': state == 'list','icon-white icon-home': state != 'list'}"></div> Backupbox</a></li>
+		<!-- li class="active"><a href="#"><div class="icon icon-hdd"></div> Cloudbox</a></li -->
+		<li id="tabPrintouts" ng-class="{active: state == 'printouts'}"><a ng-click="infinity.selectTab('printouts')"  href="#"><div ng-class="{'icon-print': state == 'printouts','icon-white icon-print': state != 'printouts'}"></div> Photocopies <span id="cart"></span></a></li>
+	</ul>
+	<div class="container">
+		<div id="libContainer">
+	  	    <ul class="thumbnails">
+				<div>
+				  <div id="infiniteContainer" infinite-scroll='infinity.nextPage()' infinite-scroll-disabled='infinity.busy' infinite-scroll-distance='1'>					
+						<div ng-show="state == 'printouts'" id="printouts" ng-include src=" '/templates/printouts.html' ">
+							
+						</div>
+
+						<div ng-show="state == 'list'">
+							<div ng-include src=" '/templates/device-list.html' "></div>
+							<ul ng-show="items && items.length > 1" id="thumbnails" class="thumbnails">
+								<li class="span3" ng-repeat="item in items" thumbnail-repeat-done="parseDate()">
+									<div id="photo-{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div ng-show="item.type == 'image'" class="print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
+								</li>
+							</ul>
+							<table ng-show="files && files.length > 0" id="otherfiles" class="display otherfiles" cellspacing="0" width="100%">
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th>Type</th>
+										<th>Date</th>
+										<th>Size</th>
+									</tr>
+								</thead>
+				
+								<tfoot>
+									<tr>
+										<th>Name</th>
+										<th>Type</th>
+										<th>Date</th>
+										<th>Size</th>
+									</tr>
+								</tfoot>
+				
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+				  </div>
+				</div>
+		        
+		    </ul>
+	    </div>
+
 		
-						<tfoot>
-							<tr>
-								<th>Name</th>
-								<th>Type</th>
-								<th>Date</th>
-								<th>Size</th>
-							</tr>
-						</tfoot>
-		
-						<tbody>
-						</tbody>
-					</table>
-			  </div>
-			</div>
-	        
-	    </ul>
-    </div>
 
-	
+	    <div class="modal fade" id="filesDetailModal" tabindex="-1" role="dialog" aria-labelledby="filesDetailModalLabel" aria-hidden="true" ng-include src=" '/templates/files.detail.html' ">
+	    </div>
 
-    <div class="modal fade" id="filesDetailModal" tabindex="-1" role="dialog" aria-labelledby="filesDetailModalLabel" aria-hidden="true" ng-include src=" '/templates/files.detail.html' ">
-    </div>
+	    <div class="modal fade" id="deviceDetailModal" tabindex="-1" role="dialog" aria-labelledby="deviceDetailModalLabel" aria-hidden="true">
+	        <div class="modal-dialog">
+	            <div class="modal-content">
+	                <div class="modal-header">
+	                    <button type="button" class="close" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
+	                    <h4 class="modal-title" id="deviceDetailModalLabel">Edit device information</h4>
+	                </div>
+	                <div class="modal-body">
+						<form>
+							<input id="deviceDetailModalInput" type="text" name="label" /><br />
+		                    <a style="z-index: 10000; position: absolute; margin-top: 15px;" class="btn" ng-click="infinity.updateDevice()" id="modalSave" target="_blank" href="">
+							    <i class="icon-download-alt"></i> Save
+							</a>						
+						</form>
+	                </div>
+	                <div class="modal-footer">
+	                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
 
-    <div class="modal fade" id="deviceDetailModal" tabindex="-1" role="dialog" aria-labelledby="deviceDetailModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="deviceDetailModalLabel">Edit device information</h4>
-                </div>
-                <div class="modal-body">
-					<form>
-						<input id="deviceDetailModalInput" type="text" name="label" /><br />
-	                    <a style="z-index: 10000; position: absolute; margin-top: 15px;" class="btn" ng-click="infinity.updateDevice()" id="modalSave" target="_blank" href="">
-						    <i class="icon-download-alt"></i> Save
-						</a>						
-					</form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+	</div>
 </div>

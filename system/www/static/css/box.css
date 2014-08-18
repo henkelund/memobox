@@ -427,6 +427,7 @@ div.tooltip-inner .imageContainer {
 .tablist {
 	padding-left: 8%; 
 	padding-right: 15%; 
+	padding-top: 1%;
 	width: 84%; 
 	background-color: #2a00ff;	
 }
@@ -461,10 +462,6 @@ div.tooltip-inner .imageContainer {
 /*.tablist li {
 	background-color: #2705d1;
 }*/
-
-#printouts {
-	display: none;
-}
 
 .print-form {
 	display: none;
@@ -524,4 +521,12 @@ div.tooltip-inner .imageContainer {
 
 #modalImage {
 	cursor: -webkit-zoom-in; cursor: -moz-zoom-in;
+}
+
+.navbar {
+	display: none; 
+}
+
+.navbar .brand {
+	margin-left: 10px;
 }

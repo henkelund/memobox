@@ -1,4 +1,4 @@
-		<div id="device-list" class="navbar navbar-inverse navbar-static-top">
+		<!-- div id="device-list" class="navbar navbar-inverse navbar-static-top">
 		    <div class="navbar-inner">
 		        <a id="mainNav-btn" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
 		            <span class="icon-bar"></span>
@@ -16,4 +16,29 @@
 					</ul>
 				</div>
 			</div>
-		</div>
+		</div -->
+	  <div class="navbar">
+	    <div class="navbar-inner">
+	      <a class="brand" href="#">Backupbox.se</a>
+	      <ul class="nav">
+	          <li ng-click="" class="devices dropdown-checkbox dropdown">Devices</li>
+	          <!--li>
+	          <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+			    Action
+			    <span class="caret"></span>
+			  </a>
+			  <ul class="dropdown-menu">
+			    <li><a href="#">Magdas iPhone</a></li>
+			    <li><a href="#">P-M's iPhone</a></li>
+			  </ul>
+			</li-->
+	        <li class="filters">
+	        	<a href="#" ng-click="infinity.nextPage(null,'image')"><input id="filter-image" type="checkbox" checked ng-click="infinity.nextPage(null,'image')" /> Photos</a> 
+	        	<a href="#" ng-click="infinity.nextPage(null,'video')"><input id="filter-video" type="checkbox" checked ng-click="infinity.nextPage(null,'video')" /> Videos</a>
+	        </li>
+	        <li class="filters">
+	        	<a href="#" ng-click="infinity.nextPage(null,'other')"><input id="filter-other" type="checkbox" ng-click="infinity.nextPage(null,'other')" /> Documents & Files</a>
+	        </li>
+	      </ul>
+	    </div>
+	  </div>   		

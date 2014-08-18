@@ -102,6 +102,10 @@
 		this.publish.checkoutstep++;
 	  }
 
+	  Infinity.prototype.selectTab = function(state){
+		this.publish.state = state;
+	  }
+
 	  Infinity.prototype.updateCart = function(event){
 		this.price = event.target.attributes.price.value;
 		$(".photosize button").removeClass("active");
@@ -203,8 +207,7 @@
 					} else {
 						$("#modalVideo > source").attr("src", result.abspath.replace("/backupbox/data/devices/", "/backups/" + username + "/devices/")+"/"+result.name);
 					}
-					
-					$("#originalImage").attr("src", result.abspath.replace("/backupbox/data/devices/", "/backups/" + username + "/devices/")+"/"+result.name);
+				
 					$("#modalVideo").load();
 					$("#modalVideo").show();
 					$("#modalImage").hide();
@@ -212,7 +215,6 @@
 					$("#modalVideo").hide();
 					$("#modalImage").show();
 					$("#zoomLink").attr("href", "/files/stream/"+result._id+"/null/nodownload/0");
-					$("#originalImage").attr("src", "/files/stream/"+result._id+"/null/full/0");
 					$("#modalImage").attr("src", "/files/stream/"+result._id+"/null/thumbnail/520");
 				}
 				
@@ -236,14 +238,40 @@
 	  **/
 	  Infinity.prototype.nextPage = function(_device, _type) {
 	    // Make sure previous request is not running
-	    if (this.busy || (!_device && !_type && this.type == "other")) return;
+	    if (this.busy) return;
 	    
 	    // Flag this method as running
 	    this.busy = true;	
-	    
+	    var filters = [];
+
+	    if(_type == "other") {
+		    $("#filter-"+_type).prop("checked", !$("#filter-"+_type).prop("checked"));
+			$("#filter-image").prop("checked", !$("#filter-other").prop("checked"));
+			$("#filter-video").prop("checked", !$("#filter-other").prop("checked"));				
+
+			filters.push(_type);
+	    } else {
+		    $("#filter-"+_type).prop("checked", !$("#filter-"+_type).prop("checked"));
+	    	if($('#filter-other').prop('checked')) {
+	    		$('#filter-other').prop('checked', false);
+	    	}
+
+			$( "li.filters input" ).each(function( index ) {
+			  if($( this ).prop("checked")) {
+			  	filters.push($( this ).prop("id").replace("filter-", ""));
+			  }
+			});
+	    }
+
 	    // Parameter to determine wether content was replaced or appended. replace => chnageState = true
 	    var changedState = false; 
 		
+	    if(_type != null || _device != null) {
+	    	changedState = true; 
+	    	this.page = 1;
+			this.type = filters.join(",");	    	
+	    }
+
 		// If a device ID was passed, let's filter on device
 		if(_device != null) {
 			if(this.device != _device) {
@@ -272,9 +300,9 @@
 			    }
 			});*/
 		}
-		
+
 		// If a file type(Videos or Images) was added, Let's filter on type
-		if(_type != null) {
+		/*if(_type != null) {
 			if(this.type != _type) {
 				changedState = true;
 				this.page = 1; 
@@ -287,7 +315,7 @@
 				$(".type span").removeClass("label label-success");
 				this.type = null;
 			}
-		}
+		}*/
 		
 		// Clear visiable area of old images if the state was changed
 		if(changedState == true) {
@@ -298,7 +326,7 @@
 	
 		// Lead request
 		$.ajax({
-		    url : "/files?after="+this.page+"&device="+this.device+"&format="+this.type,
+		    url : "/files?after="+this.page+"&device="+this.device+"&format="+filters.join(","),
 			async: false,
 			context: this,
 		    success : function(result){
@@ -322,7 +350,7 @@
 			      var type_content = ""; 
 			      
 			      // If current item is a video, add info about lenght in thumbnail. 
-			      if(result.files[i].type == "video" && result.files[i].value != null) {
+			      /*if(result.files[i].type == "video" && result.files[i].value != null) {
 			      	  var video_length = result.files[i].value.split(" ")
 			      	  var suffix = "ms"; 
 			      	  
@@ -330,7 +358,7 @@
 			      	  	if(video_length[ind].indexOf(suffix, video_length[ind].length - suffix.length) == -1)
 							type_content += video_length[ind].replace("mn", "min")+" ";
 					  }
-			      }		
+			      }	*/	
 			      
 			      // Push thumbnail item to ng-repeat array	      
 			      if(this.type == "other") {
@@ -446,6 +474,30 @@
                 this.devices = data.devices;
                 if(this.devices.length == 0) {
 	                this.missingDevices = true; 
+                } else {
+				
+                var devices = [];
+
+                for(var index = 0; index<this.devices.length; index++) {
+                	devices.push({ id: String(index), label: this.devices[index].product_name, isChecked: true });
+                }
+
+				/*var devices = [
+				    { id: "1", label: "Magdalenas iPhone.", isChecked: true },
+				    { id: "2", label: "P-M iPhone 5S", isChecked: true },
+				    { id: "3", label: "iPad", isChecked: true },
+				    { id: "4", label: "Canon G11", isChecked: true },
+				    { id: "5", label: "USB Stick", isChecked: true }
+				 ];*/
+
+				  $('.devices').dropdownCheckbox({
+				    data: devices,
+				    title: "Backedup Devices",
+				    hideHeader: true,
+				    showNbSelected: true,
+				    templateButton: '<a class="dropdown-checkbox-toggle" data-toggle="dropdown" href="#">Devices <span class="dropdown-checkbox-nbselected"></span><b class="caret"></b>'
+				  });
+				  $(".navbar").show();
                 }
             },
 
@@ -588,6 +640,7 @@
         this.fileService = FileService.loadFiles().loadDevices();
         $scope.infinity = new Infinity($scope);
         $scope.items = [];
+        $scope.state = "list"; 
         
         if(!$scope.datatable)
 	        $scope.datatable = $('#otherfiles').dataTable({ "iDisplayLength": 30, "bLengthChange": false });
