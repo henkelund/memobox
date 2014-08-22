@@ -48,6 +48,7 @@
 	    this.page = 1;
 		this.device = -1; 
 		this.type = null; 
+		this.lastCount = -1; 
 		this.filters = [];
 		this.photolist = new Object();
 		this.price = 0.11;
@@ -249,6 +250,10 @@
 		    $("#filter-"+_type).prop("checked", !$("#filter-"+_type).prop("checked"));
 			$("#filter-image").prop("checked", !$("#filter-other").prop("checked"));
 			$("#filter-video").prop("checked", !$("#filter-other").prop("checked"));
+			if(!$("#filter-"+_type).prop("checked")) {
+				_type = "image,video";
+				this.type = _type;
+			}
 			filters.push(_type);
 	    } else 
 	    if(_type != null) {
@@ -270,6 +275,7 @@
 		// If a device ID was passed, let's filter on device
 		if(_device || _type) {
 			changedState = true;
+			this.lastCount = -1; 
 			if(this.device != _device) {
 				$(".device").removeClass("active");
 				$("#"+_device).addClass("active");
@@ -296,6 +302,7 @@
 		}
 
 		// Lead request
+		if(this.type != "other" && this.lastCount != 0)
 		$.ajax({
 		    url : "/files?after="+this.page+"&device="+this.device+"&format="+filters.join(","),
 			async: false,
@@ -311,11 +318,13 @@
 
 				// If response resulted in no images, show error message
 				if(result.files.length == 0 && this.publish.items.length == 0) {
-					this.publish.missingImages = true; 	
+					this.publish.missingImages = true;
 				} else {
 					this.publish.missingImages = false; 
 				}
 				
+				this.lastCount = result.files.length; 
+
 				// Loop JSON response and add images to ng-repeat array
 			    for(var i = 0; i < result.files.length; i++) {
 			      var type_content = ""; 
@@ -353,6 +362,10 @@
 				if(filters == "other" && this.publish.files.length > 0) {
 					this.publish.datatable.fnClearTable();
 					this.publish.datatable.fnAddData(this.publish.files);
+				}
+
+				if(_type != null) {
+					this.type = _type;
 				}
 			
 		    }
