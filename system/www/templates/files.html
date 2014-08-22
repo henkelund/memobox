@@ -14,7 +14,39 @@
 						</div>
 
 						<div ng-show="state == 'list'">
-							<div ng-include src=" '/templates/device-list.html' "></div>
+							<!-- div ng-include src=" '/templates/device-list.html' "></div -->
+							  <div class="navbar">
+							    <div class="navbar-inner">
+							      <a class="brand" href="#">Backupbox.se</a>
+							      <ul class="nav">
+							          <li ng-click="" class="devices dropdown-checkbox dropdown device-dropdown"><a href="#">Devices <span id="deviceCount"></span><b class="caret"></b></a></li>
+							          <li>
+										<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+											<li ng-repeat="device in FilesCtrl.fileService.devices" id="{{device.id}}" class="device" device-repeat-directive>
+												<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')">{{device.product_name}}<div class="unset-filter">x</div></a>
+											</li>
+										</ul>
+							          </li>
+							          <!--li>
+							          <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+									    Action
+									    <span class="caret"></span>
+									  </a>
+									  <ul class="dropdown-menu">
+									    <li><a href="#">Magdas iPhone</a></li>
+									    <li><a href="#">P-M's iPhone</a></li>
+									  </ul>
+									</li-->
+							        <li class="filters">
+							        	<a href="#" ng-click="infinity.nextPage(null,'image')"><input id="filter-image" type="checkbox" checked ng-click="infinity.nextPage(null,'image')" /> Photos</a> 
+							        	<a href="#" ng-click="infinity.nextPage(null,'video')"><input id="filter-video" type="checkbox" checked ng-click="infinity.nextPage(null,'video')" /> Videos</a>
+							        </li>
+							        <li class="filters">
+							        	<a href="#" ng-click="infinity.nextPage(null,'other')"><input id="filter-other" type="checkbox" ng-click="infinity.nextPage(null,'other')" /> Documents & Files</a>
+							        </li>
+							      </ul>
+							    </div>
+							  </div>   									
 							<ul ng-show="items && items.length > 0" id="thumbnails" class="thumbnails">
 								<li class="span3" ng-repeat="item in items" thumbnail-repeat-done="parseDate()">
 									<div id="photo-{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div ng-show="item.type == 'image'" class="print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>

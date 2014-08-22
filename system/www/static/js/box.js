@@ -269,14 +269,12 @@
 		if(_device != null) {
 			if(this.device != _device) {
 				changedState = true;
-				this.page = 1; 
 				$(".device").removeClass("active");
 				$("#"+_device).addClass("active");
 				this.device = _device; 
 			} else {
 				this.device = -1; 
 				$(".device").removeClass("active");
-				this.page = 1; 
 				changedState = true; 
 				$(".dropdown-menu").hide();
 			}
@@ -287,6 +285,7 @@
 		
 		// Clear visiable area of old images if the state was changed
 		if(changedState == true) {
+			this.page = 1; 			
 			this.publish.items = [];
 			this.publish.files = [];
 			resetDate();
