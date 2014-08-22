@@ -243,7 +243,7 @@
 	  * Method that loads next page in the infinite scroll. Device ID and File type ID can be passed as filtering parameters. 
 	  *	  
 	  **/
-	  Infinity.prototype.nextPage = function(_device, _type) {
+	  Infinity.prototype.nextPage = function(_device, _type, noInvert) {
 	    // Make sure previous request is not running
 	    if (this.busy) return;
 	    
@@ -252,18 +252,27 @@
 	   	var filters = [];
 
 	    if(_type == "other") {
-		    $("#filter-"+_type).prop("checked", !$("#filter-"+_type).prop("checked"));
+		    if(!noInvert) {
+		    	$("#filter-"+_type).prop("checked", !$("#filter-"+_type).prop("checked"));
+		    }
+
 			$("#filter-image").prop("checked", !$("#filter-other").prop("checked"));
 			$("#filter-video").prop("checked", !$("#filter-other").prop("checked"));
+			
 			if(!$("#filter-"+_type).prop("checked")) {
 				_type = "image,video";
 				this.type = _type;
 			}
+
 			filters.push(_type);
 	    } else 
 	    if(_type != null) {
 			this.type = _type;	    	
-		    $("#filter-"+_type).prop("checked", !$("#filter-"+_type).prop("checked"));
+		    
+		    if(!noInvert) {
+		    	$("#filter-"+_type).prop("checked", !$("#filter-"+_type).prop("checked"));
+		    }
+	    	
 	    	if($('#filter-other').prop('checked')) {
 	    		$('#filter-other').prop('checked', false);
 	    	}
@@ -279,15 +288,16 @@
 	    var changedState = false; 
 
 		// If a device ID was passed, let's filter on device
-		if(_device || _type) {
+		if((_device) || _type) {
 			changedState = true;
 			this.lastCount = -1; 
-			
-			if(_device != -1 && this.device != _device) {
+
+			if(_device && _device != -1 && this.device != _device) {
 				$(".device").removeClass("active");
 				$("#"+_device).addClass("active");
 				this.device = _device; 
-			} else {
+			} else 
+			if(_device) {
 				this.device = -1; 
 				$(".device").removeClass("active");
 				$("#allDevices").addClass("active");
