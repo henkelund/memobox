@@ -400,7 +400,11 @@
 			this.busy = false; 
 		}
 	  };
-	
+	  
+	  if(this.page < 5) {
+	  	this.nextPage();
+	  }
+
 	  return Infinity;
 	});	
 
