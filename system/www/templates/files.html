@@ -1,14 +1,33 @@
 <div>
-	<ul class="tablist nav nav-tabs nav-justified" role="tablist">
-		<li id="tabBackupbox" ng-class="{active: state == 'list'}"><a ng-click="infinity.selectTab('list')" href="#"><div ng-class="{'icon-home': state == 'list','icon-white icon-home': state != 'list'}"></div> My MemoryBox</a></li>
-		<!-- li class="active"><a href="#"><div class="icon icon-hdd"></div> Cloudbox</a></li -->
-		<li id="tabPrintouts" ng-class="{active: state == 'printouts'}"><a ng-click="infinity.selectTab('printouts')"  href="#"><div ng-class="{'icon-print': state == 'printouts','icon-white icon-print': state != 'printouts'}"></div> Physical Prints <span id="cart"></span></a></li>
+	<div id='cssmenu' style="margin-top: 10px; margin-bottom: 5px;">
+	<ul>
+	   <li ng-class="{active: state == 'list'}" style="margin-left: 150px;" class='active'><a ng-click="infinity.selectTab('list')" href="#"><div class="icon-white icon-home"></div> <span>Backup at Home</span></a></li>
+	   <li ng-class="{active: state == 'cloud'}" ><a ng-click="infinity.selectTab('cloud')" href='#'><div class="icon-white icon-hdd"></div> <span>Backup on Cloud Server</span></a></li>
+	   <li ng-class="{active: state == 'printouts'}"><a ng-click="infinity.selectTab('printouts')"  href="#"><div class="icon-white icon-print"></div> <span>Printed Photos<span id="cart"></span></span></a></li>
+	   <!-- li class='last'><a href='#'><span>Contact</span></a></li -->
 	</ul>
+	</div>	
+<script type="text/javascript">
+( function( $ ) {
+$( document ).ready(function() {
+$('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg-three"></div><div id="bg-four"></div>');
+});
+} )( jQuery );
+	
+</script>	
+	<!-- ul class="tablist nav nav-tabs nav-justified" role="tablist">
+		<li id="tabBackupbox" ng-class="{active: state == 'list'}"><a ng-click="infinity.selectTab('list')" href="#"><div ng-class="{'icon-home': state == 'list','icon-white icon-home': state != 'list'}"></div> My MemoryBox</a></li>
+		<li id="tabPrintouts" ng-class="{active: state == 'printouts'}"><a ng-click="infinity.selectTab('printouts')"  href="#"><div ng-class="{'icon-print': state == 'printouts','icon-white icon-print': state != 'printouts'}"></div> Physical Prints <span id="cart"></span></a></li>
+	</ul -->
 	<div class="container">
 		<div id="libContainer">
 	  	    <ul class="thumbnails">
 				<div>
 				  <div id="infiniteContainer" infinite-scroll='infinity.nextPage()' infinite-scroll-disabled='infinity.busy' infinite-scroll-distance='3'>					
+						<div ng-show="state == 'cloud'" class="browserMessage" id="cloud">
+							Cloud backup is not activated.
+						</div>
+
 						<div ng-show="state == 'printouts'" id="printouts" ng-include src=" '/templates/printouts.html' ">
 							
 						</div>

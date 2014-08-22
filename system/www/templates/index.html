@@ -13,93 +13,111 @@
 		<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-dropdown-checkbox.css" />
 
 		<style>
-		/* ------------------------------------------------- */
+#cssmenu,
+#cssmenu ul,
+#cssmenu ul li,
+#cssmenu ul li a {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  list-style: none;
+  line-height: 1;
+  display: block;
+  position: relative;
+  font-family: Capriola, Helvetica, sans-serif;
+}
+#cssmenu {
+  width: auto;
+  height: 59px;
+  padding-bottom: 4px;
+}
+#cssmenu.align-right {
+  float: right;
+}
+#cssmenu.align-right ul li {
+  float: right;
+  margin-right: 0;
+  margin-left: 4px;
+}
+#cssmenu.align-right ul li:first-child,
+#cssmenu.align-right ul li:first-child > a {
+  border-bottom-right-radius: 3px;
+}
+#cssmenu #bg-one,
+#cssmenu #bg-two,
+#cssmenu #bg-three,
+#cssmenu #bg-four {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+#cssmenu #bg-one {
+  height: 10px;
+  background: #0f71ba;
+}
+#cssmenu #bg-two {
+  height: 59px;
+  z-index: 2;
+  background: url('images/bg.png');
+}
+#cssmenu #bg-three {
+  bottom: 4px;
+  height: 55px;
+  z-index: 3;
+  background: #222222;
+  background: -moz-linear-gradient(top, #555555 0%, #222222 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #555555), color-stop(100%, #222222));
+  background: -webkit-linear-gradient(top, #555555 0%, #222222 100%);
+  background: -o-linear-gradient(top, #555555 0%, #222222 100%);
+  background: -ms-linear-gradient(top, #555555 0%, #222222 100%);
+  background: linear-gradient(to bottom, #555555 0%, #222222 100%);
+}
+#cssmenu #bg-four {
+  bottom: 4px;
+  height: 55px;
+  z-index: 4;
+  background: url('images/bg.png');
+}
+#cssmenu ul {
+  height: 59px;
+}
+#cssmenu ul li {
+  float: left;
+  margin-right: 4px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  z-index: 5;
+}
+#cssmenu ul li a {
+  padding: 24px 30px 20px 30px;
+  margin-bottom: 4px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  color: #eeeeee;
+  font-size: 15px;
+  text-decoration: none;
+}
+#cssmenu ul li:first-child,
+#cssmenu ul li:first-child > a {
+  border-bottom-left-radius: 3px;
+}
+#cssmenu ul li:hover,
+#cssmenu ul li.active {
+  background: #0f71ba;
+  background: -moz-linear-gradient(top, #3fa4f0 0%, #0f71ba 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #3fa4f0), color-stop(100%, #0f71ba));
+  background: -webkit-linear-gradient(top, #3fa4f0 0%, #0f71ba 100%);
+  background: -o-linear-gradient(top, #3fa4f0 0%, #0f71ba 100%);
+  background: -ms-linear-gradient(top, #3fa4f0 0%, #0f71ba 100%);
+  background: linear-gradient(to bottom, #3fa4f0 0%, #0f71ba 100%);
+}
+#cssmenu ul li a:hover,
+#cssmenu ul li.active > a {
+  color: #ffffff;
+}
 
-		#tabs {
-		  overflow: hidden;
-		  width: 100%;
-		  margin: 0;
-		  padding: 0;
-		  list-style: none;
-		}
-
-		#tabs li {
-		  float: left;
-		  margin: 0 .5em 0 0;
-		}
-
-		#tabs a {
-		  position: relative;
-		  background: #ddd;
-		  background-image: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ddd));
-		  background-image: -webkit-linear-gradient(top, #fff, #ddd);
-		  background-image: -moz-linear-gradient(top, #fff, #ddd);
-		  background-image: -ms-linear-gradient(top, #fff, #ddd);
-		  background-image: -o-linear-gradient(top, #fff, #ddd);
-		  background-image: linear-gradient(to bottom, #fff, #ddd);  
-		  padding: .7em 3.5em;
-		  float: left;
-		  text-decoration: none;
-		  color: #444;
-		  text-shadow: 0 1px 0 rgba(255,255,255,.8);
-		  -webkit-border-radius: 5px 0 0 0;
-		  -moz-border-radius: 5px 0 0 0;
-		  border-radius: 5px 0 0 0;
-		  -moz-box-shadow: 0 2px 2px rgba(0,0,0,.4);
-		  -webkit-box-shadow: 0 2px 2px rgba(0,0,0,.4);
-		  box-shadow: 0 2px 2px rgba(0,0,0,.4);
-		}
-
-		#tabs a:hover,
-		#tabs a:hover::after,
-		#tabs a:focus,
-		#tabs a:focus::after {
-		  background: #fff;
-		}
-
-		#tabs a:focus {
-		  outline: 0;
-		}
-
-		#tabs a::after {
-		  content:'';
-		  position:absolute;
-		  z-index: 1;
-		  top: 0;
-		  right: -.5em;  
-		  bottom: 0;
-		  width: 1em;
-		  background: #ddd;
-		  background-image: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ddd));
-		  background-image: -webkit-linear-gradient(top, #fff, #ddd);
-		  background-image: -moz-linear-gradient(top, #fff, #ddd);
-		  background-image: -ms-linear-gradient(top, #fff, #ddd);
-		  background-image: -o-linear-gradient(top, #fff, #ddd);
-		  background-image: linear-gradient(to bottom, #fff, #ddd);  
-		  -moz-box-shadow: 2px 2px 2px rgba(0,0,0,.4);
-		  -webkit-box-shadow: 2px 2px 2px rgba(0,0,0,.4);
-		  box-shadow: 2px 2px 2px rgba(0,0,0,.4);
-		  -webkit-transform: skew(10deg);
-		  -moz-transform: skew(10deg);
-		  -ms-transform: skew(10deg);
-		  -o-transform: skew(10deg);
-		  transform: skew(10deg);
-		  -webkit-border-radius: 0 5px 0 0;
-		  -moz-border-radius: 0 5px 0 0;
-		  border-radius: 0 5px 0 0;  
-		}
-
-		#tabs #current a {
-		  background: #fff;
-		  z-index: 3;
-		}
-
-		#tabs #current a::after {
-		  background: #fff;
-		  z-index: 3;
-		}
-
-		/* ------------------------------------------------- */
 		</style>
 
         <script>var browserStatus = 0;</script>
