@@ -1,6 +1,6 @@
 <div>
 	<ul class="tablist nav nav-tabs nav-justified" role="tablist">
-		<li id="tabBackupbox" ng-class="{active: state == 'list'}"><a ng-click="infinity.selectTab('list')" href="#"><div ng-class="{'icon-home': state == 'list','icon-white icon-home': state != 'list'}"></div> Backupbox</a></li>
+		<li id="tabBackupbox" ng-class="{active: state == 'list'}"><a ng-click="infinity.selectTab('list')" href="#"><div ng-class="{'icon-home': state == 'list','icon-white icon-home': state != 'list'}"></div> My MemoryBox</a></li>
 		<!-- li class="active"><a href="#"><div class="icon icon-hdd"></div> Cloudbox</a></li -->
 		<li id="tabPrintouts" ng-class="{active: state == 'printouts'}"><a ng-click="infinity.selectTab('printouts')"  href="#"><div ng-class="{'icon-print': state == 'printouts','icon-white icon-print': state != 'printouts'}"></div> Photocopies <span id="cart"></span></a></li>
 	</ul>
@@ -14,7 +14,6 @@
 						</div>
 
 						<div ng-show="state == 'list'">
-							<!-- div ng-include src=" '/templates/device-list.html' "></div -->
 							  <div class="navbar">
 							    <div class="navbar-inner">
 							      <a class="brand" href="#">Backupbox.se</a>
@@ -27,16 +26,6 @@
 											</li>
 										</ul>
 							          </li>
-							          <!--li>
-							          <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-									    Action
-									    <span class="caret"></span>
-									  </a>
-									  <ul class="dropdown-menu">
-									    <li><a href="#">Magdas iPhone</a></li>
-									    <li><a href="#">P-M's iPhone</a></li>
-									  </ul>
-									</li-->
 							        <li class="filters">
 							        	<input id="filter-image" type="checkbox" checked ng-click="infinity.nextPage(null,'image', true)" /><a href="#" ng-click="infinity.nextPage(null,'image')"> Photos</a> 
 							        	<input id="filter-video" type="checkbox" checked ng-click="infinity.nextPage(null,'video', true)" /><a href="#" ng-click="infinity.nextPage(null,'video')"> Videos</a>

@@ -23,7 +23,14 @@
 						var template = '<li class="divider"></li><li id="allDevices" class="device active"><a href="javascript:void(0)" ng-click="infinity.nextPage(-1)">All devices</a></li>';
 			            var linkFn = $compile(template);
 			            var content = linkFn(scope);
-			            element.parent().append(content);                        
+			            element.parent().append(content); 
+
+						$('#deviceDropdown').bind("click", function()
+						{
+						  $('#deviceDropdown').delay(500).fadeOut(600); //$('#select'), not ('#select')
+						});
+
+
                     });
                 }
             }
@@ -320,7 +327,7 @@
 		}
 
 		// Lead request
-		if(this.type != "other" && this.lastCount != 0)
+		if(changedState || this.type != "other" && this.lastCount != 0) {
 		$.ajax({
 		    url : "/files?after="+this.page+"&device="+this.device+"&format="+filters.join(","),
 			async: false,
@@ -388,6 +395,7 @@
 			
 		    }
 		});
+		}
 	  };
 	
 	  return Infinity;
