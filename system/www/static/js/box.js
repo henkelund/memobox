@@ -47,7 +47,7 @@
 	    this.busy = false;
 	    this.page = 1;
 		this.device = -1; 
-		this.type = null;
+		this.filters = [];
 		this.photolist = new Object();
 		this.price = 0.11;
 		this.shipping = 5;
@@ -242,7 +242,7 @@
 	    
 	    // Flag this method as running
 	    this.busy = true;	
-	    var filters = [];
+	   	var filters = [];
 
 	    if(_type == "other") {
 		    $("#filter-"+_type).prop("checked", !$("#filter-"+_type).prop("checked"));
@@ -266,9 +266,9 @@
 	    var changedState = false; 
 
 		// If a device ID was passed, let's filter on device
-		if(_device != null) {
+		if(_device || _type) {
+			changedState = true;
 			if(this.device != _device) {
-				changedState = true;
 				$(".device").removeClass("active");
 				$("#"+_device).addClass("active");
 				this.device = _device; 
@@ -279,9 +279,6 @@
 				$(".dropdown-menu").hide();
 			}
 		}
-
-		if(_type)
-			changedState = true;
 		
 		// Clear visiable area of old images if the state was changed
 		if(changedState == true) {
@@ -290,7 +287,12 @@
 			this.publish.files = [];
 			resetDate();
 		}
-	
+		
+		// Format input string to request page
+		if(this.device == null) {
+			this.device = -1;
+		}
+
 		// Lead request
 		$.ajax({
 		    url : "/files?after="+this.page+"&device="+this.device+"&format="+filters.join(","),
@@ -328,7 +330,7 @@
 			      }	*/	
 			      
 			      // Push thumbnail item to ng-repeat array	      
-			      if(this.type == "other") {
+			      if(filters == "other") {
 				      var _months = Array("January","February","March","April","May","June","July","August","September","October","November","December");
 				      var time = new Date(result.files[i].created_at*1000);
 					  var viewMonth = String(_months[time.getMonth()]).substr(0, 3);
@@ -345,8 +347,8 @@
 				// Increase current page number(for next request)
 		        this.page = this.page + 1;
 		        this.busy = false;
-				
-				if(this.type == "other" && this.publish.files.length > 0) {
+
+				if(filters == "other" && this.publish.files.length > 0) {
 					this.publish.datatable.fnClearTable();
 					this.publish.datatable.fnAddData(this.publish.files);
 				}
