@@ -532,11 +532,13 @@ div.tooltip-inner .imageContainer {
 }
 
 .dropdown-menu li .unset-filter {
-	display: none; 
+	display: block; 
+	visibility: hidden;
 	float: right;
-	margin-top: -1px;
+	margin-top: 0px;
+	margin-left: 15px;
 }
 
 .dropdown-menu li.active .unset-filter {
-	display: block;
+	visibility: visible;
 }

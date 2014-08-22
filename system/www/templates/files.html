@@ -21,7 +21,7 @@
 							      <ul class="nav">
 							          <li ng-click="" class="devices dropdown-checkbox dropdown device-dropdown"><a href="#">Devices <span id="deviceCount"></span><b class="caret"></b></a></li>
 							          <li>
-										<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+										<ul id="deviceDropdown" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
 											<li ng-repeat="device in FilesCtrl.fileService.devices" id="{{device.id}}" class="device" device-repeat-directive>
 												<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')">{{device.product_name}}<div class="unset-filter">x</div></a>
 											</li>
@@ -81,7 +81,7 @@
 				  		<div ng-show="missingImages && !FilesCtrl.fileService.missingDevices" class="browserMessage">
 				  			Ops! No images or videos were found that matches your selection. 
 				  		</div>
-						
+
 				  </div>
 				</div>
 		        

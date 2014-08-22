@@ -8,17 +8,22 @@
     exports.box = box;
 	
 	/* Repeat directive that activates tooltip  on loaded devices for device info on mouseover*/
-	box.directive('deviceRepeatDirective', function ($timeout) {
+	box.directive('deviceRepeatDirective', function ($compile, $timeout) {
         return {
             restrict: 'A',
             link: function (scope, element, attr) {
                 if (scope.$last === true) {
                     $timeout(function () {
                         scope.$emit('deviceRepeatDirective');
-                        var is_touch_device = 'ontouchstart' in document.documentElement;
+                        /*var is_touch_device = 'ontouchstart' in document.documentElement;
 						if(!is_touch_device && window.matchMedia("(min-width: 981px)").matches) {
 	                        $(".device").tooltip();
-                        }
+                        }*/
+                        //element.append('<li class="divider"></li><li id="allDevices" class="device active"><a href="javascript:void(0)" ng-click="infinity.nextPage(-1)">All devices</a></li>');
+						var template = '<li class="divider"></li><li id="allDevices" class="device active"><a href="javascript:void(0)" ng-click="infinity.nextPage(-1)">All devices</a></li>';
+			            var linkFn = $compile(template);
+			            var content = linkFn(scope);
+			            element.parent().append(content);                        
                     });
                 }
             }
@@ -257,6 +262,7 @@
 			filters.push(_type);
 	    } else 
 	    if(_type != null) {
+			this.type = _type;	    	
 		    $("#filter-"+_type).prop("checked", !$("#filter-"+_type).prop("checked"));
 	    	if($('#filter-other').prop('checked')) {
 	    		$('#filter-other').prop('checked', false);
@@ -276,15 +282,17 @@
 		if(_device || _type) {
 			changedState = true;
 			this.lastCount = -1; 
-			if(this.device != _device) {
+			
+			if(_device != -1 && this.device != _device) {
 				$(".device").removeClass("active");
 				$("#"+_device).addClass("active");
 				this.device = _device; 
 			} else {
 				this.device = -1; 
 				$(".device").removeClass("active");
+				$("#allDevices").addClass("active");
 				changedState = true; 
-				$(".dropdown-menu").hide();
+				//$(".dropdown-menu").hide();
 			}
 		}
 		
