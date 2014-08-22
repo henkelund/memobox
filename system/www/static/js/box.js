@@ -329,78 +329,81 @@
 
 		// Lead request
 		if(changedState || this.type != "other" && this.lastCount != 0) {
-		$.ajax({
-		    url : "/files?after="+this.page+"&device="+this.device+"&format="+filters.join(","),
-			async: false,
-			context: this,
-		    success : function(result){
-		    	if(changedState == true) {
-					if (!window.matchMedia || (window.matchMedia("(max-width: 767px)").matches)) {
-						$("#mainNav").css("height", "0px");
-						$("#mainNav").removeClass("in");
-						$("#mainNav-btn").addClass("collapsed");
+			$.ajax({
+			    url : "/files?after="+this.page+"&device="+this.device+"&format="+filters.join(","),
+				async: false,
+				context: this,
+			    success : function(result){
+			    	if(changedState == true) {
+						if (!window.matchMedia || (window.matchMedia("(max-width: 767px)").matches)) {
+							$("#mainNav").css("height", "0px");
+							$("#mainNav").removeClass("in");
+							$("#mainNav-btn").addClass("collapsed");
+						}
 					}
-				}
 
-				// If response resulted in no images, show error message
-				if(result.files.length == 0 && this.publish.items.length == 0) {
-					this.publish.missingImages = true;
-				} else {
-					this.publish.missingImages = false; 
-				}
+					// If response resulted in no images, show error message
+					if(result.files.length == 0 && this.publish.items.length == 0) {
+						this.publish.missingImages = true;
+					} else {
+						this.publish.missingImages = false; 
+					}
+					
+					this.lastCount = result.files.length; 
+
+					// Loop JSON response and add images to ng-repeat array
+				    for(var i = 0; i < result.files.length; i++) {
+				      var type_content = ""; 
+				      
+				      // If current item is a video, add info about lenght in thumbnail. 
+				      /*if(result.files[i].type == "video" && result.files[i].value != null) {
+				      	  var video_length = result.files[i].value.split(" ")
+				      	  var suffix = "ms"; 
+				      	  
+				      	  for (var ind = 0; ind < video_length.length; ++ind) {
+				      	  	if(video_length[ind].indexOf(suffix, video_length[ind].length - suffix.length) == -1)
+								type_content += video_length[ind].replace("mn", "min")+" ";
+						  }
+				      }	*/	
+				      
+				      // Push thumbnail item to ng-repeat array	      
+				      if(filters == "other") {
+					      var _months = Array("January","February","March","April","May","June","July","August","September","October","November","December");
+					      var time = new Date(result.files[i].created_at*1000);
+						  var viewMonth = String(_months[time.getMonth()]).substr(0, 3);
+						  var viewYear = time.getFullYear().toString();
+						  var viewDate = time.getDate();
+						  var dat = viewYear + "-" + viewMonth + "-" + viewDate;
+						  
+					      this.publish.files.push(['<a href="/files/stream/'+result.files[i]._id+'/'+result.files[i].name+'/full/0">'+result.files[i].name+'</a>',result.files[i].type, dat, humanFileSize(result.files[i].size)]);				      
+				      } else {
+					      this.publish.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});				      
+				      }
+				    }			    
+
+					// Increase current page number(for next request)
+			        this.page = this.page + 1;
+			        this.busy = false;
+
+					if(filters == "other" && this.publish.files.length > 0) {
+						this.publish.datatable.fnClearTable();
+						this.publish.datatable.fnAddData(this.publish.files);
+					}
+
+					if(_type != null) {
+						this.type = _type;
+					}
 				
-				this.lastCount = result.files.length; 
-
-				// Loop JSON response and add images to ng-repeat array
-			    for(var i = 0; i < result.files.length; i++) {
-			      var type_content = ""; 
-			      
-			      // If current item is a video, add info about lenght in thumbnail. 
-			      /*if(result.files[i].type == "video" && result.files[i].value != null) {
-			      	  var video_length = result.files[i].value.split(" ")
-			      	  var suffix = "ms"; 
-			      	  
-			      	  for (var ind = 0; ind < video_length.length; ++ind) {
-			      	  	if(video_length[ind].indexOf(suffix, video_length[ind].length - suffix.length) == -1)
-							type_content += video_length[ind].replace("mn", "min")+" ";
-					  }
-			      }	*/	
-			      
-			      // Push thumbnail item to ng-repeat array	      
-			      if(filters == "other") {
-				      var _months = Array("January","February","March","April","May","June","July","August","September","October","November","December");
-				      var time = new Date(result.files[i].created_at*1000);
-					  var viewMonth = String(_months[time.getMonth()]).substr(0, 3);
-					  var viewYear = time.getFullYear().toString();
-					  var viewDate = time.getDate();
-					  var dat = viewYear + "-" + viewMonth + "-" + viewDate;
-					  
-				      this.publish.files.push(['<a href="/files/stream/'+result.files[i]._id+'/'+result.files[i].name+'/full/0">'+result.files[i].name+'</a>',result.files[i].type, dat, humanFileSize(result.files[i].size)]);				      
-			      } else {
-				      this.publish.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});				      
-			      }
-			    }			    
-
-				// Increase current page number(for next request)
-		        this.page = this.page + 1;
-		        this.busy = false;
-
-				if(filters == "other" && this.publish.files.length > 0) {
-					this.publish.datatable.fnClearTable();
-					this.publish.datatable.fnAddData(this.publish.files);
-				}
-
-				if(_type != null) {
-					this.type = _type;
-				}
-			
-		    }
-		});
+			    }
+			});
 		} else {
 			this.busy = false; 
 		}
 	  };
 	  
+	  if(this.publish)
+		  alert(this.publish.items.length);
+
 	  if(this.page < 5) {
 	  	this.nextPage();
 	  }
