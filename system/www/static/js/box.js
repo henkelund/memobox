@@ -61,7 +61,7 @@
 		this.device = -1; 
 		this.type = null; 
 		this.lastCount = -1; 
-		this.filters = [];
+
 		this.photolist = new Object();
 		this.price = 0.11;
 		this.shipping = 5;
@@ -226,6 +226,7 @@
 					$("#modalVideo").show();
 					$("#modalImage").hide();
 				} else {
+					$("#originalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/full/0");
 					$("#modalVideo").hide();
 					$("#modalImage").show();
 					$("#zoomLink").attr("href", "/files/stream/"+result._id+"/null/nodownload/0");

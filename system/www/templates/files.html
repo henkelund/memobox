@@ -2,7 +2,7 @@
 	<ul class="tablist nav nav-tabs nav-justified" role="tablist">
 		<li id="tabBackupbox" ng-class="{active: state == 'list'}"><a ng-click="infinity.selectTab('list')" href="#"><div ng-class="{'icon-home': state == 'list','icon-white icon-home': state != 'list'}"></div> My MemoryBox</a></li>
 		<!-- li class="active"><a href="#"><div class="icon icon-hdd"></div> Cloudbox</a></li -->
-		<li id="tabPrintouts" ng-class="{active: state == 'printouts'}"><a ng-click="infinity.selectTab('printouts')"  href="#"><div ng-class="{'icon-print': state == 'printouts','icon-white icon-print': state != 'printouts'}"></div> Photocopies <span id="cart"></span></a></li>
+		<li id="tabPrintouts" ng-class="{active: state == 'printouts'}"><a ng-click="infinity.selectTab('printouts')"  href="#"><div ng-class="{'icon-print': state == 'printouts','icon-white icon-print': state != 'printouts'}"></div> Physical Prints <span id="cart"></span></a></li>
 	</ul>
 	<div class="container">
 		<div id="libContainer">
@@ -37,7 +37,7 @@
 							    </div>
 							  </div>   									
 							<ul ng-show="items && items.length > 0" id="thumbnails" class="thumbnails">
-								<li class="span3" ng-repeat="item in items" ---thumbnail-repeat-done="parseDate()">
+								<li class="span3" ng-repeat="item in items">
 									<div id="photo-{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div ng-show="item.type == 'image'" class="print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
 								</li>
 							</ul>
