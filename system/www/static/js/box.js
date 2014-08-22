@@ -47,6 +47,7 @@
 	    this.busy = false;
 	    this.page = 1;
 		this.device = -1; 
+		this.type = null; 
 		this.filters = [];
 		this.photolist = new Object();
 		this.price = 0.11;
@@ -249,7 +250,8 @@
 			$("#filter-image").prop("checked", !$("#filter-other").prop("checked"));
 			$("#filter-video").prop("checked", !$("#filter-other").prop("checked"));
 			filters.push(_type);
-	    } else {
+	    } else 
+	    if(_type != null) {
 		    $("#filter-"+_type).prop("checked", !$("#filter-"+_type).prop("checked"));
 	    	if($('#filter-other').prop('checked')) {
 	    		$('#filter-other').prop('checked', false);
