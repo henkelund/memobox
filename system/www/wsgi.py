@@ -7,7 +7,9 @@ import json
 import urllib2
 import re
 import uuid
+
 #import pwinty
+from ftplib import FTP
 from datetime import date
 from subprocess import call
 from datetime import date
@@ -274,30 +276,38 @@ def file_hide_action():
 
 @app.route('/print')
 def print_action():
-	pwinty.apikey = "0537a38f-d2b4-4360-842d-e254a7161128"
-	pwinty.merchantid = "2260a6b6-f261-4e86-8f18-81597a3637f6"
-	order = pwinty.Order.create(
-	    recipient_name =            'Hans-Peter Kurtz/Helene Brumagne',
-	    address_1 =                 'Gammelgrdsvagen 54, lgh 1101',
-	    address_2 =                 '',
-	    address_town_or_city =      'Stockholm',
-	    state_or_county =           'Sweden',
-	    postal_or_zip_code =        '11264',
-	    destination_country_code =  'SE',
-	    country_code =              'SE',
-	    qualityLevel =              'Standard'
-	)
-	photo = order.photos.create(
-	    type =      '13x19_cm',
-	    url =       'http://nordkvist.backupbox.se/static/images/felicie.jpg',
-	    copies =    '1',
-	    sizing =    'Crop'
-	)	
-	order_status = order.get_submission_status()
-	if not order_status.is_valid:
-	    return "Invalid Order"
-	#order.submit()
-	return "success"
+    ftp = FTP('nordkvist.backupbox.se')     # connect to host, default port
+    ftp.login()
+    ftp.cwd('incoming')
+    files = request.args.get("files").split(",")
+
+    for f in files:
+        ftp.storbinary('STOR '+str(uuid.uuid1())+'.jpg', open(FileModel().load(f).abspath()+"/"+FileModel().load(f).name(), 'rb'))
+
+    return "success"    
+	#pwinty.apikey = "0537a38f-d2b4-4360-842d-e254a7161128"
+	#pwinty.merchantid = "2260a6b6-f261-4e86-8f18-81597a3637f6"
+	#order = pwinty.Order.create(
+	#    recipient_name =            'Hans-Peter Kurtz/Helene Brumagne',
+	#    address_1 =                 'Gammelgrdsvagen 54, lgh 1101',
+	#    address_2 =                 '',
+	#    address_town_or_city =      'Stockholm',
+	#    state_or_county =           'Sweden',
+	#    postal_or_zip_code =        '11264',
+	#    destination_country_code =  'SE',
+	#    country_code =              'SE',
+	#    qualityLevel =              'Standard'
+	#)
+	#photo = order.photos.create(
+	#    type =      '13x19_cm',
+	#    url =       'http://nordkvist.backupbox.se/static/images/felicie.jpg',
+	#    copies =    '1',
+	#    sizing =    'Crop'
+	#)	
+	#order_status = order.get_submission_status()
+	#if not order_status.is_valid:
+	#    return "Invalid Order"
+	##order.submit()
 
 @app.route('/files/calendar')
 def file_calendar_action():
