@@ -60,7 +60,7 @@ def index_action():
 	FileModel.install()
 	FilterHelper.install() 
 	
-	if g.localaccess:
+	if g.localaccess and request.args.get('noredirect') is not None:
 		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
 	else:
 		if g.islocalbox or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
