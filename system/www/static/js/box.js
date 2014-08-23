@@ -15,11 +15,6 @@
                 if (scope.$last === true) {
                     $timeout(function () {
                         scope.$emit('deviceRepeatDirective');
-                        /*var is_touch_device = 'ontouchstart' in document.documentElement;
-						if(!is_touch_device && window.matchMedia("(min-width: 981px)").matches) {
-	                        $(".device").tooltip();
-                        }*/
-                        //element.append('<li class="divider"></li><li id="allDevices" class="device active"><a href="javascript:void(0)" ng-click="infinity.nextPage(-1)">All devices</a></li>');
 						var template = '<li class="divider"></li><li id="allDevices" class="device active"><a href="javascript:void(0)" ng-click="infinity.nextPage(-1)">All devices</a></li>';
 			            var linkFn = $compile(template);
 			            var content = linkFn(scope);
@@ -56,18 +51,21 @@
 	box.factory('Infinity', function($http) {
 	  var Infinity = function($scope) {
 	  	this.publish = $scope;
+	  	
+	  	// Shopping cart
 	  	this.publish.product = "Small 9x12cm"; 
 		this.publish.price = 0.2;
 		this.publish.shipping = 5;
 		this.publish.cart = [];
+		this.photolist = new Object();
 
+	    // Keep track of Infinite Scroll
 	    this.busy = false;
 	    this.page = 1;
 		this.device = -1; 
 		this.type = null; 
 		this.lastCount = -1; 
 
-		this.photolist = new Object();
 		this.imageCount = -1; 
 		this.device_info = null;
 	};
@@ -122,15 +120,18 @@
 		this.publish.state = state;
 	  }
 
+	  // Used in cart for switching between printing options
 	  Infinity.prototype.selectProduct = function(event){
 		this.price = event.target.attributes.price.value;
-		$(".photosize button").removeClass("active");
-		$(event.target).addClass('active');
 		this.publish.product = $(event.target).html();
 		this.publish.price = this.price;
+
+		$(event.target).addClass('active');
+		$(".photosize button").removeClass("active");
 		$(".photocount").html(this.publish.cart.length);
 	  }
 
+	  // Adds a photo to the pringin queue
 	  Infinity.prototype.addToCart = function(image, event){		
 		var currentImageId = this.publish.currentFile.id; 
 		if(!$.grep(this.publish.cart, function(e){ return e.id == currentImageId; }).length == 1) {
@@ -142,6 +143,7 @@
 			$("#photo-"+this.publish.currentFile.id+" .print").removeClass("visible");	
 		}
 		
+		// If added from file modal, close it
 		$('#filesDetailModal').modal('hide');
 	  }
 
@@ -149,17 +151,6 @@
 	  Infinity.prototype.showPicture = function(file) {
 	  	var obj = JSON.parse(file);
 	  	this.publish.currentFile = obj; 
-		var imageInCart = false; 
-		var cartIndex = 0; 
-		
-		if(this.publish.cart) {
-			for (var index = 0; index < this.publish.cart.length; ++index) {
-			    if(this.publish.cart[index].id == obj.id) {
-				    imageInCart = true; 
-				    cartIndex = index; 
-			    }
-			}
-		}
 	  	
 		$.ajax({
 		    url : "/files/details?id="+obj.id,
@@ -190,15 +181,17 @@
 					$("#modalVideo").load();
 					$("#modalVideo").show();
 					$("#modalImage").hide();
+					$("#print-button").hide();
 				} else {
 					$("#originalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/full/0");
 					$("#modalVideo").hide();
 					$("#modalImage").show();
 					$("#zoomLink").attr("href", "/files/stream/"+result._id+"/null/nodownload/0");
 					$("#modalImage").attr("src", "/files/stream/"+result._id+"/null/thumbnail/520");
+					$("#print-button").show()
 				}
 				
-				if(imageInCart) {
+				if($.grep(this.publish.cart, function(e){ return e.id == obj.id; }).length == 1) {
 					$("#print-label").html("Remove from print queue");
 				} else {
 					$("#print-label").html("Order Photocopy");
@@ -206,10 +199,7 @@
 		
 		        $('#filesDetailModal').modal('show');				
 		    }
-		});	  	
-  	
-	  	//var f = new FileService();
-	  	//f.loadDetails(file);	  	
+		});  	
 	  }
 	  
 	  /**
