@@ -56,6 +56,11 @@
 	box.factory('Infinity', function($http) {
 	  var Infinity = function($scope) {
 	  	this.publish = $scope;
+	  	this.publish.product = "Small 9x12cm"; 
+		this.publish.price = 0.2;
+		this.publish.shipping = 5;
+		this.publish.cart = [];
+
 	    this.busy = false;
 	    this.page = 1;
 		this.device = -1; 
@@ -63,9 +68,6 @@
 		this.lastCount = -1; 
 
 		this.photolist = new Object();
-		this.price = 0.11;
-		this.shipping = 5;
-
 		this.imageCount = -1; 
 		this.device_info = null;
 	};
@@ -120,61 +122,24 @@
 		this.publish.state = state;
 	  }
 
-	  Infinity.prototype.updateCart = function(event){
+	  Infinity.prototype.selectProduct = function(event){
 		this.price = event.target.attributes.price.value;
 		$(".photosize button").removeClass("active");
 		$(event.target).addClass('active');
-		
-		$(".price").html(this.price);
-		$(".rowtotals").html(this.publish.cart.length*this.price);
-		$(".shipping").html(this.shipping);
-		$(".totals").html(this.publish.cart.length*this.price + this.shipping);
+		this.publish.product = $(event.target).html();
+		this.publish.price = this.price;
 		$(".photocount").html(this.publish.cart.length);
-		
-		this.publish.checkoutstep = 2;
 	  }
 
-	  Infinity.prototype.addToCart = function(image, event){	    
-		if(this.publish.cart == null) {
-			this.publish.cart = [];
-		}
-		
-		var obj = null; 
-		
-		if(image != null) {
-			obj = JSON.parse(image);
+	  Infinity.prototype.addToCart = function(image, event){		
+		var currentImageId = this.publish.currentFile.id; 
+		if(!$.grep(this.publish.cart, function(e){ return e.id == currentImageId; }).length == 1) {
+			$("#photo-"+this.publish.currentFile.id+" .print").addClass("visible");
+			this.publish.cart.push(this.publish.currentFile);
 		} else {
-			if(this.publish.currentFile == null)
-				return;
-			else
-				obj = this.publish.currentFile;
-		}
-		
-		var imageInCart = false; 
-		var cartIndex = 0; 
-		
-		for (var index = 0; index < this.publish.cart.length; ++index) {
-		    if(this.publish.cart[index].id == obj.id) {
-			    imageInCart = true; 
-			    cartIndex = index; 
-		    }
-		}
-		
-		if(!imageInCart) {
-			$("#photo-"+obj.id+" .print").addClass("visible");
-			this.publish.cart.push(obj);
-		} else {
-			this.publish.cart.splice(cartIndex, 1);
-			$("#photo-"+obj.id+" .print").removeClass("visible");	
-		}
-		
-		this.publish.checkoutstep = 0;
-		
-		if(this.publish.cart.length > 0) {
-			$("#cart").html("("+this.publish.cart.length+")");
-		} else  {
-			$("#cart").html("");
-			this.publish.checkoutstep = -1; 
+			//this.publish.cart.splice(cartIndex, 1);
+			this.publish.cart = $.grep(this.publish.cart, function(e){ return e.id == currentImageId; }, true)
+			$("#photo-"+this.publish.currentFile.id+" .print").removeClass("visible");	
 		}
 		
 		$('#filesDetailModal').modal('hide');
@@ -400,14 +365,6 @@
 			this.busy = false; 
 		}
 	  };
-	  
-	  if(this.publish)
-		  alert(this.publish.items.length);
-
-	  if(this.page < 5) {
-	  	this.nextPage();
-	  }
-
 	  return Infinity;
 	});	
 
