@@ -20,12 +20,13 @@
 			            var content = linkFn(scope);
 			            element.parent().append(content); 
 
-						$('#deviceDropdown').bind("click", function()
+						$('#deviceDropdown li').bind("click", function()
 						{
-						  $('#deviceDropdown').delay(500).fadeOut(600); //$('#select'), not ('#select')
+						  $('#deviceDropdown').delay(500).fadeOut(600);
+						  scope.$emit('ngRepeatFinished', $( this ).attr("id"));
 						});
 
-
+						scope.$emit('ngRepeatFinished', -1);
                     });
                 }
             }
@@ -52,11 +53,17 @@
 	  var Infinity = function($scope) {
 	  	this.publish = $scope;
 	  	
+	  	// Devices
+	  	this.publish.imagecount = 0; 
+	  	this.publish.videocount = 0; 
+	  	this.publish.othercount = 0; 
+
 	  	// Shopping cart
 	  	this.publish.product = "Small 9x12cm"; 
 		this.publish.price = 0.2;
 		this.publish.shipping = 5;
 		this.publish.cart = [];
+		this.publish.orderid = false;
 		this.photolist = new Object();
 
 	    // Keep track of Infinite Scroll
@@ -108,16 +115,34 @@
 		});	  	
 	  }
 
-	  Infinity.prototype.nextCheckoutStep = function(){
-		this.publish.checkoutstep++;
-	  }
-
-	  Infinity.prototype.nextCheckoutStep = function(){
-		this.publish.checkoutstep++;
-	  }
-
 	  Infinity.prototype.selectTab = function(state){
 		this.publish.state = state;
+	  }
+
+	  Infinity.prototype.placeOrder = function(event){
+		var images = []; 
+		$.each( this.publish.cart, function( key, value ) {
+		  images.push(value.id);
+		});
+
+		$(event.target).isLoading({ text: "Placing order", position: "overlay" });
+
+
+		/*$.ajax({
+		    url : "/print?files="+images.join(","),
+			async: false,
+			timeout: 120,
+			context: this,
+		    success : function(result){
+		    	if(result == "error") {
+		    		alert("Order could not be placed at this moment.");
+		    	} else {
+		    		alert(result);
+		    		this.publish.orderid = result;
+		    		this.publish.cart = [];
+		    	}
+		    }
+		});	*/
 	  }
 
 	  // Used in cart for switching between printing options
@@ -417,6 +442,7 @@
             this.files = [];
             this.details = [];
         };
+
         FileService.prototype = {
 
             /**
@@ -439,6 +465,8 @@
              */
             loadDevicesSuccess: function (data) {
                 this.devices = data.devices;
+
+
 				$(".navbar").show();
 				$("#deviceCount").html("("+this.devices.length+")");
 				$(".device-dropdown").click(function() {
@@ -581,9 +609,11 @@
      */
     box.controller('FilesCtrl', function ($scope, $location, FileService, Infinity) {
         this.fileService = FileService.loadFiles().loadDevices();
+        $scope.service = this.fileService;
         $scope.infinity = new Infinity($scope);
         $scope.items = [];
         $scope.files = [];
+        $scope.types = {}
         $scope.state = "list"; 
         
         if(!$scope.datatable)
@@ -592,6 +622,26 @@
         $scope.render = function(e) {
 			return $(e).html();
         }
+
+		$scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent, device) {
+			$scope.types = { 'videos' : 0, 'images' : 0, 'others' : 0 };
+
+			if(device > 0) {
+				$.each($scope.service.devices, function( index, value ) {
+				  if(value.id == device) {
+					  for(var key in $scope.types) {
+					  	$scope.types[key] += value[key];
+					  }
+				  }
+				});
+			} else {
+				$.each($scope.service.devices, function( index, value ) {
+				  for(var key in $scope.types) {
+				  	$scope.types[key] += value[key];
+				  }
+				});
+			}
+		});        
 
         $scope.FilesCtrl = this;
         return this;

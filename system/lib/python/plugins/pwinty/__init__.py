@@ -321,6 +321,9 @@ class Order(Resource):
         res = _request('Orders/%s/Status' % self.id, 'POST', data={'status': 'Submitted'})
         self.refresh()
 
+    def getOrderId(self):
+        return self.id
+
     def await_payment(self):
         res = _request('Orders/%s/Status' % self.id, 'POST', data={'status': 'AwaitingPayment'})
         self.refresh()

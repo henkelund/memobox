@@ -8,7 +8,7 @@ import urllib2
 import re
 import uuid
 
-#import pwinty
+import pwinty
 from ftplib import FTP
 from datetime import date
 from subprocess import call
@@ -118,7 +118,7 @@ def files_action():
             models.where('m.created_at < ?', endtime)   
         elif (arg == 'format') and (len(vals) > 0) and (str(vals[0]) != "null") and (str(vals[0]) != ""):
             if str(vals[0]) == "other":
-	            models.where("m.type not in ('image', 'video')").limit(100, (after-1)*100)
+	            models.where("m.type not in ('image', 'video')").limit(1000, (after-1)*1000)
 	            isMedia = False
             else:
 	            models.where("m.type = '"+str(vals[0])+"'")
@@ -204,29 +204,26 @@ def file_devices_action():
     devices = []
     for device in DeviceModel.all():
     	states = { -1 : 'Error', 1 : 'Preparing', 2 : 'Transfering files', 3 : 'Preparing images', 4 : 'Ready' }
-    	images = DBSelect('file','count(*) as imagecount').join('device', 'device._id = file.device', None).where("device._id = "+str(device.id())).where("file.type = 'image'").query()
-    	videos = DBSelect('file','count(*) as videocount').join('device', 'device._id = file.device', None).where("device._id = "+str(device.id())).where("file.type = 'video'").query()
-    	thumbnails = DBSelect('file','count(*) as thumbnailcount').join('device', 'device._id = file.device', None).join('file_thumbnail', 'file_thumbnail.file = file._id', None).where("device._id = "+str(device.id())).where("file.type = 'image'").where("file_thumbnail.width = 260").query()
-    			
-    	imagecount = 0
-    	videocount = 0
-    	thumbnailcount = 0; 
+        formats = ['image', 'video', 'other' ]
+        count = {}
 
-    	for image in images:
-    		imagecount = image['imagecount']
-    	
-    	for video in videos:
-    		videocount = video['videocount']
+    	for t in formats: 
+            q = ""
+
+            if t == "other":
+                q = "not in ('image', 'video')"
+            else:
+                q = "in ('"+t+"')"
+
+            result = DBSelect('file','count(*) as count').join('device', 'device._id = file.device', None).where("device._id = "+str(device.id())).where("file.type " + q).query()
+            for r in result:
+                count[t] = r["count"]
+
+    	thumbnails = DBSelect('file','count(*) as thumbnailcount').join('device', 'device._id = file.device', None).join('file_thumbnail', 'file_thumbnail.file = file._id', None).where("device._id = "+str(device.id())).where("file.type = 'image'").where("file_thumbnail.width = 260").query()    			
+    	thumbnailcount = 0; 
 
     	for thumbnail in thumbnails:
     		thumbnailcount = thumbnail['thumbnailcount']
-
-    	# Prepare status message
-    	message = states[device.state()]+"<br /><br />"
-    	
-    	# If the number of images and thumbnails does not match, assume that thumbnails are still being generated and display progress
-    	if(thumbnailcount != imagecount):
-    		message = states[device.state()] + "<br />Progress: "+str(100-int(math.ceil(((imagecount-thumbnailcount)/imagecount)*100)))+"%"
     	
         devices.insert(0, {
             'id': device.id(),
@@ -235,11 +232,11 @@ def file_devices_action():
             'model': device.model(),
             'product_id': device.product_id(),
             'last_backup': DeviceModel().last_backup(str(device.id())),
-            'images': imagecount,
-            'videos': videocount,
+            'images': count['image'],
+            'videos': count['video'],
+            'others': count['other'],
             'thumbnails': thumbnailcount,
-            'symbol': str(device.type()),
-            'message': states[device.state()]
+            'symbol': str(device.type())
         })    
 
     return jsonify({'devices': devices})
@@ -279,35 +276,44 @@ def print_action():
     ftp = FTP('nordkvist.backupbox.se')     # connect to host, default port
     ftp.login()
     ftp.cwd('incoming')
+
     files = request.args.get("files").split(",")
+    orderitems = {}
+
+    pwinty.apikey = "0537a38f-d2b4-4360-842d-e254a7161128"
+    pwinty.merchantid = "2260a6b6-f261-4e86-8f18-81597a3637f6"
+    order = pwinty.Order.create(
+        recipient_name =            'Hans-Peter Kurtz/Helene Brumagne',
+        address_1 =                 'Gammelgrdsvagen 54, lgh 1101',
+        address_2 =                 '',
+        address_town_or_city =      'Stockholm',
+        state_or_county =           'Sweden',
+        postal_or_zip_code =        '11264',
+        destination_country_code =  'SE',
+        country_code =              'SE',
+        qualityLevel =              'Standard'
+    )
 
     for f in files:
-        ftp.storbinary('STOR '+str(uuid.uuid1())+'.jpg', open(FileModel().load(f).abspath()+"/"+FileModel().load(f).name(), 'rb'))
+        ff = str(FileModel().load(f).abspath()+"/"+FileModel().load(f).name())
+        uid = str(uuid.uuid1())+'.jpg'
+        orderitems[uid] = ff
+        ftp.storbinary('STOR '+str(uuid.uuid1())+'.jpg', open(ff, 'rb'))
+        
+        photo = order.photos.create(
+            type =      '13x19_cm',
+            url =       'http://nordkvist.backupbox.se/static/pwinty/'+uid,
+            copies =    '1',
+            sizing =    'Crop'
+        )   
 
-    return "success"    
-	#pwinty.apikey = "0537a38f-d2b4-4360-842d-e254a7161128"
-	#pwinty.merchantid = "2260a6b6-f261-4e86-8f18-81597a3637f6"
-	#order = pwinty.Order.create(
-	#    recipient_name =            'Hans-Peter Kurtz/Helene Brumagne',
-	#    address_1 =                 'Gammelgrdsvagen 54, lgh 1101',
-	#    address_2 =                 '',
-	#    address_town_or_city =      'Stockholm',
-	#    state_or_county =           'Sweden',
-	#    postal_or_zip_code =        '11264',
-	#    destination_country_code =  'SE',
-	#    country_code =              'SE',
-	#    qualityLevel =              'Standard'
-	#)
-	#photo = order.photos.create(
-	#    type =      '13x19_cm',
-	#    url =       'http://nordkvist.backupbox.se/static/images/felicie.jpg',
-	#    copies =    '1',
-	#    sizing =    'Crop'
-	#)	
-	#order_status = order.get_submission_status()
-	#if not order_status.is_valid:
-	#    return "Invalid Order"
-	##order.submit()
+	order_status = order.get_submission_status()
+
+    if not order_status.is_valid:
+        return "error"
+    else:
+    	#order.submit()
+        return str(order_status.id)
 
 @app.route('/files/calendar')
 def file_calendar_action():
