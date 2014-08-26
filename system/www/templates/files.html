@@ -46,11 +46,11 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 										</ul>
 							          </li>
 							        <li class="filters">
-							        	<input id="filter-image" type="checkbox" checked ng-click="infinity.nextPage(null,'image', true)" /><a href="#" ng-click="infinity.nextPage(null,'image')"> Photos<span id="imagescount">({{types["images"]}})</span></a> 
-							        	<input id="filter-video" type="checkbox" checked ng-click="infinity.nextPage(null,'video', true)" /><a href="#" ng-click="infinity.nextPage(null,'video')"> Videos<span id="videoscount">({{types["videos"]}})</span></a>
+							        	<span nng-show="types['images'] > 0"><input id="filter-image" type="checkbox" checked ng-click="infinity.nextPage(null,'image', true)" /><a href="#" ng-click="infinity.nextPage(null,'image')"> Photos<span id="imagescount"> ({{types["images"]}})</span></a></span>
+							        	<span nng-show="types['videos'] > 0"><input id="filter-video" type="checkbox" checked ng-click="infinity.nextPage(null,'video', true)" /><a href="#" ng-click="infinity.nextPage(null,'video')"> Videos<span id="videoscount"> ({{types["videos"]}})</span></a></span>
 							        </li>
-							        <li class="filters">
-							        	<input id="filter-other" type="checkbox" ng-click="infinity.nextPage(null,'other', true)" /><a href="#" ng-click="infinity.nextPage(null,'other')"> Documents & Files<span id="otherscount">({{types["others"]}})</span></a>
+							        <li nng-show="types['others'] > 0" class="filters">
+							        	<input id="filter-other" type="checkbox" ng-click="infinity.nextPage(null,'other', true)" /><a href="#" ng-click="infinity.nextPage(null,'other')"> Documents & Files<span id="otherscount"> ({{types["others"]}})</span></a>
 							        </li>
 							      </ul>
 							    </div>
