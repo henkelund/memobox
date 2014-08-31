@@ -117,32 +117,42 @@
 
 	  Infinity.prototype.selectTab = function(state){
 		this.publish.state = state;
+		$('#order-form').bootstrapValidator();		
 	  }
 
 	  Infinity.prototype.placeOrder = function(event){
+		$("#order-form").data('bootstrapValidator').validate();
+
+		if(!$("#order-form").data('bootstrapValidator').isValid()) {
+			return;
+		}
+
 		var images = []; 
+		var scp = this; 
 		$.each( this.publish.cart, function( key, value ) {
 		  images.push(value.id);
 		});
 
-		$(event.target).isLoading({ text: "Placing order", position: "overlay" });
+		//$(event.target).isLoading({ text: "Placing order", position: "overlay" });
 
+		$.isLoading({ text: "Submitting order... " });	        
 
-		/*$.ajax({
-		    url : "/print?files="+images.join(","),
-			async: false,
-			timeout: 120,
-			context: this,
-		    success : function(result){
-		    	if(result == "error") {
-		    		alert("Order could not be placed at this moment.");
+		$http({ method: 'GET', url: "/print?files="+images.join(",")+"&recipient_name="+$("#recipient_name").val()+"&address_1="+$("#address_1").val()+"&address_town_or_city="+$("#address_town_or_city").val()+"&postal_or_zip_code="+$("#postal_or_zip_code").val()+"&country="+$("#country").val() }).
+			success(function(data, status, headers, config) {
+
+		    	if(data == "error") {
+		    		alert("Your order could not be placed at this moment.");
 		    	} else {
-		    		alert(result);
-		    		this.publish.orderid = result;
-		    		this.publish.cart = [];
+		            $.isLoading( "hide" );
+		    		scp.publish.orderid = data;
+		    		scp.publish.cart = [];
+		    		scp.$apply();
 		    	}
-		    }
-		});	*/
+
+			}).
+			error(function(data, status, headers, config) {
+				alert("Your order could not be placed at this moment. " + data);
+			});
 	  }
 
 	  // Used in cart for switching between printing options

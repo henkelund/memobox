@@ -37,6 +37,8 @@
 								         <button ng-click="infinity.placeOrder($event)" style="float: right; margin-bottom: 10px; margin-right: 10px;" class="btn btn-primary">Complete Order</button>
 								      </div>
 								</section>
+								<!-- OVERLAY -->
+            					<div id="load-overlay"><a name="overlay"></a></div>								
 				  			</div>
 				  			<div class="checkoutstep">
 					  			<p><b>1. Choose your print size</b></p>
@@ -49,26 +51,26 @@
 					  		<br />
 					  		<div class="checkoutstep">
 					  			<p><b>3. Address information</b></p>
-						  		<div class="form-horizontal">
-							  		<div class="help-block">
+						  		<form id="order-form" class="form-horizontal">
+							  		<div class="form-group">
 							  			Recipent name<br />
-							  			<input class="input-append" name="recipientName" value="Hans-Peter Kurtz/Helene Brumagne" type="text" />
+							  			<input id="recipient_name" class="form-control input-append" name="recipient_name" value="" type="text" data-bv-notempty data-bv-notempty-message="This is a required field" />
 							  		</div>
-							  		<div class="help-block">
+							  		<div class="form-group">
 							  			Street address<br />
-							  			<input name="address1" value="Gammelgrdsvagen 54, lgh 1101" type="text" />
+							  			<input id="address_1" class="form-control" name="address_1" value="" type="text" data-bv-notempty data-bv-notempty-message="This is a required field" />
 							  		</div>
-							  		<div class="help-block">
+							  		<div class="form-group">
 							  			City/Town<br />
-							  			<input name="stateOrCounty" value="Stockholm" type="text" />
+							  			<input id="address_town_or_city" class="form-control" name="address_town_or_city" value="" type="text" data-bv-notempty data-bv-notempty-message="This is a required field" />
 							  		</div>
-							  		<div class="help-block">
+							  		<div class="form-group">
 							  			Postal code<br />
-							  			<input name="postalOrZipCode" value="11264" type="text" />
+							  			<input id="postal_or_zip_code" class="form-control" name="postal_or_zip_code" value="" type="text" data-bv-notempty data-bv-notempty-message="This is a required field" />
 							  		</div>
-							  		<div class="help-block">
+							  		<div class="form-group">
 							  			Country<br />
-							  			<select name="selectCountry" id="selectCountry">
+							  			<select id="country" class="form-control" name="country" id="selectCountry"  data-bv-notempty data-bv-notempty-message="This is a required field">
 							  				<option value="AT">AUSTRIA</option>
 							  				<option value="AU">AUSTRALIA</option>
 							  				<option value="BE">BELGIUM</option>
@@ -89,7 +91,7 @@
 							  				<option value="US">UNITED STATES</option>
 							  			</select>
 							  		</div>
-							  	</div>
+							  	</form>
 					  		</div>	
 					  		<br />			  			
 					  		<br />			  			
