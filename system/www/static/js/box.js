@@ -630,7 +630,8 @@
 				$.each($scope.service.devices, function( index, value ) {
 				  if(value.id == device) {
 					  for(var key in $scope.types) {
-					  	$scope.types[key] += value[key];
+					  	$scope.types[key] = value[key];
+					  	$scope.$apply();
 					  }
 				  }
 				});
@@ -638,6 +639,7 @@
 				$.each($scope.service.devices, function( index, value ) {
 				  for(var key in $scope.types) {
 				  	$scope.types[key] += value[key];
+					$scope.$apply();
 				  }
 				});
 			}
