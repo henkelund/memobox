@@ -14,6 +14,7 @@ from datetime import date
 from subprocess import call
 from datetime import date
 from flask import Flask, session, render_template, request, jsonify, abort, Response, redirect, g
+from flask.ext.assets import Environment, Bundle
 from helper.db import DBHelper, DBSelect
 from helper.filter import FilterHelper
 from helper.image import ImageHelper
@@ -25,6 +26,7 @@ from model.file import FileModel
 
 ImageHelper('static/images', 'mint')
 app = Flask(__name__)
+assets = Environment(app)
 app.debug = True
 t = dt.datetime(2011, 10, 21, 0, 0)
 now = dt.datetime.now()
