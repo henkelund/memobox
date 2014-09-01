@@ -63,6 +63,7 @@
 		this.publish.price = 0.2;
 		this.publish.shipping = 5;
 		this.publish.cart = [];
+		this.publish.share = [];
 		this.publish.orderid = false;
 		this.photolist = new Object();
 
@@ -182,6 +183,15 @@
 		$('#filesDetailModal').modal('hide');
 	  }
 
+	  // Adds a photo to the pringin queue
+	  Infinity.prototype.share = function(image, event){		
+		var currentImageId = this.publish.currentFile.id; 
+		this.publish.share.push(this.publish.currentFile);
+		
+		// If added from file modal, close it
+		$('#filesDetailModal').modal('hide');
+	  }
+
 	  // Todo, move this from infinity to device 	  
 	  Infinity.prototype.showPicture = function(file) {
 	  	var obj = JSON.parse(file);
@@ -229,7 +239,7 @@
 				if($.grep(this.publish.cart, function(e){ return e.id == obj.id; }).length == 1) {
 					$("#print-label").html("Remove from print queue");
 				} else {
-					$("#print-label").html("Order Photocopy");
+					$("#print-label").html("Order");
 				}
 		
 		        $('#filesDetailModal').modal('show');				

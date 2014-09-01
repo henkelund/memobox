@@ -13,6 +13,13 @@ body {
 	padding-top: 10%;	
 }
 
+.modal-header .btn {
+	font-weight: bold;
+	float: right; 
+	margin-top: 5px; 
+	margin-left: 10px;
+}
+
 .logo {
 	float: left; 
 }
@@ -374,7 +381,6 @@ div.video .typecontent {
 	.modal.fade.in {
 		top: 0px; 
 	}
-	
 
 	.splashbox {
 		margin-top: 5%; 
@@ -544,7 +550,7 @@ div.tooltip-inner .imageContainer {
 }
 
 
-/* Content */
+/* Shopping Cart */
 #content{
    margin:0 auto;
    padding-bottom:50px;
@@ -688,11 +694,11 @@ div.tooltip-inner .imageContainer {
                float:right;
             }
 
-.checkoutstep {
-	width: 210px; 
-}
+	.checkoutstep {
+		width: 210px; 
+	}
 
-
+/* Overlay loader */
 .wrapper{padding-bottom:50px;}
 .header{background:#000000;}.header .container{padding-bottom:20px;}.header .container h1{color:#FFF;line-height:50px;margin-top:30px;margin-bottom:0;}
 .header .container h3{color:#E0E0E0;font-size:16px;margin-top:-5px;}.header .container h3 a{color:#66aacc;}.header .container h3 a:hover{color:#b3d5e6;}
@@ -701,3 +707,129 @@ pre,.well{background:#FFFFFF;}
 .syntax-container{background:#FCFCFC;-webkit-border-radius:7px;-webkit-background-clip:padding-box;-moz-border-radius:7px;-moz-background-clip:padding;border-radius:7px;background-clip:padding-box;border:1px solid #e3e3e3;margin-bottom:30px;padding-bottom:20px;}
 .isloading-wrapper.isloading-right{margin-left:10px;}
 .isloading-overlay{position:relative;text-align:center;}.isloading-overlay .isloading-wrapper{background:#FFFFFF;-webkit-border-radius:7px;-webkit-background-clip:padding-box;-moz-border-radius:7px;-moz-background-clip:padding;border-radius:7px;background-clip:padding-box;display:inline-block;margin:0 auto;padding:10px 20px;top:40%;z-index:9000;}
+
+/* Dropdown Filter Menu */
+#cssmenu,
+#cssmenu ul,
+#cssmenu ul li,
+#cssmenu ul li a {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  list-style: none;
+  line-height: 1;
+  display: block;
+  position: relative;
+  font-family: Capriola, Helvetica, sans-serif;
+}
+#cssmenu {
+  width: auto;
+  height: 59px;
+  padding-bottom: 4px;
+}
+#cssmenu.align-right {
+  float: right;
+}
+#cssmenu.align-right ul li {
+  float: right;
+  margin-right: 0;
+  margin-left: 4px;
+}
+#cssmenu.align-right ul li:first-child,
+#cssmenu.align-right ul li:first-child > a {
+  border-bottom-right-radius: 3px;
+}
+#cssmenu #bg-one,
+#cssmenu #bg-two,
+#cssmenu #bg-three,
+#cssmenu #bg-four {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+#cssmenu #bg-one {
+  height: 10px;
+  background: #0f71ba;
+}
+#cssmenu #bg-two {
+  height: 59px;
+  z-index: 2;
+}
+#cssmenu #bg-three {
+  bottom: 4px;
+  height: 55px;
+  z-index: 3;
+  background: #222222;
+  background: -moz-linear-gradient(top, #555555 0%, #222222 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #555555), color-stop(100%, #222222));
+  background: -webkit-linear-gradient(top, #555555 0%, #222222 100%);
+  background: -o-linear-gradient(top, #555555 0%, #222222 100%);
+  background: -ms-linear-gradient(top, #555555 0%, #222222 100%);
+  background: linear-gradient(to bottom, #555555 0%, #222222 100%);
+}
+#cssmenu #bg-four {
+  bottom: 4px;
+  height: 55px;
+  z-index: 4;
+}
+#cssmenu ul {
+  height: 59px;
+}
+#cssmenu ul li {
+  float: left;
+  margin-right: 4px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  z-index: 5;
+}
+#cssmenu ul li a {
+  padding: 24px 30px 20px 30px;
+  margin-bottom: 4px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  color: #eeeeee;
+  font-size: 15px;
+  text-decoration: none;
+}
+#cssmenu ul li:first-child,
+#cssmenu ul li:first-child > a {
+  border-bottom-left-radius: 3px;
+}
+#cssmenu ul li:hover,
+#cssmenu ul li.active {
+  background: #0f71ba;
+  background: -moz-linear-gradient(top, #3fa4f0 0%, #0f71ba 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #3fa4f0), color-stop(100%, #0f71ba));
+  background: -webkit-linear-gradient(top, #3fa4f0 0%, #0f71ba 100%);
+  background: -o-linear-gradient(top, #3fa4f0 0%, #0f71ba 100%);
+  background: -ms-linear-gradient(top, #3fa4f0 0%, #0f71ba 100%);
+  background: linear-gradient(to bottom, #3fa4f0 0%, #0f71ba 100%);
+}
+#cssmenu ul li a:hover,
+#cssmenu ul li.active > a {
+  color: #ffffff;
+}
+
+.filters {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	color: #777;
+	padding-top: 2px;
+	border-left: 1px solid #777;
+	padding-left: 0px;
+	margin-left: 10px;
+	margin-top: 8px;
+}
+
+.filters input {
+	margin-bottom: 6px;
+	margin-left: 15px;
+	margin-right: 3px;
+}
+
+.navbar .nav > li.filters a {
+	padding: 0px;
+	display: inline;
+}

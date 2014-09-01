@@ -1,7 +1,11 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <button id="modalClose" type="button" class="btn btn-default" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
+					 <a class="btn btn-default" onClick="downloadFile()" href="">
+					    <span class="icon-download-alt"></span>
+					</a>
+
                     <h4 class="modal-title" id="filesDetailModalLabel">Modal title</h4>
                 </div>
                 <div class="modal-body">
@@ -13,16 +17,16 @@
 
                 </div>
                 <div class="modal-footer">
-					 <a class="btn btn-default" onClick="downloadFile()" href="">
-					    <span class="icon-download-alt"></span> Download
-					</a>
 					 <a class="btn btn-default" onClick="hideFile()" href="">
 					    <span class="icon-remove"></span> Delete
 					</a>
 					 <a id="print-button" class="btn btn-default" ng-click="infinity.addToCart()" href="">
-					    <span class="icon-remove"></span> <span id="print-label">Order Photo</span>
+					    <span class="icon-remove"></span> <span id="print-label">Order</span>
 					</a>
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					 <a id="share-button" class="btn btn-default" ng-click="infinity.share()" href="">
+					    <span class="icon-share"></span> <span id="print-label">Share</span>
+					</a>
+					<!-- button type="button" class="btn btn-default" data-dismiss="modal">Close</button -->
                 </div>
             </div>
         </div>

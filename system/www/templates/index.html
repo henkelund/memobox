@@ -4,172 +4,41 @@
         <meta charset='utf-8' />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
         <title>Backupbox.se</title>
-        <link href="/static/css/bootstrap/bootstrap.css" rel="stylesheet">
-        <link href="/static/css/bootstrap/bootstrap-responsive.css" rel="stylesheet">
-        <link href="/static/css/box.css" rel="stylesheet">
-		<link rel="icon" type="image/png" href="/static/images/icons/favicon.ico">        
-		<link rel="stylesheet" type="text/css" href="/static/css/jquery.dataTables.css">
-		<link rel="stylesheet" type="text/css" href="/static/css/shCore.css">
-		<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-dropdown-checkbox.css" />
-    <link href="http://netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet">
-    <link href="/static/css/bootstrapValidator.css" rel="stylesheet">
-		<style>
-.help-block {
-  color: red;
-}
+    		<link rel="icon" type="image/png" href="/static/images/icons/favicon.ico">        
+        <link href="http://netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet">
+        {% assets output="gen/style.css","css/bootstrap/bootstrap.css","css/bootstrap-dropdown-checkbox.css","css/bootstrapValidator.css","css/bootstrap-dropdown-checkbox.css","css/shCore.css","css/jquery.dataTables.css","css/box.css","css/bootstrap/bootstrap-responsive.css" %}
+            <link href="{{ ASSET_URL }}" rel="stylesheet">
+        {% endassets %}
+    		<style>
+        .help-block {
+          color: red;
+        }
 
-.form-horizontal input + .help-block, .form-horizontal .input-append + .help-block {
-  margin-top: 0px;
-}
-
-#cssmenu,
-#cssmenu ul,
-#cssmenu ul li,
-#cssmenu ul li a {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  list-style: none;
-  line-height: 1;
-  display: block;
-  position: relative;
-  font-family: Capriola, Helvetica, sans-serif;
-}
-#cssmenu {
-  width: auto;
-  height: 59px;
-  padding-bottom: 4px;
-}
-#cssmenu.align-right {
-  float: right;
-}
-#cssmenu.align-right ul li {
-  float: right;
-  margin-right: 0;
-  margin-left: 4px;
-}
-#cssmenu.align-right ul li:first-child,
-#cssmenu.align-right ul li:first-child > a {
-  border-bottom-right-radius: 3px;
-}
-#cssmenu #bg-one,
-#cssmenu #bg-two,
-#cssmenu #bg-three,
-#cssmenu #bg-four {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  border-bottom-left-radius: 3px;
-  border-bottom-right-radius: 3px;
-}
-#cssmenu #bg-one {
-  height: 10px;
-  background: #0f71ba;
-}
-#cssmenu #bg-two {
-  height: 59px;
-  z-index: 2;
-}
-#cssmenu #bg-three {
-  bottom: 4px;
-  height: 55px;
-  z-index: 3;
-  background: #222222;
-  background: -moz-linear-gradient(top, #555555 0%, #222222 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #555555), color-stop(100%, #222222));
-  background: -webkit-linear-gradient(top, #555555 0%, #222222 100%);
-  background: -o-linear-gradient(top, #555555 0%, #222222 100%);
-  background: -ms-linear-gradient(top, #555555 0%, #222222 100%);
-  background: linear-gradient(to bottom, #555555 0%, #222222 100%);
-}
-#cssmenu #bg-four {
-  bottom: 4px;
-  height: 55px;
-  z-index: 4;
-}
-#cssmenu ul {
-  height: 59px;
-}
-#cssmenu ul li {
-  float: left;
-  margin-right: 4px;
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-  z-index: 5;
-}
-#cssmenu ul li a {
-  padding: 24px 30px 20px 30px;
-  margin-bottom: 4px;
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-  color: #eeeeee;
-  font-size: 15px;
-  text-decoration: none;
-}
-#cssmenu ul li:first-child,
-#cssmenu ul li:first-child > a {
-  border-bottom-left-radius: 3px;
-}
-#cssmenu ul li:hover,
-#cssmenu ul li.active {
-  background: #0f71ba;
-  background: -moz-linear-gradient(top, #3fa4f0 0%, #0f71ba 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #3fa4f0), color-stop(100%, #0f71ba));
-  background: -webkit-linear-gradient(top, #3fa4f0 0%, #0f71ba 100%);
-  background: -o-linear-gradient(top, #3fa4f0 0%, #0f71ba 100%);
-  background: -ms-linear-gradient(top, #3fa4f0 0%, #0f71ba 100%);
-  background: linear-gradient(to bottom, #3fa4f0 0%, #0f71ba 100%);
-}
-#cssmenu ul li a:hover,
-#cssmenu ul li.active > a {
-  color: #ffffff;
-}
-
+        .form-horizontal input + .help-block, .form-horizontal .input-append + .help-block {
+          margin-top: 0px;
+        }
 		</style>
 
         <script>var browserStatus = 0;</script>
-		<script>
-			var isLocal = true;
-			var username = "{{ username }}";
-		</script>
-        <!--[if lte IE 7]>
-			<style>#browserError { display: block; }</style>
-			<script>browserStatus = -1;</script>
-		<![endif]-->
-        <!--[if lte IE 8]>
-        <script src="/static/js/ie/json2.js"></script>
-		<script>browserStatus = -1;</script>
-		<style>#browserError { display: block; }</style>
-		<![endif]-->
-		<!--[if IE 8]><!--> <meta http-equiv="X-UA-Compatible" content="IE=8" /> <!--<![endif]-->
-		{% if islocal == false %}
-		<script>
-			isLocal = false;
-		</script>
-		{% endif %}
-  <style>
-	.filters {
-		font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-		font-size: 14px;
-		color: #777;
-		padding-top: 2px;
-		border-left: 1px solid #777;
-		padding-left: 0px;
-		margin-left: 10px;
-		margin-top: 8px;
-	}
-
-	.filters input {
-		margin-bottom: 6px;
-		margin-left: 15px;
-		margin-right: 3px;
-	}
-
-	.navbar .nav > li.filters a {
-		padding: 0px;
-		display: inline;
-	}
-  </style>	
+    		<script>
+    			var isLocal = true;
+    			var username = "{{ username }}";
+    		</script>
+            <!--[if lte IE 7]>
+    			<style>#browserError { display: block; }</style>
+    			<script>browserStatus = -1;</script>
+    		<![endif]-->
+            <!--[if lte IE 8]>
+            <script src="/static/js/ie/json2.js"></script>
+    		<script>browserStatus = -1;</script>
+    		<style>#browserError { display: block; }</style>
+    		<![endif]-->
+    		<!--[if IE 8]><!--> <meta http-equiv="X-UA-Compatible" content="IE=8" /> <!--<![endif]-->
+    		{% if islocal == false %}
+    		<script>
+    			isLocal = false;
+    		</script>
+    		{% endif %}
     </head>
     <body>
         <!-- div class="jumbotron">
@@ -188,23 +57,20 @@
         <div id="ng-app" ng-app="box">
             <div ui-view><span id="browserError" class="browserMessage">This browser is not yet supported by Backupbox. Please use a different web browser.</span></div>
         </div>
-        {% endraw %}        
-        <script type="text/javascript" src="/static/js/jquery/jquery.js"></script>
-        <script type="text/javascript" src="/static/js/bootstrap/bootstrap.js"></script>
-        <script type="text/javascript" src="/static/js/angular/angular.js"></script>
-        <script type="text/javascript" src="/static/js/angular/angular-resource.js"></script>
-        <script type="text/javascript" src="/static/js/angular/angular-ui-router.js"></script>
-        <script type="text/javascript" src="/static/js/angular/ng-infinite-scroll.js"></script>
-        <script type="text/javascript" src="/static/js/angular/sinon-chai.js"></script>
-        <script type="text/javascript" src="/static/js/angular/sinon.js"></script>
-        <script type="text/javascript" src="/static/js/angular/angular-sanitize.min.js"></script>
-        <script type="text/javascript" src="/static/js/box.js"></script>
-        <script type="text/javascript" src="/static/js/datebar.js"></script>
-        <script type="text/javascript" src="/static/js/bootstrapValidator.js"></script>
-    		<script type="text/javascript" language="javascript" src="/static/js/jquery.dataTables.js"></script>
-    		<script type="text/javascript" language="javascript" src="/static/js/shCore.js"></script>
-    		<script type="text/javascript" language="javascript" src="/static/js/demo.js"></script>
-        <script type="text/javascript" language="javascript" src="/static/js/jquery.isloading.js"></script>
+        {% endraw %}
+        
+        {% assets output="gen/basic.js","js/jquery/jquery.js","js/bootstrap/bootstrap.js" %}
+        <script src="{{ ASSET_URL }}" type="text/javascript"></script>
+        {% endassets %}        
+
+        {% assets output="gen/angular.js","js/angular/angular.js","js/angular/angular-resource.js","js/angular/angular-ui-router.js","js/angular/ng-infinite-scroll.js","js/angular/sinon-chai.js","js/angular/sinon.js","js/angular/angular-sanitize.min.js" %}
+        <script src="{{ ASSET_URL }}" type="text/javascript"></script>
+        {% endassets %}        
+
+        {% assets output="gen/app.js","js/box.js","js/datebar.js","js/bootstrapValidator.js","js/jquery.dataTables.js","js/shCore.js","js/demo.js","js/jquery.isloading.js" %}
+        <script src="{{ ASSET_URL }}" type="text/javascript"></script>
+        {% endassets %}
+
     </body>
 </html>
 
