@@ -374,6 +374,13 @@ def file_calendar_action():
     
     return jsonify(_data)
 
+@app.route('/icon/<type>')
+def icon_action(type=None):
+    
+    if os.path.isfile("static/images/icons/mint/48/"+type+".png"):
+        return redirect("/static/images/icons/mint/48/"+type+".png")
+    else:
+        return redirect("/static/images/icons/mint/48/unknown.png")
 
 @app.route('/files/stream/<file_id>/<display_name>/<type>/<size>')
 def file_stream_action(file_id=None, display_name=None, type=None, size=None):

@@ -37,11 +37,11 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 							    <div class="navbar-inner">
 							      <a class="brand" href="#">Backupbox.se</a>
 							      <ul class="nav">
-							          <li ng-click="" class="devices dropdown-checkbox dropdown device-dropdown"><a href="#">Devices <span id="deviceCount"></span><b class="caret"></b></a></li>
+							          <li class="devices dropdown-checkbox dropdown device-dropdown"><a href="#"><span id="device-dropdown">All devices</span> <span id="deviceCount"></span><b class="caret"></b></a></li>
 							          <li>
 										<ul id="deviceDropdown" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
 											<li ng-repeat="device in FilesCtrl.fileService.devices" id="{{device.id}}" class="device" device-repeat-directive>
-												<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')">{{device.product_name}}<div class="unset-filter">x</div></a>
+												<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span><div class="unset-filter">x</div></a>
 											</li>
 										</ul>
 							          </li>
@@ -63,22 +63,12 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 							<table ng-show="files && files.length > 0" id="otherfiles" class="display otherfiles" cellspacing="0" width="100%">
 								<thead>
 									<tr>
-										<th>Name</th>
 										<th>Type</th>
+										<th>Name</th>
 										<th>Date</th>
 										<th>Size</th>
 									</tr>
 								</thead>
-				
-								<tfoot>
-									<tr>
-										<th>Name</th>
-										<th>Type</th>
-										<th>Date</th>
-										<th>Size</th>
-									</tr>
-								</tfoot>
-				
 								<tbody>
 								</tbody>
 							</table>

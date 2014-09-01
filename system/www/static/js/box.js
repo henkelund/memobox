@@ -291,6 +291,7 @@
 			this.lastCount = -1; 
 
 			if(_device && _device != -1 && this.device != _device) {
+				$("#device-dropdown").text($("#"+_device + " span").text());
 				$(".device").removeClass("active");
 				$("#"+_device).addClass("active");
 				this.device = _device; 
@@ -365,7 +366,7 @@
 						  var viewDate = time.getDate();
 						  var dat = viewYear + "-" + viewMonth + "-" + viewDate;
 						  
-					      this.publish.files.push(['<a href="/files/stream/'+result.files[i]._id+'/'+result.files[i].name+'/full/0">'+result.files[i].name+'</a>',result.files[i].type, dat, humanFileSize(result.files[i].size)]);				      
+					      this.publish.files.push(['<img src="/icon/'+result.files[i].type+"-"+result.files[i].subtype+'" />', '<a href="/files/stream/'+result.files[i]._id+'/'+result.files[i].name+'/full/0">'+result.files[i].name+'</a>', dat, humanFileSize(result.files[i].size)]);				      
 				      } else {
 					      this.publish.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});				      
 				      }
@@ -627,7 +628,12 @@
         $scope.state = "list"; 
         
         if(!$scope.datatable)
-	        $scope.datatable = $('#otherfiles').dataTable({ "iDisplayLength": 30, "bLengthChange": false });
+	        $scope.datatable = $('#otherfiles').dataTable({ "iDisplayLength": 30, "bLengthChange": false,   "columns": [
+    { "width": "35px" },
+    null,
+    null,
+    null
+  ] });
 
         $scope.render = function(e) {
 			return $(e).html();
