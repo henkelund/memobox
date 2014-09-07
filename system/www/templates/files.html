@@ -36,23 +36,25 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 							  <div class="navbar">
 							    <div class="navbar-inner">
 							      <a class="brand" href="#">Backupbox.se</a>
-							      <ul class="nav">
-							          <li class="devices dropdown-checkbox dropdown device-dropdown"><a href="#"><span id="device-dropdown">All devices</span> <span id="deviceCount"></span><b class="caret"></b></a></li>
-							          <li>
-										<ul id="deviceDropdown" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
-											<li ng-repeat="device in FilesCtrl.fileService.devices" id="{{device.id}}" class="device" device-repeat-directive>
-												<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span><div class="unset-filter">x</div></a>
-											</li>
-										</ul>
-							          </li>
-							        <li class="filters">
-							        	<span nng-show="types['images'] > 0"><input id="filter-image" type="checkbox" checked ng-click="infinity.nextPage(null,'image', true)" /><a href="#" ng-click="infinity.nextPage(null,'image')"> Photos<span id="imagescount"> ({{types["images"]}})</span></a></span>
-							        	<span nng-show="types['videos'] > 0"><input id="filter-video" type="checkbox" checked ng-click="infinity.nextPage(null,'video', true)" /><a href="#" ng-click="infinity.nextPage(null,'video')"> Videos<span id="videoscount"> ({{types["videos"]}})</span></a></span>
-							        </li>
-							        <li nng-show="types['others'] > 0" class="filters">
-							        	<input id="filter-other" type="checkbox" ng-click="infinity.nextPage(null,'other', true)" /><a href="#" ng-click="infinity.nextPage(null,'other')"> Documents & Files<span id="otherscount"> ({{types["others"]}})</span></a>
-							        </li>
-							      </ul>
+							        <ul id="devices" class="nav">
+								         <li class="devices dropdown-checkbox dropdown device-dropdown"><a href="#"><span id="device-dropdown">Alla devices</span> <span id="deviceCount"></span><b class="caret"></b></a></li>
+								         <li>
+											<ul id="deviceDropdown" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+												<li ng-repeat="device in FilesCtrl.fileService.devices" id="{{device.id}}" class="device" device-repeat-directive>
+													<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span><div class="unset-filter">x</div></a>
+												</li>
+											</ul>
+								         </li>
+							        </ul>
+							        <ul id="filters" class="nav">
+								        <li class="filters">
+								        	<span nng-show="types['images'] > 0"><input id="filter-image" type="checkbox" checked ng-click="infinity.nextPage(null,'image', true)" /><a href="#" ng-click="infinity.nextPage(null,'image')"> Photos<span id="imagescount"> ({{types["images"]}})</span></a></span>
+								        	<span nng-show="types['videos'] > 0"><input id="filter-video" type="checkbox" checked ng-click="infinity.nextPage(null,'video', true)" /><a href="#" ng-click="infinity.nextPage(null,'video')"> Videos<span id="videoscount"> ({{types["videos"]}})</span></a></span>
+								        </li>
+								        <li nng-show="types['others'] > 0" class="filters">
+								        	<input id="filter-other" type="checkbox" ng-click="infinity.nextPage(null,'other', true)" /><a href="#" ng-click="infinity.nextPage(null,'other')"> Documents & Files<span id="otherscount"> ({{types["others"]}})</span></a>
+								        </li>
+							        </ul>
 							    </div>
 							  </div>   									
 							<ul ng-show="items && items.length > 0" id="thumbnails" class="thumbnails">

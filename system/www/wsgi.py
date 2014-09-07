@@ -9,6 +9,10 @@ import re
 import uuid
 import subprocess
 import pwinty
+
+from fabric.api import * 
+from fabric.operations import put 
+from fabric.operations import get
 from ftplib import FTP
 from datetime import date
 from subprocess import call
@@ -144,9 +148,13 @@ def files_action():
 
 @app.route('/info')
 def file_info_action():
-	with open ("/tmp/info.txt", "r") as myfile:
+    print os.path.abspath('../../data')
+    if not os.path.isfile("/tmp/info.txt"):
+        subprocess.call(['../bin/gatherData.sh'])
+
+    with open ("/tmp/info.txt", "r") as myfile:
 		data=myfile.read().replace('\n', '<br />')
-	return data
+    return data
 
 @app.route('/public_ip')
 def public_ip():

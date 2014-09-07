@@ -296,106 +296,6 @@ div.video .typecontent {
 	/*overflow: hidden;*/
 }
 
-@media (max-width: 1199px) {
-	#libContainer {
-		margin-left: 20px; 	
-	}
-	
-	#device-list {
-		margin-left: -20px; 
-		margin-right: 0px; 	
-	}
-	
-	#devicenav {
-	width: 60%;
-	}
-
-}
-
-@media (max-width: 980px) {
-	.dateHolder {
-		display: none; 		
-	}
-
-	#filternav {
-		display: none;		
-	}
-	
-	#devicenav {
-		max-height: none;
-		overflow: visible;
-	}
-}
-
-@media (max-width: 767px) {	
-    .jumbotron {
-        padding: 20px 10px;
-        margin-right: -20px;
-        margin-left: -20px;
-    }
-
-	.jumbotron h1 {
-		font-size: 24px;
-        line-height: 12px;
-	}
-    
-    .box-info {
-	    display: none;
-    }
-    
-    .noti_Container {
-	    display: none;
-    }
-
-	#libContainer {
-		margin-left: 0px; 
-	}
-
-	#device-list {
-		margin-left: 0px; 
-		margin-right: 0px; 	
-	}
-
-	#dateHolder {
-		margin-left: 0px;
-		margin-right: 0px; 
-	}
-	
-	.date-navbar {
-		margin-right: 0px;
-	}
-	
-	#formatFilter {
-		display: none;
-	}
-	
-	.modal {
-		left: 0px; 
-		right: 0px; 
-	}
-	
-	.modal-body {
-		padding: 0px; 
-	}
-	
-	.modal.fade.in {
-		top: 0px; 
-	}
-
-	.splashbox {
-		margin-top: 5%; 
-		margin-left: auto; 
-		margin-right: auto; 	
-	}
-	
-	.notify {
-		text-align: center; 
-		font-size: 22px; 
-		line-height: 28px; 
-		padding-top: 10%;	
-	}	
-}
-
 .container .modal {
 	display: none;
 }
@@ -832,4 +732,107 @@ pre,.well{background:#FFFFFF;}
 .navbar .nav > li.filters a {
 	padding: 0px;
 	display: inline;
+}
+
+
+
+@media (max-width: 1199px) {
+	#libContainer {
+		margin-left: 20px; 	
+	}
+	
+	#device-list {
+		margin-left: -20px; 
+		margin-right: 0px; 	
+	}
+	
+	#devicenav {
+	width: 60%;
+	}
+
+}
+
+@media (max-width: 980px) {
+	.dateHolder {
+		display: none; 		
+	}
+
+	#filternav {
+		display: none;		
+	}
+	
+	#devicenav {
+		max-height: none;
+		overflow: visible;
+	}
+}
+
+@media (max-width: 767px) {	
+    #cssmenu {
+    	display: none;
+    }
+
+    .navbar .navbar-inner .brand {
+    	display: none;
+    }
+
+    #filters {
+    	display: none;
+    }
+
+    .box-info {
+	    display: none;
+    }
+    
+    .noti_Container {
+	    display: none;
+    }
+
+	#libContainer {
+		margin-left: 0px; 
+	}
+
+	#device-list {
+		margin-left: 0px; 
+		margin-right: 0px; 	
+	}
+
+	#dateHolder {
+		margin-left: 0px;
+		margin-right: 0px; 
+	}
+	
+	.date-navbar {
+		margin-right: 0px;
+	}
+	
+	#formatFilter {
+		display: none;
+	}
+	
+	.modal {
+		left: 0px; 
+		right: 0px; 
+	}
+	
+	.modal-body {
+		padding: 0px; 
+	}
+	
+	.modal.fade.in {
+		top: 0px; 
+	}
+
+	.splashbox {
+		margin-top: 5%; 
+		margin-left: auto; 
+		margin-right: auto; 	
+	}
+	
+	.notify {
+		text-align: center; 
+		font-size: 22px; 
+		line-height: 28px; 
+		padding-top: 10%;	
+	}	
 }
