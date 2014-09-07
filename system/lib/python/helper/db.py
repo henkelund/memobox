@@ -137,36 +137,51 @@ class DBHelper(object):
 
     @staticmethod
     def loadconfig(username=None, dbfile=""):
-		config = {}
-		
-		if dbfile is not "":
-			# Override detection and load hard coded file
-			with open(dbfile) as f:
-				content = f.readlines()
-			for line in content:
-				if len(line.split("=")) == 2:
-					config[line.split("=")[0]] = line.split("=")[1].replace('"', '').replace('\n', '')
-			
-			return config
-							
-		elif(not hasattr(g, "config")):			
-			if username is not None:
-				with open("/backups/"+username+"/local.cfg") as f:
-					content = f.readlines()
-			elif hasattr(g, "username"):
-				with open("/backups/"+g.username+"/local.cfg") as f:
-					content = f.readlines()				
-			else:
-				with open("../data/local.cfg") as f:
-					content = f.readlines()
-			
-			for line in content:
-				if len(line.split("=")) == 2:
-					config[line.split("=")[0]] = line.split("=")[1].replace('"', '').replace('\n', '')
-			
-			g.config = config
-		
-		return g.config
+        config = {}
+        if dbfile is "":
+            if username is not None:
+                dbfile = "/backups/"+username+"/local.cfg"
+            elif hasattr(g, "username"):
+                dbfile = "/backups/"+g.username+"/local.cfg"
+            else:
+                dbfile = "../data/local.cfg"
+
+        with open(dbfile) as f:
+            content = f.readlines()
+        
+        for line in content:
+            if len(line.split("=")) == 2:
+                config[line.split("=")[0]] = line.split("=")[1].replace('"', '').replace('\n', '')
+            
+        g.config = config
+        
+        return g.config
+
+    @staticmethod
+    def saveconfig(config, username=None, dbfile=""):
+        if dbfile is "":
+            if username is not None:
+                dbfile = "/backups/"+username+"/local.cfg"
+            elif hasattr(g, "username"):
+                dbfile = "/backups/"+g.username+"/local.cfg"
+            else:
+                dbfile = "../data/local.cfg"
+
+        RE = '(('+'|'.join(config.keys())+')\s*=)[^\r\n]*?(\r?\n|\r)'
+        pat = re.compile(RE)
+
+        def jojo(mat,dic = config ):
+            return dic[mat.group(2)].join(mat.group(1,3))
+
+        with open(dbfile,'rb') as f:
+            content = f.read() 
+
+        pat = re.compile(RE)
+
+        with open(dbfile,'wb') as f:
+            f.write(pat.sub(jojo,content))
+
+        return DBHelper.loadconfig()
         
 class DBSelect(object):
     """Helper for building SQLite SELECT queries"""

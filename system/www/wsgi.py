@@ -9,7 +9,7 @@ import re
 import uuid
 import subprocess
 import pwinty
-
+import shutil
 from fabric.api import * 
 from fabric.operations import put 
 from fabric.operations import get
@@ -51,7 +51,8 @@ def before_request():
 	if request.path.startswith("/ping") or request.path.startswith("/lastping"):
 		DBHelper.initdb("ping.db")
 	else:
-		DBHelper.initdb()
+		if not request.path.startswith("/ping"):
+			DBHelper.initdb()
 
 	g.localaccess = PingModel.haslocalaccess(request)
 
@@ -148,13 +149,54 @@ def files_action():
 
 @app.route('/info')
 def file_info_action():
-    print os.path.abspath('../../data')
+    #print os.path.abspath('../../data')
+    config = DBHelper.loadconfig()
+    config_output = ""
     if not os.path.isfile("/tmp/info.txt"):
         subprocess.call(['../bin/gatherData.sh'])
 
     with open ("/tmp/info.txt", "r") as myfile:
 		data=myfile.read().replace('\n', '<br />')
-    return data
+
+    for key, value in config.iteritems():
+        config_output += key+"="+value+"<br />"
+
+    message = ""
+    if request.args.get('message') is not None:
+        message = request.args.get('message')
+    
+    return render_template('info.html', config=config_output, info=data, message=message)
+
+@app.route('/edit')
+def file_edit_action():
+    config = DBHelper.loadconfig()
+    return render_template('edit.html', config=config)
+
+@app.route('/editsave')
+def file_editsave_action():
+    output = ""
+    conf = {}
+
+    for key, value in request.args.iteritems():
+        if key.startswith("config_"):
+            conf[key[7:]] = value
+
+    new_config = DBHelper.saveconfig(conf)
+    return redirect("/info?message=Configuration has been saved")
+
+@app.route('/erasebox')
+def file_erasebox_action():
+    folders = ['../../data/cache/thumbnails', '../../data/devices', '../../data/index.db', '../../data/ping.db' ]
+    for folder in folders:
+        try:
+            if(os.path.isdir(folder)):
+                shutil.rmtree(folder)
+            else:
+                os.remove(folder)
+        except Exception as e:
+            print e
+
+    return "ok?"
 
 @app.route('/public_ip')
 def public_ip():
