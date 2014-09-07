@@ -2,8 +2,8 @@
 	<div id='cssmenu' style="margin-top: 10px; margin-bottom: 5px;">
 	<ul>
 	   <li ng-class="{active: state == 'list'}" style="margin-left: 10%;" class='active'><a ng-click="infinity.selectTab('list')" href="#"><div class="icon-white icon-home"></div> <span>My files</span></a></li>
-	   <li ng-class="{active: state == 'cloud'}" ><a ng-click="infinity.selectTab('cloud')" href='#'><div class="icon-white icon-hdd"></div> <span>Shared on Cloud Server<span ng-show="share.length > 0" id="cart">({{share.length}})</span></span></a></li>
-	   <li ng-class="{active: state == 'printouts'}"><a ng-click="infinity.selectTab('printouts')"  href="#"><div class="icon-white icon-print"></div> <span>Printed Photos<span ng-show="cart.length > 0" id="cart">({{cart.length}})</span></span></a></li>
+	   <li ng-show="FilesCtrl.fileService.devices.length > 0" ng-class="{active: state == 'cloud'}" ><a ng-click="infinity.selectTab('cloud')" href='#'><div class="icon-white icon-hdd"></div> <span>Shared on Cloud Server<span ng-show="share.length > 0" id="cart">({{share.length}})</span></span></a></li>
+	   <li ng-show="FilesCtrl.fileService.devices.length > 0" ng-class="{active: state == 'printouts'}"><a ng-click="infinity.selectTab('printouts')"  href="#"><div class="icon-white icon-print"></div> <span>Printed Photos<span ng-show="cart.length > 0" id="cart">({{cart.length}})</span></span></a></li>
 	   <!-- li class='last'><a href='#'><span>Contact</span></a></li -->
 	</ul>
 	</div>	
@@ -36,7 +36,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 							  <div class="navbar">
 							    <div class="navbar-inner">
 							      <a class="brand" href="#">Backupbox.se</a>
-							        <ul id="devices" class="nav">
+							        <ul ng-show="FilesCtrl.fileService.devices.length > 0" id="devices" class="nav">
 								         <li class="devices dropdown-checkbox dropdown device-dropdown"><a href="#"><span id="device-dropdown">Alla devices</span> <span id="deviceCount"></span><b class="caret"></b></a></li>
 								         <li>
 											<ul id="deviceDropdown" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
@@ -46,7 +46,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 											</ul>
 								         </li>
 							        </ul>
-							        <ul id="filters" class="nav">
+							        <ul ng-show="FilesCtrl.fileService.devices.length > 0" id="filters" class="nav">
 								        <li class="filters">
 								        	<span nng-show="types['images'] > 0"><input id="filter-image" type="checkbox" checked ng-click="infinity.nextPage(null,'image', true)" /><a href="#" ng-click="infinity.nextPage(null,'image')"> Photos<span id="imagescount"> ({{types["images"]}})</span></a></span>
 								        	<span nng-show="types['videos'] > 0"><input id="filter-video" type="checkbox" checked ng-click="infinity.nextPage(null,'video', true)" /><a href="#" ng-click="infinity.nextPage(null,'video')"> Videos<span id="videoscount"> ({{types["videos"]}})</span></a></span>
@@ -75,7 +75,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 								</tbody>
 							</table>
 						</div>
-				  		<div ng-show="FilesCtrl.fileService.missingDevices" class="browserMessage">
+				  		<div  ng-show="FilesCtrl.fileService.devices.length == 0" class="browserMessage">
 				  			Start using your Backupbox by connecting any USB-compatible device the the USB port on your box. 
 				  		</div>
 				  		<div ng-show="missingImages && !FilesCtrl.fileService.missingDevices" class="browserMessage">
