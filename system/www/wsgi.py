@@ -8,8 +8,17 @@ import urllib2
 import re
 import uuid
 import subprocess
+
+# API for ordering photo prints
 import pwinty
+
+# Used to remove recursive directories
 import shutil
+
+# Used to connect through sftp
+import paramiko
+import socket
+
 from fabric.api import * 
 from fabric.operations import put 
 from fabric.operations import get
@@ -77,12 +86,6 @@ def index_action():
 		else:
 			return render_template('login.html', islocal=g.islocalbox)
 
-
-# Start page route
-@app.route('/zero')
-def zero_action():
-	return render_template('zero_configuration.html')
-
 # Start page route
 @app.route('/login')
 def login_action():
@@ -148,7 +151,7 @@ def files_action():
     return jsonify({'files': data, 'sql': models.render()})
 
 @app.route('/info')
-def file_info_action():
+def info_action():
     #print os.path.abspath('../../data')
     config = DBHelper.loadconfig()
     config_output = ""
@@ -167,13 +170,13 @@ def file_info_action():
     
     return render_template('info.html', config=config_output, info=data, message=message)
 
-@app.route('/edit')
-def file_edit_action():
+@app.route('/configuration/edit')
+def configuration_edit_action():
     config = DBHelper.loadconfig()
     return render_template('edit.html', config=config)
 
-@app.route('/editsave')
-def file_editsave_action():
+@app.route('/configuration/save')
+def configuration_save_action():
     output = ""
     conf = {}
 
@@ -184,8 +187,8 @@ def file_editsave_action():
     new_config = DBHelper.saveconfig(conf)
     return redirect("/info?message=Configuration has been saved")
 
-@app.route('/erasebox')
-def file_erasebox_action():
+@app.route('/box/erase')
+def box_erase_action():
     folders = ['../../data/cache/thumbnails', '../../data/devices', '../../data/index.db', '../../data/ping.db' ]
     for folder in folders:
         try:
@@ -196,7 +199,34 @@ def file_erasebox_action():
         except Exception as e:
             print e
 
-    return "ok?"
+    return redirect("/")
+
+@app.route('/upload')
+def upload_action():
+    files = request.args.get("files").split(",")
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy( paramiko.AutoAddPolicy() )
+    ssh.connect('kurz.backupbox.se', username='root',  password='copiebox')
+    sftp = paramiko.SFTPClient.from_transport(ssh.get_transport())
+    #sftp.put()
+    #output = sftp.listdir('.')
+    for f in files:
+        _file = FileModel().load(f)
+        ff = str(_file.abspath()+"/"+_file.name())
+        uid = str(uuid.uuid1())+'.jpg'
+        sftp.put(ff, 'demo_sftp_folder/'+uid)
+
+    ssh.close()
+    #sftp.mkdir("demo_sftp_folder")
+    #ssh.close()
+    #stdin, stdout, stderr = ssh.exec_command("ls")
+
+    #output = ""
+    #for line in stdout:
+    #    output += line.strip('\n')
+    
+    return ".."
+
 
 @app.route('/public_ip')
 def public_ip():
