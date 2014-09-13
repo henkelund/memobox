@@ -180,6 +180,14 @@ class FileModel(ExtendedModel):
         return model
 
     @classmethod
+    def update(cls):
+        """ Install added attributes """
+        #cls._create_attribute(
+        #    'uuid', 'UUID', 'text', ['Image', 'Video'])
+        #cls._create_attribute(
+        #    'published', 'Published', 'integer', ['Image', 'Video'])
+
+    @classmethod
     def _install(cls):
         """Install base table and attributes"""
 

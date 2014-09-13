@@ -316,6 +316,7 @@ class ExtendedModel(BaseModel):
     @classmethod
     def all(cls):
         """Get an extended model collection"""
+        print "Hum?"
         return ExtendedModelSet(cls)
 
 class ExtendedModelSet(BaseModelSet):
@@ -323,6 +324,7 @@ class ExtendedModelSet(BaseModelSet):
 
     def _prepare_filter_attribute(self, attribute):
         """Prepare attribute for use in WHERE"""
+        print "ham?"
 
         if not hasattr(self, '_attrs'):
             self._attrs = self._model_class.get_all_attributes()
@@ -341,6 +343,7 @@ class ExtendedModelSet(BaseModelSet):
 
             # attribute not found, check if it could be a static column
             if attr_model is None:
+                print "attr_model is none"
                 return super(ExtendedModelSet, self
                                 )._prepare_filter_attribute(attribute)
 
