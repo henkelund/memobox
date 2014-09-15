@@ -111,7 +111,7 @@ class DBHelper(object):
         
     @staticmethod
     def islocal():
-    	config = DBHelper.loadconfig(None, "/HDD/local.cfg")
+    	config = DBHelper.loadconfig(None, "../data/local.cfg")
     	
     	if config["LOCAL"] and config["LOCAL"] == "true":
     		return True
@@ -121,7 +121,9 @@ class DBHelper(object):
 
     @staticmethod
     def initdb(filename="index.db"):
-    	config = DBHelper.loadconfig(None, "/HDD/local.cfg")
+    	config = DBHelper.loadconfig(None, "../data/local.cfg")
+        print config["LOCAL"]
+        print config["BOXUSER"]
     	dbname = ""
     	
     	if config["LOCAL"] and config["LOCAL"] == "true":
@@ -141,8 +143,10 @@ class DBHelper(object):
         if dbfile is "":
             if username is not None:
                 dbfile = "/backups/"+username+"/local.cfg"
+                print "#1"+dbfile
             elif hasattr(g, "username"):
                 dbfile = "/backups/"+g.username+"/local.cfg"
+                print "#2"+dbfile
             else:
                 dbfile = "../data/local.cfg"
 
