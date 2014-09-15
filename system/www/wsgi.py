@@ -123,12 +123,15 @@ def files_action():
 	'name'
 	]
 
-	models = FileModel.all().add_attribute("duration").add_attribute("uuid").add_attribute("published").where("is_hidden = 0").order('m.created_at', "DESC")
 	isMedia = True
-	
+
+	models = FileModel.all().add_attribute("duration").add_attribute("uuid").add_attribute("published").where("is_hidden = 0").order('m.created_at', "DESC")
+
 	for arg in args.keys():
 		vals = args.get(arg).split(',')
 		
+		if arg == 'mode':
+			models = FileModel.all().add_filter("published",  {'eq': (1)}).add_attribute("uuid").where("is_hidden = 0").order('m.created_at', "DESC")
 		if arg == 'year':
 			st = dt.datetime(int(vals[0]), 1, 1)
 			et = dt.datetime(int(vals[0]), 12, 31)
@@ -146,8 +149,6 @@ def files_action():
 
 	if isMedia:
 		models.where("width = 260").join("file_thumbnail", "m._id = file_thumbnail.file").limit(32, (after-1)*32)
-	
-	print models
 
 	for model in models:
 		#model.

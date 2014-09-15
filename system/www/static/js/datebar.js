@@ -182,7 +182,7 @@ function parseDate() {
 	var _months = Array("January","February","March","April","May","June","July","August","September","October","November","December");
 	var firstLeft = -1; 
 
-	$(".thumbnails .preview").each(function( index ) {
+	$("#thumbnails .preview").each(function( index ) {
 		if(counter == 0)
 			firstLeft = $( this ).position().left;
 			

@@ -41,7 +41,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 								         <li>
 											<ul id="deviceDropdown" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
 												<li ng-repeat="device in FilesCtrl.fileService.devices" id="{{device.id}}" class="device" device-repeat-directive>
-													<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span><div class="unset-filter">x</div></a>
+													<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span><!-- div class="unset-filter">x</div --></a>
 												</li>
 											</ul>
 								         </li>
@@ -78,7 +78,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 				  		<div  ng-show="FilesCtrl.fileService.devices.length == 0" class="browserMessage">
 				  			Start using your Backupbox by connecting any USB-compatible device the the USB port on your box. 
 				  		</div>
-				  		<div ng-show="missingImages && !FilesCtrl.fileService.missingDevices" class="browserMessage">
+				  		<div ng-show="missingImages" class="browserMessage">
 				  			Ops! No images or videos were found that matches your selection. 
 				  		</div>
 				  </div>

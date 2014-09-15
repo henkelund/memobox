@@ -120,51 +120,6 @@
 	  Infinity.prototype.selectTab = function(state){
 		this.publish.state = state;
 
-		if(state == "cloud") {
-			$.ajax({
-			    url : "/files?after="+this.page+"&device="+this.device+"&format="+filters.join(","),
-				async: false,
-				context: this,
-			    success : function(result){
-			    	if(changedState == true) {
-						if (!window.matchMedia || (window.matchMedia("(max-width: 767px)").matches)) {
-							$("#mainNav").css("height", "0px");
-							$("#mainNav").removeClass("in");
-							$("#mainNav-btn").addClass("collapsed");
-						}
-					}
-
-					// If response resulted in no images, show error message
-					if(result.files.length == 0 && this.publish.items.length == 0) {
-						this.publish.missingImages = true;
-					} else {
-						this.publish.missingImages = false; 
-					}
-					
-					this.lastCount = result.files.length; 
-
-					// Loop JSON response and add images to ng-repeat array
-				    for(var i = 0; i < result.files.length; i++) {
-				      var type_content = ""; 
-
-				      // Push thumbnail item to ng-repeat array	      
-				      if(filters == "other") {
-					      var _months = Array("January","February","March","April","May","June","July","August","September","October","November","December");
-					      var time = new Date(result.files[i].created_at*1000);
-						  var viewMonth = String(_months[time.getMonth()]).substr(0, 3);
-						  var viewYear = time.getFullYear().toString();
-						  var viewDate = time.getDate();
-						  var dat = viewYear + "-" + viewMonth + "-" + viewDate;
-						  
-					      this.publish.files.push(['<img src="/icon/'+result.files[i].type+"-"+result.files[i].subtype+'" />', '<a href="/files/stream/'+result.files[i]._id+'/'+result.files[i].name+'/full/0">'+result.files[i].name+'</a>', dat, humanFileSize(result.files[i].size)]);				      
-				      } else {
-					      this.publish.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});				      
-				      }
-				    }			    
-			    }
-			});			
-		}
-
 		$('#order-form').bootstrapValidator();		
 	  }
 
@@ -188,9 +143,8 @@
 		    		alert("Your order could not be placed at this moment.");
 		    	} else {
 		            $.isLoading( "hide" );
-		    		scp.publish.shared = scp.publish.share;
 		    		scp.publish.share = [];
-		    		scp.$apply();
+		    		scp.loadShared();
 		    	}
 
 			}).
@@ -265,7 +219,6 @@
 	  Infinity.prototype.share = function(image, event){		
 		var currentImageId = this.publish.currentFile.id; 
 		this.publish.share.push(this.publish.currentFile);
-		
 		// If added from file modal, close it
 		$('#filesDetailModal').modal('hide');
 	  }
@@ -324,12 +277,27 @@
 		    }
 		});  	
 	  }
+
+	  Infinity.prototype.loadShared = function() {
+			$.ajax({
+			    url : "/files?mode=shared",
+				async: false,
+				context: this,
+			    success : function(result) {
+					this.publish.shared = [];
+					// Loop JSON response and add images to ng-repeat array
+				    for(var i = 0; i < result.files.length; i++) {
+					      this.publish.shared.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:""});
+				    }
+			    }
+			});
+	  };
 	  
 	  /**
 	  * Method that loads next page in the infinite scroll. Device ID and File type ID can be passed as filtering parameters. 
 	  *	  
 	  **/
-	  Infinity.prototype.nextPage = function(_device, _type, noInvert) {
+	  Infinity.prototype.nextPage = function(_device, _type, noInvert, tab) {
 	    // Make sure previous request is not running
 	    if (this.busy) return;
 	    
@@ -532,14 +500,9 @@
          *
          */
         var FileService = function () {
-            this.filesResource = $resource('/files');
             this.detailsResource = $resource('/files/details');
             this.deviceResource = $resource('/devices');
-            this.calendarResource = $resource('/files/calendar');
-            this.calendar = [];
             this.devices = [];
-            this.missingDevices = false; 
-            this.files = [];
             this.details = [];
         };
 
@@ -548,16 +511,8 @@
             /**
              * Successful files load callback
              */
-            loadFilesSuccess: function (resource) {
-                this.files = resource.files;
-                //console.log(resource.sql);
-            },
-
-            /**
-             * Successful calendar load callback
-             */
-            loadCalendarSuccess: function (data) {
-                this.calendar = data;
+            loadSharedFilesSuccess: function (resource) {
+                this.shared = resource.files;
             },
 
             /**
@@ -591,56 +546,6 @@
                 //console.log(data);
             },
 
-            /**
-             * Load files passing 'filter'
-             */
-            loadFiles: function (filter, complete) {
-                var that = this,
-                    args = {}, // arguments
-                    fk;        // filter key
-
-                if ($window.devicePixelRatio && $window.devicePixelRatio > 1) {
-                    args.retina = 1;
-                }
-
-                if (typeof filter === 'object') {
-                    for (fk in filter) {
-                        if (filter.hasOwnProperty(fk) && filter[fk].length) {
-                            args[fk] = filter[fk].join(',');
-                        }
-                    }
-                }
-
-                this.filesResource.get(
-                    args,
-                    function (data) {
-                        that.loadFilesSuccess(data);
-                        if (typeof complete === 'function') {
-                            complete(data);
-                        }
-                    },
-                    function (data) {
-                        that.loadError(data);
-                        if (typeof complete === 'function') {
-                            complete(data);
-                        }
-                    }
-                );
-                return this;
-            },
-
-
-            /**
-             * Load available calendar
-             */
-            loadCalendar: function () {
-                this.calendarResource.get(
-                    {},
-                    this.loadCalendarSuccess.bind(this),
-                    this.loadError.bind(this)
-                );
-                return this;
-            },
 
             /**
              * Load available devices
@@ -654,18 +559,6 @@
                 return this;
             },
             
-            /**
-             * Load available filters
-             */
-            loadFilters: function () {
-                this.filterResource.get(
-                    {},
-                    this.loadFiltersSuccess.bind(this),
-                    this.loadError.bind(this)
-                );
-                return this;
-            },
-
             /**
              * Load file by id
              */
@@ -708,7 +601,7 @@
      * Files controller
      */
     box.controller('FilesCtrl', function ($scope, $location, FileService, Infinity) {
-        this.fileService = FileService.loadFiles().loadDevices();
+        this.fileService = FileService.loadDevices();
         $scope.service = this.fileService;
         $scope.infinity = new Infinity($scope);
         $scope.items = [];
@@ -716,13 +609,15 @@
         $scope.types = {}
         $scope.state = "list"; 
         
+		$scope.infinity.loadShared();
+
         if(!$scope.datatable)
 	        $scope.datatable = $('#otherfiles').dataTable({ "iDisplayLength": 30, "bLengthChange": false,   "columns": [
-    { "width": "35px" },
-    null,
-    null,
-    null
-  ] });
+			    { "width": "35px" },
+			    null,
+			    null,
+			    null
+			  ] });
 
         $scope.render = function(e) {
 			return $(e).html();
