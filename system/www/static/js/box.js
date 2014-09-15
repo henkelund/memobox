@@ -317,7 +317,7 @@
 				if($.grep(this.publish.cart, function(e){ return e.id == obj.id; }).length == 1) {
 					$("#print-label").html("Remove from print queue");
 				} else {
-					$("#print-label").html("Order");
+					$("#print-label").html("Order photocopy");
 				}
 		
 		        $('#filesDetailModal').modal('show');				
