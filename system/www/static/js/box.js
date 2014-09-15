@@ -64,6 +64,7 @@
 		this.publish.shipping = 5;
 		this.publish.cart = [];
 		this.publish.share = [];
+		this.publish.shared = [];
 		this.publish.orderid = false;
 		this.photolist = new Object();
 
@@ -118,7 +119,84 @@
 
 	  Infinity.prototype.selectTab = function(state){
 		this.publish.state = state;
+
+		if(state == "cloud") {
+			$.ajax({
+			    url : "/files?after="+this.page+"&device="+this.device+"&format="+filters.join(","),
+				async: false,
+				context: this,
+			    success : function(result){
+			    	if(changedState == true) {
+						if (!window.matchMedia || (window.matchMedia("(max-width: 767px)").matches)) {
+							$("#mainNav").css("height", "0px");
+							$("#mainNav").removeClass("in");
+							$("#mainNav-btn").addClass("collapsed");
+						}
+					}
+
+					// If response resulted in no images, show error message
+					if(result.files.length == 0 && this.publish.items.length == 0) {
+						this.publish.missingImages = true;
+					} else {
+						this.publish.missingImages = false; 
+					}
+					
+					this.lastCount = result.files.length; 
+
+					// Loop JSON response and add images to ng-repeat array
+				    for(var i = 0; i < result.files.length; i++) {
+				      var type_content = ""; 
+
+				      // Push thumbnail item to ng-repeat array	      
+				      if(filters == "other") {
+					      var _months = Array("January","February","March","April","May","June","July","August","September","October","November","December");
+					      var time = new Date(result.files[i].created_at*1000);
+						  var viewMonth = String(_months[time.getMonth()]).substr(0, 3);
+						  var viewYear = time.getFullYear().toString();
+						  var viewDate = time.getDate();
+						  var dat = viewYear + "-" + viewMonth + "-" + viewDate;
+						  
+					      this.publish.files.push(['<img src="/icon/'+result.files[i].type+"-"+result.files[i].subtype+'" />', '<a href="/files/stream/'+result.files[i]._id+'/'+result.files[i].name+'/full/0">'+result.files[i].name+'</a>', dat, humanFileSize(result.files[i].size)]);				      
+				      } else {
+					      this.publish.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});				      
+				      }
+				    }			    
+			    }
+			});			
+		}
+
 		$('#order-form').bootstrapValidator();		
+	  }
+
+	  Infinity.prototype.cancelSharing = function(state){
+	  	this.publish.share = [];
+	  }
+
+	  Infinity.prototype.shareImages = function(state){
+		$.isLoading({ text: "Publishing files... " });
+
+		var images = []; 
+		var scp = this; 
+		$.each( this.publish.share, function( key, value ) {
+		  images.push(value.id);
+		});
+
+		$http({ method: 'GET', url: "/upload?files="+images.join(",") }).
+			success(function(data, status, headers, config) {
+
+		    	if(data == "error") {
+		    		alert("Your order could not be placed at this moment.");
+		    	} else {
+		            $.isLoading( "hide" );
+		    		scp.publish.shared = scp.publish.share;
+		    		scp.publish.share = [];
+		    		scp.$apply();
+		    	}
+
+			}).
+			error(function(data, status, headers, config) {
+				alert("Your images could not be shared at this moment. " + data);
+			});
 	  }
 
 	  Infinity.prototype.placeOrder = function(event){
@@ -310,6 +388,7 @@
 				this.device = -1; 
 				$(".device").removeClass("active");
 				$("#allDevices").addClass("active");
+				$("#device-dropdown").text("All devices");
 				changedState = true; 
 				//$(".dropdown-menu").hide();
 			}
