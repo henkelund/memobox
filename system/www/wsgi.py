@@ -50,7 +50,6 @@ app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 def before_request():
 	if not DBHelper.islocal() and not PingModel.validate_ip(request.host):
 		g.username = request.base_url.split(".")[0].split("//")[1]
-		print "#3: "+g.username
 	else:
 		g.username = DBHelper.loadconfig()["BOXUSER"]
 		
@@ -76,7 +75,6 @@ def index_action():
 	except:
 		print "Box table already exist"
 	BoxModel.init()		
-	print "Start install"
 	FileModel.install()
 	FileModel.update()
 	FilterHelper.install() 
@@ -443,8 +441,6 @@ def print_action():
 			sizing =    'Crop'
 		)
 
-		print 'http://nordkvist.backupbox.se/static/pwinty/'+uid
-
 	order_status = order.get_submission_status()
 
 	if not order_status.is_valid:
@@ -505,7 +501,6 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 			filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
 			mimetype = '%s/%s' % (model.type(), model.subtype())
 			_headers["Content-Disposition"] = "inline"
-			print "###"+filename
 	else:
 		if g.islocalbox == False:
 			config = DBHelper.loadconfig()
