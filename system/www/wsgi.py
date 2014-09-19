@@ -19,33 +19,46 @@ import shutil
 import paramiko
 import socket
 
+# FTP connection utils
 from fabric.api import * 
 from fabric.operations import put 
 from fabric.operations import get
 from ftplib import FTP
+
 from datetime import date
 from subprocess import call
 from datetime import date
 from flask import Flask, session, render_template, request, jsonify, abort, Response, redirect, g
+
+# CSS & JS Compression lib
 from flask.ext.assets import Environment, Bundle
+
+# Box Helpers
 from helper.db import DBHelper, DBSelect
 from helper.filter import FilterHelper
 from helper.image import ImageHelper
 from helper.access import AccessHelper
+
+# Box Models
 from model.device import DeviceModel
 from model.box import BoxModel
 from model.ping import PingModel
 from model.file import FileModel
 
 ImageHelper('static/images', 'mint')
+
+# Initiate app and configure session key
 app = Flask(__name__)
-assets = Environment(app)
 app.debug = True
-t = dt.datetime(2011, 10, 21, 0, 0)
-now = dt.datetime.now()
-b=BoxModel()
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 
+# Initiate asset management(CSS & Javascript)
+assets = Environment(app)
+
+# Set up Box Model object
+b=BoxModel()
+
+# Creates DB Helper, loads config and determines wether box is local or cloud
 @app.before_request
 def before_request():
 	if not DBHelper.islocal() and not PingModel.validate_ip(request.host):
@@ -54,8 +67,8 @@ def before_request():
 		g.username = DBHelper.loadconfig()["BOXUSER"]
 		
 	g.host = request.host
-	g.islocalbox = DBHelper.islocal()
-	g.iscloudbox = not g.islocalbox
+	g.islocalbox = False #DBHelper.islocal()
+	g.iscloudbox = True #not g.islocalbox
 	
 	if request.path.startswith("/ping") or request.path.startswith("/lastping"):
 		DBHelper.initdb("ping.db")
@@ -66,7 +79,7 @@ def before_request():
 	g.localaccess = PingModel.haslocalaccess(request)
 
 
-# Start page route
+# Start page route that redirects to login if box is on cloud
 @app.route('/')
 def index_action():
 	DeviceModel.install()
@@ -87,13 +100,13 @@ def index_action():
 		else:
 			return render_template('login.html', islocal=g.islocalbox)
 
-# Start page route
+# Config route that loads session configuration 
 @app.route('/config')
 def config_action():
 	return jsonify({'username': g.username, 'islocal': g.islocalbox})
 
 
-# Start page route
+# Display login page
 @app.route('/login')
 def login_action():
 	if request.args.get('password') == DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))["PASSWORD"]:
@@ -104,14 +117,19 @@ def login_action():
 	else:
 		return render_template('login.html', islocal=False)	
 		
+# Route that loads next page of files
 @app.route('/files')
 def files_action():
 	after = 1
 	
+	# Read requested page if available
 	if (request.args.get('after') is not None) and (int(request.args.get('after')) > 0):
 		after = int(request.args.get('after'))
 	
+	# Object that holds image/file information
 	data = []
+	
+	# Request parameters
 	args = request.args
 	pixel_ratio = 1
 	cols = [
@@ -121,6 +139,7 @@ def files_action():
 	'name'
 	]
 
+	# Determines wether request contains only media files or documents
 	isMedia = True
 
 	models = FileModel.all().add_attribute("duration").add_attribute("uuid").add_attribute("published").where("is_hidden = 0").order('m.created_at', "DESC")
@@ -161,6 +180,7 @@ def files_action():
 	
 	return jsonify({'files': data, 'sql': models.render()})
 
+# Info route that displays box debug information. For administration use only
 @app.route('/info')
 def info_action():
 	#print os.path.abspath('../../data')
@@ -181,11 +201,13 @@ def info_action():
 	
 	return render_template('info.html', config=config_output, info=data, message=message)
 
+# Route for displaying configuration file edit form
 @app.route('/configuration/edit')
 def configuration_edit_action():
 	config = DBHelper.loadconfig()
 	return render_template('edit.html', config=config)
 
+# Route for saving configuration parameters
 @app.route('/configuration/save')
 def configuration_save_action():
 	output = ""
@@ -198,6 +220,7 @@ def configuration_save_action():
 	new_config = DBHelper.saveconfig(conf)
 	return redirect("/info?message=Configuration has been saved")
 
+# Dangerous route that erases an entire box. Use carefully...
 @app.route('/box/erase')
 def box_erase_action():
 	folders = ['../../data/cache/thumbnails', '../../data/devices', '../../data/index.db', '../../data/ping.db' ]
@@ -212,6 +235,7 @@ def box_erase_action():
 
 	return redirect("/")
 
+# Route for publishing images and files on cloud server
 @app.route('/upload')
 def upload_action():
 	config = DBHelper.loadconfig()
@@ -240,11 +264,12 @@ def upload_action():
 	
 	return "ok"
 
-
+# Debug route that gets public ip of this box
 @app.route('/public_ip')
 def public_ip():
 	return request.remote_addr
 
+# Route for fetching last ping. Only used in cloud server. 
 @app.route('/lastping')
 def lastping():
 	if g.islocalbox:
@@ -261,8 +286,8 @@ def lastping():
 		ping = PingModel.lastping()
 		return jsonify(ping)
 
+# Called by the local box client to send box information to the cloud software. Will never be used localy. 
 @app.route('/ping')
-# Called by the local box client to send box information to the cloud software. Will never be used locally. 
 def file_ping_action():
 	# Call installer script that creats the ping database if it is not present
 	try:
@@ -276,16 +301,16 @@ def file_ping_action():
 	# If no errors where thrown, respond ok to the local box. Any other response will cause green LED to start blinking. 
 	return "ok"
 
-@app.route('/device/update')
 # Used to change the name of a backup device
+@app.route('/device/update')
 def file_devicedetail_action():
 	device = DeviceModel().load(str(request.args.get('id')))
 	device.add_data({"product_name" : str(request.args.get('product_name'))})
 	device.save()
 	return "ok"
 
-@app.route('/device/detail')
 # Retreivs information about a device
+@app.route('/device/detail')
 def file_deviceupdate_action():
 	device = DeviceModel().load(str(request.args.get('id')))
 	device_data = device.get_data();
@@ -294,6 +319,7 @@ def file_deviceupdate_action():
 	device_data["last_backup"] = DeviceModel().last_backup(str(request.args.get('id')));
 	return jsonify(device.get_data())
 
+# Gets a list of, and information about, all available devices. Used to populate navigation bar. 
 @app.route('/devices')
 def file_devices_action():
 	devices = []
@@ -336,6 +362,7 @@ def file_devices_action():
 
 	return jsonify({'devices': devices})
 
+# Get detailed information about a file object
 @app.route('/files/details')
 def file_details_action():
 	data = []
@@ -359,6 +386,7 @@ def file_details_action():
 			
 	return jsonify(data_list)
 
+# Hidess a file on the box. The file is not deleted, only unpublished. 
 @app.route('/files/hide')
 def file_hide_action():
 	if request.args.get('id') is None:
@@ -366,6 +394,7 @@ def file_hide_action():
 	DBSelect('file').where("file._id = "+str(request.args.get('id'))).query_update({'is_hidden': 1});
 	return "ok"
 
+# Uses pwinty API to order photo copies of photos. 
 @app.route('/print')
 def print_action():
 	files = request.args.get("files").split(",")
@@ -449,24 +478,7 @@ def print_action():
 		order.submit()
 		return str(order_status.id)
 
-@app.route('/files/calendar')
-def file_calendar_action():
-	months = DBSelect('file',"strftime('%Y-%m', datetime(created_at, 'unixepoch')) as date").distinct(True).order('date','DESC')
-	
-	if request.args.get('device') is not None:
-		months.where("device = "+request.args.get('device'))
-	
-	months = months.query()
-	
-	_data = {}
-	counter = 0
-	
-	for month in months:
-		_data[counter] = month["date"]
-		counter = counter + 1
-	
-	return jsonify(_data)
-
+# Gets icon for a file
 @app.route('/icon/<type>')
 def icon_action(type=None):
 	
@@ -475,6 +487,7 @@ def icon_action(type=None):
 	else:
 		return redirect("/static/images/icons/mint/48/unknown.png")
 
+# Bloated action that fetches thumbnail or original file of an object. 
 @app.route('/files/stream/<file_id>/<display_name>/<type>/<size>')
 def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	if not file_id:
