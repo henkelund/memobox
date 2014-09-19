@@ -66,6 +66,7 @@
 		this.publish.share = [];
 		this.publish.shared = [];
 		this.publish.orderid = false;
+		this.publish.config = {};
 		this.photolist = new Object();
 
 	    // Keep track of Infinite Scroll
@@ -117,9 +118,13 @@
 		});	  	
 	  }
 
+	  Infinity.prototype.init = function(username) {
+	  	alert(username);
+	  	this.publish.username = username; 
+	  }
+
 	  Infinity.prototype.selectTab = function(state){
 		this.publish.state = state;
-
 		$('#order-form').bootstrapValidator();		
 	  }
 
@@ -600,7 +605,7 @@
     /**
      * Files controller
      */
-    box.controller('FilesCtrl', function ($scope, $location, FileService, Infinity) {
+    box.controller('FilesCtrl', function ($scope, $http, $location, FileService, Infinity) {
         this.fileService = FileService.loadDevices();
         $scope.service = this.fileService;
         $scope.infinity = new Infinity($scope);
@@ -608,8 +613,12 @@
         $scope.files = [];
         $scope.types = {}
         $scope.state = "list"; 
-        
 		$scope.infinity.loadShared();
+
+		$http({ method: 'GET', url: "/config" }).
+			success(function(data, status, headers, config) {
+		    	$scope.infinity.publish.config = data;
+			});
 
         if(!$scope.datatable)
 	        $scope.datatable = $('#otherfiles').dataTable({ "iDisplayLength": 30, "bLengthChange": false,   "columns": [

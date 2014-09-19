@@ -88,9 +88,9 @@ def index_action():
 			return render_template('login.html', islocal=g.islocalbox)
 
 # Start page route
-@app.route('/username')
-def username_action():
-	return g.username
+@app.route('/config')
+def config_action():
+	return jsonify({'username': g.username, 'islocal': g.islocalbox})
 
 
 # Start page route

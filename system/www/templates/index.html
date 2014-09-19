@@ -20,41 +20,20 @@
 		</style>
 
         <script>var browserStatus = 0;</script>
-    		<script>
-    			var isLocal = true;
-    			var username = "{{ username }}";
-    		</script>
-            <!--[if lte IE 7]>
-    			<style>#browserError { display: block; }</style>
-    			<script>browserStatus = -1;</script>
-    		<![endif]-->
-            <!--[if lte IE 8]>
-            <script src="/static/js/ie/json2.js"></script>
-    		<script>browserStatus = -1;</script>
-    		<style>#browserError { display: block; }</style>
-    		<![endif]-->
-    		<!--[if IE 8]><!--> <meta http-equiv="X-UA-Compatible" content="IE=8" /> <!--<![endif]-->
-    		{% if islocal == false %}
-    		<script>
-    			isLocal = false;
-    		</script>
-    		{% endif %}
+        <!--[if lte IE 7]>
+			<style>#browserError { display: block; }</style>
+			<script>browserStatus = -1;</script>
+		<![endif]-->
+        <!--[if lte IE 8]>
+        <script src="/static/js/ie/json2.js"></script>
+		<script>browserStatus = -1;</script>
+		<style>#browserError { display: block; }</style>
+		<![endif]-->
+		<!--[if IE 8]><!--> <meta http-equiv="X-UA-Compatible" content="IE=8" /> <!--<![endif]-->
     </head>
-    <body>
-        <!-- div class="jumbotron">
-            <div class="container">
-                <h1 class="logo"><a href="#" title="Backupbox.se">Backupbox.se</a><a class="box-info icon-white icon-info-sign" href="/info" target="_blank"></a></h1>
-				<div style="display: none" id="progressContainer" class="progress-container">
-					Safely uploading your data to the cloud<div class="progress" data-placement="bottom" data-trigger="hover" data-html="true" title="This is my conent" >
-					  <div id="cloudbackupprogress" class="progress-bar" role="progressbar" aria-valuenow="" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-					    
-					  </div>
-					</div>
-				</div>
-            </div>
-        </div -->     
+    <body id="ng-app" ng-app="box">
         {% raw %}
-        <div id="ng-app" ng-app="box">
+        <div>
             <div ui-view><span id="browserError" class="browserMessage">This browser is not yet supported by Backupbox. Please use a different web browser.</span></div>
         </div>
         {% endraw %}

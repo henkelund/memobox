@@ -5,7 +5,7 @@
 						<div style="height: 800px" ng-show="share.length + shared.length > 0">
 							<div ng-show="share.length > 0">
 								<h1>Share files with your friends</h1>
-								<p>You have selected these images to be published on your public url. You will be able to see them on the following url <a href="http://{{username}}.backupbox.se">http://{{username}}.backupbox.se</a><br />
+								<p>You have selected these images to be published on your public url. You will be able to see them on the following url <a href="http://{{config["username"]}}.backupbox.se">http://{{config["username"]}}.backupbox.se</a><br />
 								Are you sure you want to publish these files?<br />
 								<br />
 								<button ng-click="infinity.shareImages()" class="btn">Yes, publish them now</button>&nbsp;&nbsp;&nbsp; <button ng-click="infinity.cancelSharing()" class="btn">No, I have changed my mind</button>
