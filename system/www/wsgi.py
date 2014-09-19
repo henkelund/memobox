@@ -67,8 +67,8 @@ def before_request():
 		g.username = DBHelper.loadconfig()["BOXUSER"]
 		
 	g.host = request.host
-	g.islocalbox = False #DBHelper.islocal()
-	g.iscloudbox = True #not g.islocalbox
+	g.islocalbox = DBHelper.islocal()
+	g.iscloudbox = not g.islocalbox
 	
 	if request.path.startswith("/ping") or request.path.startswith("/lastping"):
 		DBHelper.initdb("ping.db")
