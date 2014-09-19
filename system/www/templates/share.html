@@ -5,7 +5,7 @@
 						<div style="height: 800px" ng-show="share.length + shared.length > 0">
 							<div ng-show="share.length > 0">
 								<h1>Share files with your friends</h1>
-								<p>You have selected these images to be published on your public url. You will be able to see them on the following url <a href="http://{{config["username"]}}.backupbox.se">http://{{config["username"]}}.backupbox.se</a><br />
+								<p>You have selected these images to be published on your public url. You will be able to see them on the following url <a href='http://{{config["username"]}}.backupbox.se'>http://{{config["username"]}}.backupbox.se</a><br />
 								Are you sure you want to publish these files?<br />
 								<br />
 								<button ng-click="infinity.shareImages()" class="btn">Yes, publish them now</button>&nbsp;&nbsp;&nbsp; <button ng-click="infinity.cancelSharing()" class="btn">No, I have changed my mind</button>
@@ -20,7 +20,10 @@
 								<hr />
 							</div>	
 							<div ng-show="shared.length > 0">
-								<h1>Publicly shared files</h1>
+								<h1>Shared library</h1>
+								<p>These images has already been published on your public page and can be viewed without a password at: 
+								<a href='http://{{config["username"]}}.backupbox.se'>http://{{config["username"]}}.backupbox.se</a></p>
+								<br />
 								<ul class="thumbnails">
 									<li class="span3" ng-repeat="item in shared">
 										<div id="{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
