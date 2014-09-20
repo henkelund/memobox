@@ -39,9 +39,12 @@ body {
 }
 
 .splashbox {
-	margin-top: 5%; 
-	margin-left: 30%; 
-	margin-right: 30%; 	
+    margin-left: auto; 
+    margin-right: auto;   
+    background-color: #F5F5F5;
+    border: 1px solid #E3E3E3;
+    border-radius: 4px;    
+    padding: 20px;
 }
 
 .notify {
@@ -772,6 +775,18 @@ pre,.well{background:#FFFFFF;}
     	display: none;
     }
 
+    #menuContainer #cssmenu {
+      display: block;
+      height: 40px;
+      margin-top: 0px;
+      margin-bottom: 0px;
+      padding-bottom: 0px;
+    }
+
+    #menuContainer #cssmenu ul li a {
+      padding: 10px;
+    }
+
     .navbar .navbar-inner .brand {
     	display: none;
     }
@@ -824,9 +839,12 @@ pre,.well{background:#FFFFFF;}
 	}
 
 	.splashbox {
-		margin-top: 5%; 
 		margin-left: auto; 
 		margin-right: auto; 	
+    background-color: #F5F5F5;
+    border: 1px solid #E3E3E3;
+    border-radius: 4px;    
+    padding: 5px;
 	}
 	
 	.notify {

@@ -124,7 +124,12 @@
 	  }
 
 	  Infinity.prototype.selectTab = function(state){
-		this.publish.state = state;
+		if(this.publish.state != state) {
+			this.publish.state = state;
+		} else {
+			this.publish.state = null;
+		}
+
 		$('#order-form').bootstrapValidator();		
 	  }
 
