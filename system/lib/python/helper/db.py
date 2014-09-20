@@ -141,8 +141,9 @@ class DBHelper(object):
         if dbfile is "":
             if username is not None:
                 dbfile = "/backups/"+username+"/local.cfg"
-            elif hasattr(g, "username"):
+            elif hasattr(g, "islocalbox") and g.islocalbox is False and hasattr(g, "username"):
                 dbfile = "/backups/"+g.username+"/local.cfg"
+
             else:
                 dbfile = "../data/local.cfg"
 
