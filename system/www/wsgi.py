@@ -67,8 +67,8 @@ def before_request():
 		g.username = DBHelper.loadconfig()["BOXUSER"]
 		
 	g.host = request.host
-	g.islocalbox = DBHelper.islocal()
-	g.iscloudbox = not g.islocalbox
+	g.islocalbox = not DBHelper.islocal()
+	g.iscloudbox = g.islocalbox
 	
 	if request.path.startswith("/ping") or request.path.startswith("/lastping"):
 		DBHelper.initdb("ping.db")
@@ -96,9 +96,9 @@ def index_action():
 		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
 	else:
 		if g.islocalbox or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
-			return render_template('index.html', islocal=g.islocalbox, username=g.username)
+			return render_template('index.html', username=g.username)
 		else:
-			return render_template('login.html', islocal=g.islocalbox)
+			return render_template('public.html', firstname=DBHelper.loadconfig()["FIRSTNAME"], lastname=DBHelper.loadconfig()["LASTNAME"])
 
 # Config route that loads session configuration 
 @app.route('/config')
@@ -113,9 +113,9 @@ def login_action():
 		session["verified_"+AccessHelper.requestuser(request.base_url)] = True
 		return redirect("/")
 	elif request.args.get('password') != DBHelper.loadconfig(AccessHelper.requestuser(request.base_url))["PASSWORD"]:
-		return render_template('login.html', islocal=False, message="Ops! Wrong password.")			
+		return render_template('public.html', message="Ops! Wrong password.", firstname=DBHelper.loadconfig()["FIRSTNAME"], lastname=DBHelper.loadconfig()["LASTNAME"])
 	else:
-		return render_template('login.html', islocal=False)	
+		return render_template('public.html', firstname=DBHelper.loadconfig()["FIRSTNAME"], lastname=DBHelper.loadconfig()["LASTNAME"])
 		
 # Route that loads next page of files
 @app.route('/files')
@@ -248,7 +248,7 @@ def upload_action():
 	try:
 		sftp.mkdir("/backups/"+config["BOXUSER"]+"/public")
 	except IOError as e:
-		print e
+		print str(e)+"--"
 
 	sftp.chdir("/backups/"+config["BOXUSER"]+"/public")
 	for f in files:
@@ -260,6 +260,22 @@ def upload_action():
 		_file.uuid(uid)
 		_file.save()
 
+	#sqlite3 sample.db .dump > sample.bak
+	
+	cmdline = [
+		'sqlite3',
+		'../data/index.db',
+		'.dump',
+		'>',
+		"/tmp/tmp.db"
+	]                   
+		
+	#p = subprocess.call(cmdline, stdout=subprocess.PIPE, shell=True)
+	##out, err = p.communicate()
+	#print out
+	#print err
+	sftp.chdir("/backups/"+config["BOXUSER"])
+	sftp.put("/tmp/tmp.db", "index.db")
 	ssh.close()
 	
 	return "ok"
@@ -490,39 +506,41 @@ def icon_action(type=None):
 # Bloated action that fetches thumbnail or original file of an object. 
 @app.route('/files/stream/<file_id>/<display_name>/<type>/<size>')
 def file_stream_action(file_id=None, display_name=None, type=None, size=None):
-	if not file_id:
-		abort(404)
+	_headers = {}	
+	if type == "profile":
+		filename = os.path.abspath("../data/cache/profile.jpg")
+		mimetype = "image/jpeg"
+	else:
+		if not file_id:
+			abort(404)
 
-	model = FileModel().load(file_id);
+		model = FileModel().load(file_id);
 
-	if not model.id():
-		abort(404)
+		if not model.id():
+			abort(404)
 
+		if type == "thumbnail":
+			thumbnails = DBSelect('file_thumbnail').where("file = "+str(file_id)).where("width = "+size).query()
+			
+			for thumbnail in thumbnails:
+				cache_dir = "../data/cache"	    	
 
-	_headers = {}
-
-	if type == "thumbnail":
-		thumbnails = DBSelect('file_thumbnail').where("file = "+str(file_id)).where("width = "+size).query()
-		
-		for thumbnail in thumbnails:
-			cache_dir = "../data/cache"	    	
-
+				if g.islocalbox == False:
+					config = DBHelper.loadconfig()
+					cache_dir = "/backups/"+config["BOXUSER"]+"/cache"
+				
+				filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
+				mimetype = '%s/%s' % (model.type(), model.subtype())
+				_headers["Content-Disposition"] = "inline"
+		else:
 			if g.islocalbox == False:
 				config = DBHelper.loadconfig()
-				cache_dir = "/backups/"+config["BOXUSER"]+"/cache"
-			
-			filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
+				filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+config["BOXUSER"]), model.name())
+				if type != "nodownload":
+					_headers["Content-Disposition"] = "attachment; filename="+model.name()
+			else:
+				filename = '%s/%s' % (model.abspath(), model.name())
 			mimetype = '%s/%s' % (model.type(), model.subtype())
-			_headers["Content-Disposition"] = "inline"
-	else:
-		if g.islocalbox == False:
-			config = DBHelper.loadconfig()
-			filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+config["BOXUSER"]), model.name())
-			if type != "nodownload":
-				_headers["Content-Disposition"] = "attachment; filename="+model.name()
-		else:
-			filename = '%s/%s' % (model.abspath(), model.name())
-		mimetype = '%s/%s' % (model.type(), model.subtype())
 
 	if not os.path.isfile(filename):
 		abort(404)

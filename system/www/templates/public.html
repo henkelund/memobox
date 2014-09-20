@@ -1,0 +1,90 @@
+<!doctype html>
+<html xmlns:ng="http://angularjs.org">
+    <head>
+        <meta charset='utf-8' />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+        <title>Backupbox.se</title>
+            <link rel="icon" type="image/png" href="/static/images/icons/favicon.ico">        
+        <link href="http://netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet">
+        {% assets output="gen/style.css","css/bootstrap/bootstrap.css","css/bootstrap-dropdown-checkbox.css","css/bootstrapValidator.css","css/bootstrap-dropdown-checkbox.css","css/shCore.css","css/jquery.dataTables.css","css/box.css","css/bootstrap/bootstrap-responsive.css" %}
+            <link href="{{ ASSET_URL }}" rel="stylesheet">
+        {% endassets %}
+            <style>
+        .help-block {
+          color: red;
+        }
+
+        .form-horizontal input + .help-block, .form-horizontal .input-append + .help-block {
+          margin-top: 0px;
+        }
+        </style>
+
+        <script>var browserStatus = 0;</script>
+        <!--[if lte IE 7]>
+            <style>#browserError { display: block; }</style>
+            <script>browserStatus = -1;</script>
+        <![endif]-->
+        <!--[if lte IE 8]>
+        <script src="/static/js/ie/json2.js"></script>
+        <script>browserStatus = -1;</script>
+        <style>#browserError { display: block; }</style>
+        <![endif]-->
+        <!--[if IE 8]><!--> <meta http-equiv="X-UA-Compatible" content="IE=8" /> <!--<![endif]-->
+    </head>
+    <body id="ng-app" ng-app="box">    
+    <div id="menuContainer" ng-controller="FilesCtrl">
+        <div id='cssmenu'>
+            <ul>
+               <li style="margin-left: 10%;" class='active'><a ng-click="infinity.selectTab('login')" href="#"><div class="icon-white icon-home"></div> <span>Login</span></a></li>
+            </ul>
+        </div>  
+
+        <div class="container">
+            <div id="libContainer">
+                <ul class="thumbnails">
+
+                    <form ng-show="state == 'login'" action="/login" method="GET" style="text-align: left;">
+                        <div class="splashbox">
+                            <p>Login to view all your images</p><p style="color: red;" class="message error">{{message}}</p>
+                                <input type="hidden" name="action" value="post" />
+                                <span class="form-description"></span>
+                                <input style="margin-bottom: 0px;" class="text" type="password" name="password" /> <input style="margin-left: 10px" type="submit" value="Login" />
+                            </div>
+                        </div>
+                    </form>
+                    <div ng-show="shared && shared.length > 0" ng-init="infinity.loadShared()">
+                        <p><img style="margin-right: 10px;" width="40" height="40" src="/files/stream/5/null/profile/0" />Welcome to the public photo library of {{firstname}} {{lastname}}. </p>
+                        <ul id="thumbnails" class="thumbnails">
+                            <li class="span3" ng-repeat="item in shared">
+                                {% raw %}
+                                    <div id="photo-{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div ng-show="item.type == 'image'" class="print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
+                                {% endraw %}
+                            </li>
+                        </ul>
+                    </div>
+                </ul>
+            </div>
+        </div>
+        
+        {% assets output="gen/basic.js","js/jquery/jquery.js","js/bootstrap/bootstrap.js" %}
+        <script src="{{ ASSET_URL }}" type="text/javascript"></script>
+        {% endassets %}        
+
+        {% assets output="gen/angular.js","js/angular/angular.js","js/angular/angular-resource.js","js/angular/angular-ui-router.js","js/angular/ng-infinite-scroll.js","js/angular/sinon-chai.js","js/angular/sinon.js","js/angular/angular-sanitize.min.js" %}
+        <script src="{{ ASSET_URL }}" type="text/javascript"></script>
+        {% endassets %}        
+
+        {% assets output="gen/app.js","js/box.js","js/datebar.js","js/bootstrapValidator.js","js/jquery.dataTables.js","js/shCore.js","js/demo.js","js/jquery.isloading.js" %}
+        <script src="{{ ASSET_URL }}" type="text/javascript"></script>
+        {% endassets %}
+
+        <script type="text/javascript">
+        ( function( $ ) {
+            $( document ).ready(function() {
+            $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg-three"></div><div id="bg-four"></div>');
+            });
+        } )( jQuery );
+        </script>   
+
+    </body>
+</html>
