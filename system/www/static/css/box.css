@@ -626,9 +626,15 @@ pre,.well{background:#FFFFFF;}
   font-family: Capriola, Helvetica, sans-serif;
 }
 #cssmenu {
-  width: auto;
+  /*width: auto;
   height: 59px;
-  padding-bottom: 4px;
+  padding-bottom: 4px;*/
+
+  height: 40px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+
 }
 #cssmenu.align-right {
   float: right;
@@ -688,7 +694,8 @@ pre,.well{background:#FFFFFF;}
   z-index: 5;
 }
 #cssmenu ul li a {
-  padding: 24px 30px 20px 30px;
+  /*padding: 24px 30px 20px 30px;*/
+  padding: 10px;
   margin-bottom: 4px;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
