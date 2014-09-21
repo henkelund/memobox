@@ -318,8 +318,6 @@ class BaseModelSet(DBSelect):
 
     def add_filter(self, attribute, value):
         """Add a filter to this set"""
-        print attribute+"--"
-
         if type(attribute) not in (list, tuple):
             attribute = (attribute,)
             value = (value,)
