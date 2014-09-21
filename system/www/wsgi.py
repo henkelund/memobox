@@ -524,6 +524,10 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	_headers = {}	
 	if type == "profile":
 		filename = os.path.abspath("/backups/"+DBHelper.loadconfig()["BOXUSER"]+"/cache/profile.jpg")
+
+		if not os.path.isfile(filename):
+			filename = os.path.abspath("static/images/profile.jpg");
+
 		mimetype = "image/jpeg"
 	else:
 		if not file_id:
