@@ -6,7 +6,7 @@
 	   <li ng-show="FilesCtrl.fileService.devices.length > 0" ng-class="{active: state == 'printouts'}"><a ng-click="infinity.selectTab('printouts')"  href="#"><div class="icon-white icon-print"></div> <span>Printed Photos<span ng-show="cart.length > 0" id="cart">({{cart.length}})</span></span></a></li>
 	   <!-- li class='last'><a href='#'><span>Contact</span></a></li -->
 	</ul>
-	</div>	
+</div>	
 <script type="text/javascript">
 ( function( $ ) {
 $( document ).ready(function() {
@@ -15,10 +15,6 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 } )( jQuery );
 	
 </script>	
-	<!-- ul class="tablist nav nav-tabs nav-justified" role="tablist">
-		<li id="tabBackupbox" ng-class="{active: state == 'list'}"><a ng-click="infinity.selectTab('list')" href="#"><div ng-class="{'icon-home': state == 'list','icon-white icon-home': state != 'list'}"></div> My MemoryBox</a></li>
-		<li id="tabPrintouts" ng-class="{active: state == 'printouts'}"><a ng-click="infinity.selectTab('printouts')"  href="#"><div ng-class="{'icon-print': state == 'printouts','icon-white icon-print': state != 'printouts'}"></div> Physical Prints <span id="cart"></span></a></li>
-	</ul -->
 	<div class="container">
 		<div id="libContainer">
 	  	    <ul class="thumbnails">
@@ -54,6 +50,9 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 								        <li nng-show="types['others'] > 0" class="filters">
 								        	<input id="filter-other" type="checkbox" ng-click="infinity.nextPage(null,'other', true)" /><a href="#" ng-click="infinity.nextPage(null,'other')"> Documents & Files<span id="otherscount"> ({{types["others"]}})</span></a>
 								        </li>
+							        </ul>
+							        <ul style="float: right;" class="nav">
+							        	<li><a href="#" onClick="$('#profile-picture').attr('src', '/files/stream/null/null/profile/0?'+(new Date()).getTime());$('#userModal').modal('show');" class="icon-user"></a></li>
 							        </ul>
 							    </div>
 							  </div>   									
@@ -106,6 +105,41 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 							    <i class="icon-download-alt"></i> Save
 							</a>						
 						</form>
+	                </div>
+	                <div class="modal-footer">
+	                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+
+	    <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="deviceDetailModalLabel" aria-hidden="true">
+	        <div class="modal-dialog">
+	            <div class="modal-content">
+	                <div class="modal-header">
+	                    <button type="button" class="close" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
+	                    <h4 class="modal-title" id="deviceDetailModalLabel">Update profile information</h4>
+	                </div>
+	                <div class="modal-body">
+						<img id="profile-picture" style="margin-right: 10px;" width="80" height="80" src="/files/stream/null/null/profile/0" /><br />
+						<br />
+						<b>Upload profile picture</b><br />
+						<input id="fileupload" type="file" file-model="myFile"/>
+						<br />
+						<b>Firstname</b><br />
+						<input id="firstname" type="text" name="firstname" value="Per-Mattas">
+						<br />
+						<b>Lastname</b><br />
+						<input id="lastname" type="text" name="lastname" value="Nordkvist"><br />
+						<br />
+						<button ng-click="saveProfile()" class="btn"><i class="icon-download-alt"></i> Save</button>
+						
+						<!-- form>
+							<input id="deviceDetailModalInput" type="text" name="label" /><br />
+		                    <a style="z-index: 10000; position: absolute; margin-top: 15px;" class="btn" ng-click="infinity.updateDevice()" id="modalSave" target="_blank" href="">
+							    <i class="icon-download-alt"></i> Save
+							</a>						
+						</form-->
 	                </div>
 	                <div class="modal-footer">
 	                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

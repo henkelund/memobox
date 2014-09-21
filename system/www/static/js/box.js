@@ -33,6 +33,37 @@
         }
      });
 
+	box.directive('fileModel', ['$parse', function ($parse) {
+	    return {
+	        restrict: 'A',
+	        link: function(scope, element, attrs) {
+	            var model = $parse(attrs.fileModel);
+	            var modelSetter = model.assign;
+	            
+	            element.bind('change', function(){
+	                scope.$apply(function(){
+	                    modelSetter(scope, element[0].files[0]);
+	                });
+	            });
+	        }
+	    };
+	}]);
+
+	box.service('fileUpload', ['$http', function ($http) {
+	    this.uploadFileToUrl = function(file, uploadUrl){
+	        var fd = new FormData();
+	        fd.append('file', file);
+	        $http.post(uploadUrl, fd, {
+	            transformRequest: angular.identity,
+	            headers: {'Content-Type': undefined}
+	        })
+	        .success(function(){
+	        })
+	        .error(function(){
+	        });
+	    }
+	}]);
+
 	/* Repeat directive that manages thumbnail repeats */
 	box.directive('thumbnailRepeatDone', function ($timeout) {
         return {
@@ -610,7 +641,7 @@
     /**
      * Files controller
      */
-    box.controller('FilesCtrl', function ($scope, $http, $location, FileService, Infinity) {
+    box.controller('FilesCtrl', function ($scope, $http, $location, FileService, Infinity, fileUpload) {
         this.fileService = FileService.loadDevices();
         $scope.service = this.fileService;
         $scope.infinity = new Infinity($scope);
@@ -623,6 +654,8 @@
 		$http({ method: 'GET', url: "/config" }).
 			success(function(data, status, headers, config) {
 		    	$scope.infinity.publish.config = data;
+		    	$("#firstname").val(data["FIRSTNAME"]);
+		    	$("#lastname").val(data["LASTNAME"]);
 			});
 
         if(!$scope.datatable)
@@ -632,6 +665,27 @@
 			    null,
 			    null
 			  ] });
+
+
+	    $scope.saveProfile = function(){
+	        var file = $scope.myFile;
+	        var uploadUrl = "/profileupload";
+	        fileUpload.uploadFileToUrl(file, uploadUrl);
+			
+			$http({ method: 'GET', url: "/config/save?FIRSTNAME="+$("#firstname").val()+"&LASTNAME="+$("#lastname").val() }).
+				success(function(data, status, headers, config) {
+					
+				}).
+				error(function(data, status, headers, config) {
+					alert("There was a problem saving your profile information");
+				});
+
+			$("#fileupload").wrap('<form>').closest('form').get(0).reset();
+  			$("#fileupload").unwrap();
+			$("#userModal").modal("hide");
+	    };
+
+
 
         $scope.render = function(e) {
 			return $(e).html();

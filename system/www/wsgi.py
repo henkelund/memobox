@@ -9,6 +9,8 @@ import re
 import uuid
 import subprocess
 
+from werkzeug import secure_filename
+
 # API for ordering photo prints
 import pwinty
 
@@ -28,7 +30,7 @@ from ftplib import FTP
 from datetime import date
 from subprocess import call
 from datetime import date
-from flask import Flask, session, render_template, request, jsonify, abort, Response, redirect, g
+from flask import Flask, session, render_template, request, jsonify, abort, Response, redirect, g, url_for
 
 # CSS & JS Compression lib
 from flask.ext.assets import Environment, Bundle
@@ -47,10 +49,14 @@ from model.file import FileModel
 
 ImageHelper('static/images', 'mint')
 
+UPLOAD_FOLDER = '/tmp'
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
 # Initiate app and configure session key
 app = Flask(__name__)
 app.debug = True
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Initiate asset management(CSS & Javascript)
 assets = Environment(app)
@@ -103,7 +109,23 @@ def index_action():
 # Config route that loads session configuration 
 @app.route('/config')
 def config_action():
-	return jsonify({'username': g.username, 'islocal': g.islocalbox})
+	config = DBHelper.loadconfig()
+	config["username"] = g.username
+	config["islocal"] = g.islocalbox
+	return jsonify(config)
+
+# Config route that loads session configuration 
+@app.route('/config/save')
+def config_save_action():
+	config = DBHelper.loadconfig()
+
+	for key in request.args.keys():
+		if key.upper() in config:
+			config[key.upper()] = request.args.get(key)
+
+	DBHelper.saveconfig(config)
+
+	return jsonify(config)
 
 
 # Display login page
@@ -240,43 +262,36 @@ def box_erase_action():
 def upload_action():
 	config = DBHelper.loadconfig()
 	files = request.args.get("files").split(",")
-	ssh = paramiko.SSHClient()
-	ssh.set_missing_host_key_policy( paramiko.AutoAddPolicy() )
-	ssh.connect(config["BOXUSER"]+'.backupbox.se', username='root',  password='copiebox')
-	sftp = paramiko.SFTPClient.from_transport(ssh.get_transport())
+	#ssh = paramiko.SSHClient()
+	#ssh.set_missing_host_key_policy( paramiko.AutoAddPolicy() )
+	#ssh.connect(config["BOXUSER"]+'.backupbox.se', username='root',  password='copiebox')
+	#sftp = paramiko.SFTPClient.from_transport(ssh.get_transport())
 	
-	try:
-		sftp.mkdir("/backups/"+config["BOXUSER"]+"/public")
-	except IOError as e:
-		print str(e)+"--"
+	#try:
+	#	sftp.mkdir("/backups/"+config["BOXUSER"]+"/public")
+	#except IOError as e:
+	#		print str(e)+"--"
 
-	sftp.chdir("/backups/"+config["BOXUSER"]+"/public")
+	#sftp.chdir("/backups/"+config["BOXUSER"]+"/public")
 	for f in files:
 		_file = FileModel().load(f)
 		ff = str(_file.abspath()+"/"+_file.name())
 		uid = str(uuid.uuid1())+'.jpg'
-		sftp.put(ff, uid)
+		shutil.copyfile(ff, "../data/public/"+uid)
+		#sftp.put(ff, uid)
 		_file.published(1)
 		_file.uuid(uid)
 		_file.save()
 
 	#sqlite3 sample.db .dump > sample.bak
 	
-	cmdline = [
-		'sqlite3',
-		'../data/index.db',
-		'.dump',
-		'>',
-		"/tmp/tmp.db"
-	]                   
-		
-	#p = subprocess.call(cmdline, stdout=subprocess.PIPE, shell=True)
+	open("../data/public/_publish", 'a').close()
 	##out, err = p.communicate()
 	#print out
 	#print err
-	sftp.chdir("/backups/"+config["BOXUSER"])
-	sftp.put("/tmp/tmp.db", "index.db")
-	ssh.close()
+	#sftp.chdir("/backups/"+config["BOXUSER"])
+	#sftp.put("/tmp/tmp.db", "index.db")
+	#ssh.close()
 	
 	return "ok"
 
@@ -560,3 +575,41 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 				headers=_headers,
 				direct_passthrough=True,
 				content_type=mimetype)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+@app.route('/profileupload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            _width = 160
+            _height = 160
+
+            cmdline = [
+            	'gm',
+            	'convert',
+            	'-size',
+            	str(_width)+"x"+str(_height),
+            	os.path.join(app.config['UPLOAD_FOLDER'], filename),
+            	'-thumbnail',
+            	str(_width)+"x"+str(_height)+"^",
+            	'-gravity',
+            	'center',
+            	'-extent',
+            	str(_width)+"x"+str(_height),
+            	'+profile',
+            	'"*"',
+            	'-auto-orient',
+            	'/backups/dev/cache/profile.jpg'
+            	]                 	
+            	
+            subprocess.call(cmdline)
+
+            # Write flag to public-dir in order to perform file upload
+            open("../data/public/_publish", 'a').close()
+            return "ok"
