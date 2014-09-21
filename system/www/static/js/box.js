@@ -287,13 +287,8 @@
 				$("#filesDetailModalLabel").attr("file", obj.id);
 				
 				if(result.type == "video") {
-					$("#moddalVideoContainer").html('<video id="modalVideo" style="display: none;" width="100%" height="520" controls="controls" autoplay="autoplay"><source id="modalSource" src="" type="video/mp4" /></video>');
-					
-					if(isLocal) {
-						$("#modalVideo > source").attr("src", result.abspath.replace("/backupbox/data/devices/", "/static/devices/")+"/"+result.name);
-					} else {
-						$("#modalVideo > source").attr("src", result.abspath.replace("/backupbox/data/devices/", "/backups/" + username + "/devices/")+"/"+result.name);
-					}
+					$("#moddalVideoContainer").html('<video id="modalVideo" style="display: none;" width="100%" height="520" controls="controls" autoplay="autoplay"><source id="modalSource" src="" type="video/mp4" /></video>');					
+					$("#modalVideo > source").attr("src", "/files/stream/"+obj.id+"/null/null/0");
 				
 					$("#modalVideo").load();
 					$("#modalVideo").show();
