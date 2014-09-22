@@ -15,13 +15,13 @@ mkfs.ext3 /dev/sda1
 
 # Create mount folder and give ww-data full rights
 mkdir /HDD
+mkdir /HDD/log
+mkdir /HDD/public
+mkdir /HDD/cache
+mkdir /HDD/devices
 chown -R www-data:www-data /HDD
 chmod 777 -R /HDD
 
-# The same with the log folder...
-mkdir /HDD/log
-chown -R www-data:www-data /HDD/log
-chmod 777 -R /HDD/log
 
 # Try mounting the harddrive
 mount /dev/sda1 /HDD

@@ -55,10 +55,16 @@ else
 	fi
 
 	if [ "$1" == "FULLBACKUP" ]; then 
+		# Create snapshot of database
+		db_dump
+
 		# Upload thumbnails
 		rsync -avz --progress $BACKUP_DIR/cache root@$BOXUSER.backupbox.se:/backups/$BOXUSER
 
 		# Upload thumbnails
 		rsync -avz --progress $BACKUP_DIR/devices root@$BOXUSER.backupbox.se:/backups/$BOXUSER
+
+		# Uplaod DB after content is uploaded
+		rsync -avz --progress $BACKUP_DIR/tmp.db root@$BOXUSER.backupbox.se:/backups/$BOXUSER
 	fi	
 fi
