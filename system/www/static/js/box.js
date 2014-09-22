@@ -650,7 +650,7 @@
         $scope.files = [];
         $scope.types = {}
         $scope.state = "list"; 
-		//$scope.infinity.loadShared();
+		$scope.infinity.loadShared();
 
 		$http({ method: 'GET', url: "/config" }).
 			success(function(data, status, headers, config) {
