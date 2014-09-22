@@ -29,10 +29,10 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 						</div>
 
 						<div ng-show="state == 'list'">
-							  <div class="navbar">
-							    <div class="navbar-inner">
-							      <a class="brand" href="#">Backupbox.se</a>
-							        <ul ng-show="FilesCtrl.fileService.devices.length > 0" id="devices" class="nav">
+							<div class="navbar">
+								<div class="navbar-inner">
+								  	<a class="brand" href="#">Backupbox.se</a>
+								    <ul ng-show="FilesCtrl.fileService.devices.length > 0" id="devices" class="nav">
 								         <li class="devices dropdown-checkbox dropdown device-dropdown"><a href="#"><span id="device-dropdown">All devices</span> <span id="deviceCount"></span><b class="caret"></b></a></li>
 								         <li>
 											<ul id="deviceDropdown" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
@@ -41,8 +41,8 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 												</li>
 											</ul>
 								         </li>
-							        </ul>
-							        <ul ng-show="FilesCtrl.fileService.devices.length > 0" id="filters" class="nav">
+								    </ul>
+								    <ul ng-show="FilesCtrl.fileService.devices.length > 0" id="filters" class="nav">
 								        <li class="filters">
 								        	<span nng-show="types['images'] > 0"><input id="filter-image" type="checkbox" checked ng-click="infinity.nextPage(null,'image', true)" /><a href="#" ng-click="infinity.nextPage(null,'image')"> Photos<span id="imagescount"> ({{types["images"]}})</span></a></span>
 								        	<span nng-show="types['videos'] > 0"><input id="filter-video" type="checkbox" checked ng-click="infinity.nextPage(null,'video', true)" /><a href="#" ng-click="infinity.nextPage(null,'video')"> Videos<span id="videoscount"> ({{types["videos"]}})</span></a></span>
@@ -50,15 +50,15 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 								        <li nng-show="types['others'] > 0" class="filters">
 								        	<input id="filter-other" type="checkbox" ng-click="infinity.nextPage(null,'other', true)" /><a href="#" ng-click="infinity.nextPage(null,'other')"> Documents & Files<span id="otherscount"> ({{types["others"]}})</span></a>
 								        </li>
-							        </ul>
-							        <ul style="float: right;" class="nav">
-							        	<li><a href="#" onClick="$('#profile-picture').attr('src', '/files/stream/null/null/profile/0?'+(new Date()).getTime());$('#userModal').modal('show');" class="icon-user"></a></li>
-							        </ul>
-							    </div>
-							  </div>   									
+								    </ul>
+								    <ul style="float: right;" class="nav">
+								    	<li><a href="#" ng-click="infinity.editProfile()" class="icon-user"></a></li>
+								    </ul>
+								</div>
+							</div> 
 							<ul ng-show="items && items.length > 0" id="thumbnails" class="thumbnails">
 								<li class="span3" ng-repeat="item in items" thumbnail-repeat-done="parseDate()">
-									<div id="photo-{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div ng-show="item.type == 'image'" class="print"><img src="/static/images/icons/photoalbum.png" /></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
+									<div id="photo-{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div class="print"><span ng-click="infinity.favourite({{item}}, $event)" class="stars"></span></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
 								</li>
 							</ul>
 							<table ng-show="files && files.length > 0" id="otherfiles" class="display otherfiles" cellspacing="0" width="100%">
@@ -74,10 +74,10 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 								</tbody>
 							</table>
 						</div>
-				  		<div  ng-show="FilesCtrl.fileService.devices.length == 0" class="browserMessage">
+				  		<div style="display: none;" ng-show="FilesCtrl.fileService.devices.length == 0 && FilesCtrl.fileService.init" class="browserMessage">
 				  			Start using your Backupbox by connecting any USB-compatible device the the USB port on your box. 
 				  		</div>
-				  		<div ng-show="missingImages" class="browserMessage">
+				  		<div style="display: none;" ng-show="missingImages" class="browserMessage">
 				  			Ops! No images or videos were found that matches your selection. 
 				  		</div>
 				  </div>
@@ -131,15 +131,15 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 						<br />
 						<b>Lastname</b><br />
 						<input id="lastname" type="text" name="lastname" value="Nordkvist"><br />
+						<div><input id="passclick" onClick="$('#passform').show();$(this).parent().hide()" type="checkbox"> Change password</div>
+						<div id="passform" style="display:none">
+							<b>New password</b><br />
+							<input id="password" type="password" name="password" /><br />
+							<b>Repeat password</b><br />
+							<input id="confirmPassword" type="password" name="confirmPassword" />
+						</div>
 						<br />
 						<button ng-click="saveProfile()" class="btn"><i class="icon-download-alt"></i> Save</button>
-						
-						<!-- form>
-							<input id="deviceDetailModalInput" type="text" name="label" /><br />
-		                    <a style="z-index: 10000; position: absolute; margin-top: 15px;" class="btn" ng-click="infinity.updateDevice()" id="modalSave" target="_blank" href="">
-							    <i class="icon-download-alt"></i> Save
-							</a>						
-						</form-->
 	                </div>
 	                <div class="modal-footer">
 	                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

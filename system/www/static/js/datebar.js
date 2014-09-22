@@ -120,11 +120,6 @@ setTimeout("refreshDate()", 500);*/
 
 var uploadComplete = false; 
 var progressInterval; 
-			
-$( document ).ready(function() {
-	//loadCloudBackupProgress();
-	//progressInterval = setInterval(function(){loadCloudBackupProgress()}, 10000);
-});
 
 function loadCloudBackupProgress() {
 	if(!uploadComplete && browserStatus >= 0) {

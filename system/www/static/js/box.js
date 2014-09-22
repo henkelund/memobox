@@ -20,6 +20,9 @@
 			            var content = linkFn(scope);
 			            element.parent().append(content); 
 
+						/*$(".navbar").sticky();*/
+
+			            $('#deviceDropdown li').unbind();
 						$('#deviceDropdown li').bind("click", function()
 						{
 						  $('#deviceDropdown').delay(500).fadeOut(600);
@@ -71,7 +74,6 @@
             link: function (scope, element, attr) {
                 if (scope.$last === true) {
                     $timeout(function () {
-                        //scope.$emit('thumbnailRepeatDirective');
                         eval(attr.thumbnailRepeatDone);
                     });
                 }
@@ -95,6 +97,7 @@
 		this.publish.shipping = 5;
 		this.publish.cart = [];
 		this.publish.share = [];
+		this.publish.favourite = [];
 		this.publish.shared = [];
 		this.publish.orderid = false;
 		this.publish.config = {};
@@ -162,6 +165,11 @@
 		}
 
 		$('#order-form').bootstrapValidator();		
+	  }
+
+	  Infinity.prototype.editProfile = function(state){
+	  	$('#profile-picture').attr('src', '/files/stream/null/null/profile/0?'+(new Date()).getTime());
+	  	$('#userModal').modal('show');
 	  }
 
 	  Infinity.prototype.cancelSharing = function(state){
@@ -254,6 +262,19 @@
 		
 		// If added from file modal, close it
 		$('#filesDetailModal').modal('hide');
+	  }
+
+	  // Adds a photo to the pringin queue
+	  Infinity.prototype.favourite = function(image, event){		
+		if(!$.grep(this.publish.favourite, function(e){ return e.id == image.id; }).length == 1) {
+			$(event.target).removeAttr('style');
+			$(event.target).addClass('active');
+			this.publish.favourite.push(image);
+		} else {
+			this.publish.favourite = $.grep(this.publish.favourite, function(e){ return e.id == image.id; }, true)
+			$(event.target).removeClass('active');
+			$(event.target).css('background-image', 'url(/static/images/star-off.png)');
+		}		
 	  }
 
 	  // Adds a photo to the pringin queue
@@ -507,24 +528,6 @@
      * Run the box app
      */
     box.run(function ($window) {
-        ng.element($window).bind('scroll', function () {
-        	// If the appliaction is running on a desktop computer, add fancy paralax scroll to images
-            if (false && window.matchMedia && (window.matchMedia("(min-width: 1025px)").matches)) {
-	            var winHeight = $($window).height();
-	            $('.preview.image').each(function () {
-	                var rect = this.getBoundingClientRect(),
-	                    el = $(this),
-	                    pos,
-	                    percent;
-	                if (rect.bottom >= 0 && rect.top <= winHeight) {
-	                    pos = rect.top / (winHeight - el.height());
-	                    percent = Math.round(Math.min(100, Math.max(0,
-	                                pos * 100)));
-	                    el.css('backgroundPosition', '50% ' + percent + '%');
-	                }
-	            });
-			}
-        });
     });
 
     /**
@@ -539,6 +542,7 @@
             this.detailsResource = $resource('/files/details');
             this.deviceResource = $resource('/devices');
             this.devices = [];
+            this.init = false;
             this.details = [];
         };
 
@@ -555,7 +559,9 @@
              * Successful devices load callback
              */
             loadDevicesSuccess: function (data) {
+                $("#navbar-container").sticky({topSpacing:5});
                 this.devices = data.devices;
+                this.init = true;
 
 
 				$(".navbar").show();
@@ -644,7 +650,7 @@
         $scope.files = [];
         $scope.types = {}
         $scope.state = "list"; 
-		$scope.infinity.loadShared();
+		//$scope.infinity.loadShared();
 
 		$http({ method: 'GET', url: "/config" }).
 			success(function(data, status, headers, config) {
@@ -661,31 +667,36 @@
 			    null
 			  ] });
 
-
+	    /* Method to save user profile */ 
 	    $scope.saveProfile = function(){
+	        if($("#password").val() != "" && $("#password").val() != $("#confirmPassword").val()) {
+	        	alert("Passwords do not match");
+	        	return;
+	        }
+
+	        var _pass = "";
+
+	        if($("#password").val()) {
+	        	_pass = "&PASSWORD="+$("#password").val(); 
+	        }
+
 	        var file = $scope.myFile;
 	        var uploadUrl = "/profileupload";
 	        fileUpload.uploadFileToUrl(file, uploadUrl);
 			
-			$http({ method: 'GET', url: "/config/save?FIRSTNAME="+$("#firstname").val()+"&LASTNAME="+$("#lastname").val() }).
+			$http({ method: 'GET', url: "/config/save?FIRSTNAME="+$("#firstname").val()+"&LASTNAME="+$("#lastname").val()+_pass }).
 				success(function(data, status, headers, config) {
-					
+					$("#fileupload").wrap('<form>').closest('form').get(0).reset();
+		  			$("#fileupload").unwrap();
+					$("#userModal").modal("hide");					
 				}).
 				error(function(data, status, headers, config) {
 					alert("There was a problem saving your profile information");
 				});
-
-			$("#fileupload").wrap('<form>').closest('form').get(0).reset();
-  			$("#fileupload").unwrap();
-			$("#userModal").modal("hide");
 	    };
 
 
-
-        $scope.render = function(e) {
-			return $(e).html();
-        }
-
+        /* This method runs everytime devices has been loaded. To force UI update.  */
 		$scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent, device) {
 			$scope.types = { 'videos' : 0, 'images' : 0, 'others' : 0 };
 
