@@ -18,12 +18,6 @@ EOF
 
 }
 
-# Function uploads all content of public folder
-push_public() {
-	echo "Rsync public folder"
-	rsync -avz --progress --exclude index.db $BACKUP_DIR/public root@$BOXUSER.backupbox.se:/backups/$BOXUSER
-}
-
 
 if [[ $CLOUDBACKUP != "true" ]]; then
 	echo "Cloud backup is disabled for this box. Exiting."
@@ -60,16 +54,11 @@ else
 		echo "Nothing to do. Exiting..."
 	fi
 
-	if [ "$1" == "PUBLISH" ]; then 
-		push_public
-	fi
-	
-	
-	# Once thumbnails are uploaded, activate database
-	#echo "Copy DB and fix permissions"
-	#ssh $BOXUSER.backupbox.se "cp /backups/$BOXUSER/tmp.db /backups/$BOXUSER/index.db && chmod 777 /backups/$BOXUSER/index.db && chown www-data:www-data /backups/$BOXUSER/index.db"
-	
-	# Last, backup all original files
-	#echo "Backup content"
-	#rsync -avz -e ssh --progress --exclude index.db /HDD/devices root@$BOXUSER.backupbox.se:/backups/$BOXUSER	
+	if [ "$1" == "FULLBACKUP" ]; then 
+		# Upload thumbnails
+		rsync -avz --progress $BACKUP_DIR/cache root@$BOXUSER.backupbox.se:/backups/$BOXUSER
+
+		# Upload thumbnails
+		rsync -avz --progress $BACKUP_DIR/devices root@$BOXUSER.backupbox.se:/backups/$BOXUSER
+	fi	
 fi

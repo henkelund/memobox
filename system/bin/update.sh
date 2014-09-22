@@ -24,6 +24,5 @@ echo "Auto update from channel: $CHANNEL"
 cd $ROOT_DIR
 git fetch --all
 git reset --hard origin/$CHANNEL
-git pull
 /etc/init.d/uwsgi restart
 cd $BIN_DIR
