@@ -42,7 +42,7 @@ else
 		db_dump
 
 		# Upload db and local.cfg
-		rsync -avz --progress $BACKUP_DIR/tmp.db root@$BOXUSER.backupbox.se:/backups/$BOXUSER
+		rsync -avz --progress $BACKUP_DIR/tmp.db root@$BOXUSER.backupbox.se:/backups/$BOXUSER/index.db
 		rsync -avz --progress $BACKUP_DIR/local.cfg root@$BOXUSER.backupbox.se:/backups/$BOXUSER
 
 		# Upload thumbnails
@@ -65,6 +65,6 @@ else
 		rsync -avz --progress $BACKUP_DIR/devices root@$BOXUSER.backupbox.se:/backups/$BOXUSER
 
 		# Uplaod DB after content is uploaded
-		rsync -avz --progress $BACKUP_DIR/tmp.db root@$BOXUSER.backupbox.se:/backups/$BOXUSER
+		rsync -avz --progress $BACKUP_DIR/tmp.db root@$BOXUSER.backupbox.se:/backups/$BOXUSER/index.db
 	fi	
 fi
