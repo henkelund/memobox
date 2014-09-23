@@ -36,11 +36,12 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 								         <li class="devices dropdown-checkbox dropdown device-dropdown"><a href="#"><span id="device-dropdown">All devices</span> <span id="deviceCount"></span><b class="caret"></b></a></li>
 								         <li>
 											<ul id="deviceDropdown" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
-												<li ng-repeat="device in FilesCtrl.fileService.devices" id="{{device.id}}" class="device" device-repeat-directive>
-													<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span><!-- div class="unset-filter">x</div --></a>
+												<li ng-repeat="device in FilesCtrl.fileService.devices" id="{{device.id}}" type="{{device.type}}" class="device" device-repeat-directive>
+													<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span></a>
 												</li>
 											</ul>
 								         </li>
+								         <li ng-show="infinity.device > 0"><a style="padding-left: 0px; padding-right: 0px;" ng-click="infinity.editDevice()" href="#">(edit)</a></li>
 								    </ul>
 								    <ul ng-show="FilesCtrl.fileService.devices.length > 0" id="filters" class="nav">
 								        <li class="filters">
@@ -100,7 +101,27 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 	                </div>
 	                <div class="modal-body">
 						<form>
+							<b>Name</b><br />
 							<input id="deviceDetailModalInput" type="text" name="label" /><br />
+		                    <br />
+							<b>Type</b><br />
+							<select id="device-type">
+								<option value="1">Mobile Phone</option>
+								<option value="2">Tablet</option>
+								<option value="3">USB Drive</option>
+								<option value="4">External Harddrive</option>
+								<option value="5">Digital Camera</option>
+								<option value="6">Camcorder</option>
+							</select><br />
+		                    <br />
+		                    <div><input id="dev_passclick" onClick="$('#dev_passform').show();$(this).parent().hide()" type="checkbox"> Password protected</div>
+							<div id="dev_passform" style="display:none">
+								<b>Password</b><br />
+								<input id="dev_password" type="password" name="password" /><br />
+								<b>Repeat password</b><br />
+								<input id="dev_confirmPassword" type="password" name="confirmPassword" />
+							</div>
+							<br />
 		                    <a style="z-index: 10000; position: absolute; margin-top: 15px;" class="btn" ng-click="infinity.updateDevice()" id="modalSave" target="_blank" href="">
 							    <i class="icon-download-alt"></i> Save
 							</a>						
@@ -118,7 +139,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 	            <div class="modal-content">
 	                <div class="modal-header">
 	                    <button type="button" class="close" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
-	                    <h4 class="modal-title" id="deviceDetailModalLabel">Update profile information</h4>
+	                    <h4 class="modal-title" id="userModal">Update profile information</h4>
 	                </div>
 	                <div class="modal-body">
 						<img id="profile-picture" style="margin-right: 10px;" width="80" height="80" src="/files/stream/null/null/profile/0" /><br />

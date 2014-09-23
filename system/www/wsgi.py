@@ -337,6 +337,7 @@ def file_ping_action():
 def file_devicedetail_action():
 	device = DeviceModel().load(str(request.args.get('id')))
 	device.add_data({"product_name" : str(request.args.get('product_name'))})
+	device.add_data({"type" : str(request.args.get('type'))})
 	device.save()
 	return "ok"
 
@@ -381,6 +382,7 @@ def file_devices_action():
 			'id': device.id(),
 			'product_name': device.product_name(),
 			'state': device.state(),
+			'type': device.type(),
 			'model': device.model(),
 			'product_id': device.product_id(),
 			'last_backup': DeviceModel().last_backup(str(device.id())),

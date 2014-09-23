@@ -115,15 +115,16 @@
 	};
 
 	  // Todo, move this from infinity to device 
-	  Infinity.prototype.editDevice = function(device) {
-		  $('#deviceDetailModal').attr("device", device);					  
+	  Infinity.prototype.editDevice = function() {
+		  $('#deviceDetailModal').attr("device", this.device);					  
 		  $.ajax({
-			    url : "/device/detail?id="+device,
+			    url : "/device/detail?id="+this.device,
 				async: false,
 				context: this,
 			    success : function(result){
 			        $("#deviceDetailModalInput").attr("value", result.product_name);
-			        //$('#deviceDetailModal').modal('show');				
+			        $("#device-type").val(result.type);
+			        $('#deviceDetailModal').modal('show');				
 			        this.device_info = result; 
 			        $("#device-message").remove();
 			        if(this.device != -1) {
@@ -134,7 +135,7 @@
 							last_backup_string = "Last backup of this device was: "+ (last_backup.getYear()+1900)+"-"+ ('0' + last_backup.getMonth()).slice(-2)+"-"+('0' + last_backup.getDate()).slice(-2);
 						}
 
-			        	$("#infiniteContainer").before("<div id='device-message' style='background-color: #DDD; padding: 5px; padding-left: 15px; margin-bottom: 10px;  '><div style='float: left;'><b>"+this.device_info.product_name+"</b> (<a href='#' onClick=\"$('#deviceDetailModal').modal('show')\">Change name</a>) – "+this.device_info.image_count+" images and "+this.device_info.video_count+" videos. "+last_backup_string+"</div><div style='float: right;'></div><br style='clear:both;' /></div>");
+			        	//$("#infiniteContainer").before("<div id='device-message' style='background-color: #DDD; padding: 5px; padding-left: 15px; margin-bottom: 10px;  '><div style='float: left;'><b>"+this.device_info.product_name+"</b> (<a href='#' onClick=\"$('#deviceDetailModal').modal('show')\">Change name</a>) – "+this.device_info.image_count+" images and "+this.device_info.video_count+" videos. "+last_backup_string+"</div><div style='float: right;'></div><br style='clear:both;' /></div>");
 			        }
 			    }
 		  });	  	
@@ -143,7 +144,7 @@
 	  // Todo, move this from infinity to device 
 	  Infinity.prototype.updateDevice = function() {
 		$.ajax({
-		    url : "/device/update?id="+$('#deviceDetailModal').attr("device")+"&product_name="+$("#deviceDetailModalInput").val(),
+		    url : "/device/update?id="+$('#deviceDetailModal').attr("device")+"&product_name="+$("#deviceDetailModalInput").val()+"&type="+$("#device-type").val(),
 			async: false,
 			context: this,
 		    success : function(result){
@@ -402,18 +403,27 @@
 		if((_device) || _type) {
 			changedState = true;
 			this.lastCount = -1; 
+			var _icons = [];
+			_icons[1] = "icon-mobile-phone";
+			_icons[2] = "icon-tablet";
+			_icons[3] = "icon-hdd";
+			_icons[4] = "icon-hdd";
+			_icons[5] = "icon-camera";
+			_icons[6] = "icon-facetime-video";
 
 			if(_device && _device != -1 && this.device != _device) {
-				$("#device-dropdown").text($("#"+_device + " span").text());
+				$("#device-dropdown").html($("#"+_device + " span").text());
 				$(".device").removeClass("active");
 				$("#"+_device).addClass("active");
+				$("#deviceCount").hide();
 				this.device = _device; 
 			} else 
 			if(_device) {
 				this.device = -1; 
 				$(".device").removeClass("active");
 				$("#allDevices").addClass("active");
-				$("#device-dropdown").text("All devices");
+				$("#device-dropdown").html('All devices');
+				$("#deviceCount").show();
 				changedState = true; 
 				//$(".dropdown-menu").hide();
 			}
