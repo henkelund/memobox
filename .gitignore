@@ -3,5 +3,5 @@
 /data
 /data/
 /system/www/static/images/thumbnails
-/system/www/static/gen
-/system/www/static/.webassets-cache
+/system/www/static/gen/*
+/system/www/static/.webassets-cache/*
