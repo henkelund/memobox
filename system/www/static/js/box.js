@@ -412,7 +412,7 @@
 			_icons[6] = "icon-facetime-video";
 
 			if(_device && _device != -1 && this.device != _device) {
-				$("#device-dropdown").html($("#"+_device + " span").text());
+				$("#device-dropdown").text($("#"+_device + " span").text());
 				$(".device").removeClass("active");
 				$("#"+_device).addClass("active");
 				$("#deviceCount").hide();
@@ -422,7 +422,7 @@
 				this.device = -1; 
 				$(".device").removeClass("active");
 				$("#allDevices").addClass("active");
-				$("#device-dropdown").html('All devices');
+				$("#device-dropdown").text('All devices');
 				$("#deviceCount").show();
 				changedState = true; 
 				//$(".dropdown-menu").hide();

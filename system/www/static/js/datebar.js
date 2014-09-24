@@ -120,6 +120,11 @@ setTimeout("refreshDate()", 500);*/
 
 var uploadComplete = false; 
 var progressInterval; 
+			
+$( document ).ready(function() {
+	//loadCloudBackupProgress();
+	//progressInterval = setInterval(function(){loadCloudBackupProgress()}, 10000);
+});
 
 function loadCloudBackupProgress() {
 	if(!uploadComplete && browserStatus >= 0) {
@@ -192,7 +197,7 @@ function parseDate() {
 		}
 
 		if(time.getTime() < lastTimstamp && lastMonth != viewMonth) {
-			$( this ).append('<div class="dateHolder" style="left: '+(firstLeft - $( this ).position().left - 90)+'px; top: -5px; "><div class="month">'+viewMonth + '</div><div class="year">' + viewYear +'</div></div>');
+			$( this ).append('<div class="dateHolder" style="position: absolute; left: '+(firstLeft-90) +'px; top: '+($( this ).position().top-5)+'px; "><div class="month">'+viewMonth + '</div><div class="year">' + viewYear +'</div></div>');
 			lastTimstamp = time.getTime(); 
 			lastMonth = viewMonth;
 			lastYear = viewYear;

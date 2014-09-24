@@ -35,13 +35,13 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 								    <ul ng-show="FilesCtrl.fileService.devices.length > 0" id="devices" class="nav">
 								         <li class="devices dropdown-checkbox dropdown device-dropdown"><a href="#"><span id="device-dropdown">All devices</span> <span id="deviceCount"></span><b class="caret"></b></a></li>
 								         <li>
-											<ul id="deviceDropdown" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
-												<li ng-repeat="device in FilesCtrl.fileService.devices" id="{{device.id}}" type="{{device.type}}" class="device" device-repeat-directive>
+											<ul id="deviceDropdown" class="dropdown-menu" role="menu">
+												<li ng-repeat="device in FilesCtrl.fileService.devices" id="{{device.id}}" class="device" device-repeat-directive>
 													<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span></a>
 												</li>
 											</ul>
 								         </li>
-								         <li ng-show="infinity.device > 0"><a style="padding-left: 0px; padding-right: 0px;" ng-click="infinity.editDevice()" href="#">(edit)</a></li>
+								         <li id="edit-device" ng-show="infinity.device > 0"><a style="padding-left: 0px; padding-right: 0px;" ng-click="infinity.editDevice()" href="#">(edit)</a></li>
 								    </ul>
 								    <ul ng-show="FilesCtrl.fileService.devices.length > 0" id="filters" class="nav">
 								        <li class="filters">
@@ -59,7 +59,16 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 							</div> 
 							<ul ng-show="items && items.length > 0" id="thumbnails" class="thumbnails">
 								<li class="span3" ng-repeat="item in items" thumbnail-repeat-done="parseDate()">
-									<div id="photo-{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div class="print"><span ng-click="infinity.favourite({{item}}, $event)" class="stars"></span></div><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
+									<div id="photo-{{item.id}}" class="thumbnail">
+										<div style="cursor: pointer;" class="preview">
+											<div class="print">
+												<span ng-click="infinity.favourite({{item}}, $event)" class="stars"></span>
+											</div>
+											<div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')">
+												<div class="{{item.type}}"></div>
+											</div>
+										</div>
+									</div>
 								</li>
 							</ul>
 							<table ng-show="files && files.length > 0" id="otherfiles" class="display otherfiles" cellspacing="0" width="100%">
@@ -114,7 +123,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 								<option value="6">Camcorder</option>
 							</select><br />
 		                    <br />
-		                    <div><input id="dev_passclick" onClick="$('#dev_passform').show();$(this).parent().hide()" type="checkbox"> Password protected</div>
+		                    <div><input id="dev_passclick" onClick="$('#dev_passform').show();$(this).parent().hide()" type="checkbox"> <a style="padding-top: 3px;" onClick="$('#dev_passform').show();$(this).parent().hide()"  href="#">Protect with password</a></div>
 							<div id="dev_passform" style="display:none">
 								<b>Password</b><br />
 								<input id="dev_password" type="password" name="password" /><br />

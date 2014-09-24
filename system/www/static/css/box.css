@@ -819,6 +819,10 @@ pre,.well{background:#FFFFFF;}
 }
 
 @media (max-width: 767px) {	
+    #edit-device {
+      display: none;
+    }
+
     .print {
       display: none;
     }  
@@ -884,9 +888,10 @@ pre,.well{background:#FFFFFF;}
   	
   	.modal-body {
   		padding: 0px; 
+      min-height: 300px;      
   	}
   	
-    #userModal .modal-body {
+    #userModal .modal-body, #deviceDetailModal .modal-body {
       padding: 20px;
     }
 
