@@ -888,7 +888,7 @@ pre,.well{background:#FFFFFF;}
   	
   	.modal-body {
   		padding: 0px; 
-      min-height: 300px;      
+      min-height: 300px;
   	}
   	
     #userModal .modal-body, #deviceDetailModal .modal-body {

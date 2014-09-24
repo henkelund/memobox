@@ -17,13 +17,13 @@
 
                 </div>
                 <div class="modal-footer">
-					 <a class="btn btn-default" onClick="hideFile()" href="">
+					 <a ng-show="config['islocal'] == 'true'" class="btn btn-default" onClick="hideFile()" href="">
 					    <span class="icon-remove"></span> Delete
 					</a>
 					 <a id="print-button" class="btn btn-default" ng-click="infinity.addToCart()" href="">
-					    <span class="icon-remove"></span> <span id="print-label">Order photocopy</span>
+					    <span class="icon-remove"></span> <span id="print-label">{{config['islocal']}} - Order photocopy</span>
 					</a>
-					 <a id="share-button" class="btn btn-default" ng-click="infinity.share()" href="">
+					 <a ng-show="config['islocal'] == 'true'" id="share-button" class="btn btn-default" ng-click="infinity.share()" href="">
 					    <span class="icon-share"></span> <span id="print-label">Share</span>
 					</a>
 					<!-- button type="button" class="btn btn-default" data-dismiss="modal">Close</button -->
