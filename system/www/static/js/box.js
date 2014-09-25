@@ -115,16 +115,29 @@
 	};
 
 	  // Todo, move this from infinity to device 
-	  Infinity.prototype.editDevice = function() {
-		  $('#deviceDetailModal').attr("device", this.device);					  
+	  Infinity.prototype.editDevice = function(device, new_device) {
+	  	  if(device != null) {
+	  	  	this.device = device; 
+	  	  }
+
+		  $('#deviceModal').attr("device", this.device);	
+
 		  $.ajax({
 			    url : "/device/detail?id="+this.device,
 				async: false,
 				context: this,
 			    success : function(result){
-			        $("#deviceDetailModalInput").attr("value", result.product_name);
+			    	if(new_device) {
+			    		$("#deviceModalLabel").text("Set up this new device");
+			    		$("#new-desc").show();
+			    	} else {
+						$("#deviceModalLabel").text("Edit device information");
+			    		$("#new-desc").show();
+			    	}
+
+			        $("#deviceModalInput").attr("value", result.product_name);
 			        $("#device-type").val(result.type);
-			        $('#deviceDetailModal').modal('show');				
+			        $('#deviceModal').modal('show');				
 			        this.device_info = result; 
 			        $("#device-message").remove();
 			        if(this.device != -1) {
@@ -147,25 +160,30 @@
 
 	  // Todo, move this from infinity to device 
 	  Infinity.prototype.updateDevice = function() {
-		$.ajax({
-		    url : "/device/update?id="+$('#deviceDetailModal').attr("device")+"&product_name="+$("#deviceDetailModalInput").val()+"&type="+$("#device-type").val(),
-			async: false,
-			context: this,
-		    success : function(result){
-		        window.location = "/"; 
-		    },
-		    error: function (xhr, ajaxOptions, thrownError) {
-		        alert(xhr.status);
-		        alert(thrownError);
-			}
-		}); 	
+	  	if($("#dev_password").val() != "" && $("#dev_password").val() != $("#dev_confirmPassword").val()) {
+	  		alert("Sorry, passwords are not matching. Please check your spelling.");
+	  		return false;
+	  	} else {
+			$.ajax({
+			    url : "/device/update?id="+$('#deviceModal').attr("device")+"&product_name="+$("#deviceModalInput").val()+"&type="+$("#device-type").val()+"&password="+$("#dev_password").val(),
+				async: false,
+				context: this,
+			    success : function(result){
+			        window.location = "/"; 
+			    },
+			    error: function (xhr, ajaxOptions, thrownError) {
+			        alert(xhr.status);
+			        alert(thrownError);
+				}
+			}); 	  		
+	  	}
 	  }
 
 	  // Todo, move this from infinity to device 
 	  Infinity.prototype.eraseDevice = function() {
 	  	if(confirm("This will completely remove this device, are you sure you want to do this?")) {
 			$.ajax({
-			    url : "/device/erase?id="+$('#deviceDetailModal').attr("device"),
+			    url : "/device/erase?id="+$('#deviceModal').attr("device"),
 				async: false,
 				context: this,
 			    success : function(result){
@@ -182,7 +200,6 @@
 	  }
 
 	  Infinity.prototype.init = function(username) {
-	  	alert(username);
 	  	this.publish.username = username; 
 	  }
 
@@ -601,7 +618,6 @@
                 this.devices = data.devices;
                 this.init = true;
 
-
 				$(".navbar").show();
 				$("#deviceCount").html("("+this.devices.length+")");
 				$(".device-dropdown").click(function() {
@@ -749,6 +765,11 @@
 				});
 			} else {
 				$.each($scope.service.devices, function( index, value ) {
+				  //alert(value.new);						
+				  if(value.new == 1) {
+				  	$scope.infinity.editDevice(value.id, 1);
+				  }
+
 				  for(var key in $scope.types) {
 				  	$scope.types[key] += value[key];
 					$scope.$apply();

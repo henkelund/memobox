@@ -337,7 +337,9 @@ def ping_action():
 def device_update_action():
 	device = DeviceModel().load(str(request.args.get('id')))
 	device.add_data({"product_name" : str(request.args.get('product_name'))})
+	device.add_data({"password" : str(request.args.get('password'))})
 	device.add_data({"type" : str(request.args.get('type'))})
+	device.add_data({"new" : 0})
 	device.save()
 	return "ok"
 
@@ -401,6 +403,8 @@ def file_devices_action():
 		
 		devices.insert(0, {
 			'id': device.id(),
+			'new': device.new(),
+			'password': device.password(),
 			'product_name': device.product_name(),
 			'state': device.state(),
 			'type': device.type(),

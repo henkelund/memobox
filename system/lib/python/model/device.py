@@ -17,7 +17,9 @@ class DeviceModel(BaseModel):
         'vendor_name': 'vendor',
         'manufacturer': 'manufacturer',
         'last_backup': 'last_backup',
-        'state': 'state'
+        'state': 'state',
+        'new': 'new',
+        'password': 'password'
     }
 
     def get_transfer_dirs(self):
@@ -91,9 +93,11 @@ class DeviceModel(BaseModel):
                             "vendor_id"    TEXT NOT NULL DEFAULT '',
                             "vendor_name"  TEXT NOT NULL DEFAULT '',
                             "manufacturer" TEXT NOT NULL DEFAULT '',
+                            "password"     TEXT DEFAULT NULL,
                             "last_backup" DATETIME,
                             "state" INT NOT NULL DEFAULT 3, 
-                            "type" INT NOT NULL DEFAULT 1
+                            "type" INT NOT NULL DEFAULT 1,
+                            "new" INT NOT NULL DEFAULT 0
                         )
                     """ % table),
                 DBHelper().query(

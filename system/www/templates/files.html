@@ -1,3 +1,45 @@
+                 <div class="modal fade" id="deviceModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" id="deviceModalLabel">Edit device information</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <p id="new-desc" style="display:none;">This is the first time you are using this device. In order to use it, please choose a name and decide wether or not to password protect this device. If the device is password protected. Files, images and videos will only be shown if you provide a password.</p>
+                                    <b>Name</b><br />
+                                    <input id="deviceModalInput" type="text" name="label" /><br />
+                                    <br />
+                                    <b>Type</b><br />
+                                    <select id="device-type">
+                                        <option value="1">Mobile Phone</option>
+                                        <option value="2">Tablet</option>
+                                        <option value="3">USB Drive</option>
+                                        <option value="4">External Harddrive</option>
+                                        <option value="5">Digital Camera</option>
+                                        <option value="6">Camcorder</option>
+                                    </select><br />
+                                    <br />
+                                    <div><input id="dev_passclick" onClick="$('#dev_passform').show();$(this).parent().hide()" type="checkbox"> <a style="padding-top: 3px;" onClick="$('#dev_passform').show();$(this).parent().hide()"  href="#">Protect with password</a></div>
+                                    <div id="dev_passform" style="display:none">
+                                        <b>Password</b><br />
+                                        <input id="dev_password" type="password" name="password" /><br />
+                                        <b>Repeat password</b><br />
+                                        <input id="dev_confirmPassword" type="password" name="confirmPassword" />
+                                    </div>
+                                    <br />
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                    <button style="float:left;" type="button" onClick="return false;" ng-click="infinity.eraseDevice()" class="btn btn-default"><i class="icon-trash"></i> Delete entire device</button>
+                                    <button style="float:left;" type="button" ng-click="infinity.updateDevice()" class="btn btn-default"><i class="icon-download-alt"></i> Save</button>
+                                    <button style="float: right;" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 <div>
 	<div id='cssmenu' style="margin-top: 10px; margin-bottom: 5px;">
 	<ul>
@@ -101,48 +143,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 	    <div class="modal fade" id="filesDetailModal" tabindex="-1" role="dialog" aria-labelledby="filesDetailModalLabel" aria-hidden="true" ng-include src=" '/templates/files.detail.html' ">
 	    </div>
 
-	    <div class="modal fade" id="deviceDetailModal" tabindex="-1" role="dialog" aria-labelledby="deviceDetailModalLabel" aria-hidden="true">
-	        <div class="modal-dialog">
-	            <div class="modal-content">
-	                <div class="modal-header">
-	                    <button type="button" class="close" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
-	                    <h4 class="modal-title" id="deviceDetailModalLabel">Edit device information</h4>
-	                </div>
-	                <div class="modal-body">
-						<form>
-							<b>Name</b><br />
-							<input id="deviceDetailModalInput" type="text" name="label" /><br />
-		                    <br />
-							<b>Type</b><br />
-							<select id="device-type">
-								<option value="1">Mobile Phone</option>
-								<option value="2">Tablet</option>
-								<option value="3">USB Drive</option>
-								<option value="4">External Harddrive</option>
-								<option value="5">Digital Camera</option>
-								<option value="6">Camcorder</option>
-							</select><br />
-		                    <br />
-		                    <div><input id="dev_passclick" onClick="$('#dev_passform').show();$(this).parent().hide()" type="checkbox"> <a style="padding-top: 3px;" onClick="$('#dev_passform').show();$(this).parent().hide()"  href="#">Protect with password</a></div>
-							<div id="dev_passform" style="display:none">
-								<b>Password</b><br />
-								<input id="dev_password" type="password" name="password" /><br />
-								<b>Repeat password</b><br />
-								<input id="dev_confirmPassword" type="password" name="confirmPassword" />
-							</div>
-							<br />
-						</form>
-	                </div>
-	                <div class="modal-footer">
-	                    	<button style="float:left;" type="button" onClick="return false;" ng-click="infinity.eraseDevice()" class="btn btn-default"><i class="icon-trash"></i> Delete entire device</button>
-		                    <button style="float:left;" type="button" ng-click="infinity.updateDevice()" class="btn btn-default" data-dismiss="modal"><i class="icon-download-alt"></i> Save</button>
-							<button style="float: right;" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	                </div>
-	            </div>
-	        </div>
-	    </div>
-
-	    <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="deviceDetailModalLabel" aria-hidden="true">
+	    <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-hidden="true">
 	        <div class="modal-dialog">
 	            <div class="modal-content">
 	                <div class="modal-header">

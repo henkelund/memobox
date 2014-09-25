@@ -34,10 +34,11 @@
     </head>
     <body id="ng-app" ng-app="box">
         {% raw %}
-        <div>
-            <div ui-view><span id="browserError" class="browserMessage">This browser is not yet supported by Backupbox. Please use a different web browser.</span></div>
-        </div>
+            <div ui-view>
+                <span id="browserError" class="browserMessage">This browser is not yet supported by Backupbox. Please use a different web browser.</span>
+            </div>            
         {% endraw %}
+        </div>
         
         <!-- Bootstrap Assests -->
         {% assets output="gen/basic.js","js/jquery/jquery.js","js/bootstrap/bootstrap.js" %}
@@ -56,4 +57,3 @@
 
     </body>
 </html>
-
