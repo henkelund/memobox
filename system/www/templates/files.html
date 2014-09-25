@@ -134,7 +134,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 						</form>
 	                </div>
 	                <div class="modal-footer">
-	                    	<button style="float:left;" type="button" class="btn btn-default" data-dismiss="modal"><i class="icon-trash"></i> Delete entire device</button>
+	                    	<button style="float:left;" type="button" onClick="return false;" ng-click="infinity.eraseDevice()" class="btn btn-default"><i class="icon-trash"></i> Delete entire device</button>
 		                    <button style="float:left;" type="button" ng-click="infinity.updateDevice()" class="btn btn-default" data-dismiss="modal"><i class="icon-download-alt"></i> Save</button>
 							<button style="float: right;" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 	                </div>

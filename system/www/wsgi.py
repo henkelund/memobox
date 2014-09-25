@@ -319,7 +319,7 @@ def lastping():
 
 # Called by the local box client to send box information to the cloud software. Will never be used localy. 
 @app.route('/ping')
-def file_ping_action():
+def ping_action():
 	# Call installer script that creats the ping database if it is not present
 	try:
 		PingModel.install();	
@@ -334,16 +334,37 @@ def file_ping_action():
 
 # Used to change the name of a backup device
 @app.route('/device/update')
-def file_devicedetail_action():
+def device_update_action():
 	device = DeviceModel().load(str(request.args.get('id')))
 	device.add_data({"product_name" : str(request.args.get('product_name'))})
 	device.add_data({"type" : str(request.args.get('type'))})
 	device.save()
 	return "ok"
 
+# Used to change the name of a backup device
+@app.route('/device/erase')
+def device_erase_action():
+	device = DeviceModel().load(str(request.args.get('id')))
+	device_data = device.get_data();
+
+	folder = '../../data/devices/'+device_data["serial"]
+
+	try:
+		if(os.path.isdir(folder)):
+			shutil.rmtree(folder)
+		else:
+			os.remove(folder)
+	except Exception as e:
+		print e
+
+	device.delete()
+
+	return "ok"
+
+
 # Retreivs information about a device
 @app.route('/device/detail')
-def file_deviceupdate_action():
+def device_detail_action():
 	device = DeviceModel().load(str(request.args.get('id')))
 	device_data = device.get_data();
 	device_data["image_count"] = DeviceModel().image_count(str(request.args.get('id')));

@@ -137,7 +137,11 @@
 
 			        	//$("#infiniteContainer").before("<div id='device-message' style='background-color: #DDD; padding: 5px; padding-left: 15px; margin-bottom: 10px;  '><div style='float: left;'><b>"+this.device_info.product_name+"</b> (<a href='#' onClick=\"$('#deviceDetailModal').modal('show')\">Change name</a>) – "+this.device_info.image_count+" images and "+this.device_info.video_count+" videos. "+last_backup_string+"</div><div style='float: right;'></div><br style='clear:both;' /></div>");
 			        }
-			    }
+			    },
+			    error: function (xhr, ajaxOptions, thrownError) {
+			        alert(xhr.status);
+			        alert(thrownError);
+				}	
 		  });	  	
 	  }
 
@@ -149,8 +153,32 @@
 			context: this,
 		    success : function(result){
 		        window.location = "/"; 
-		    }
-		});	  	
+		    },
+		    error: function (xhr, ajaxOptions, thrownError) {
+		        alert(xhr.status);
+		        alert(thrownError);
+			}
+		}); 	
+	  }
+
+	  // Todo, move this from infinity to device 
+	  Infinity.prototype.eraseDevice = function() {
+	  	if(confirm("This will completely remove this device, are you sure you want to do this?")) {
+			$.ajax({
+			    url : "/device/erase?id="+$('#deviceDetailModal').attr("device"),
+				async: false,
+				context: this,
+			    success : function(result){
+			        window.location = "/"; 
+			    },
+			    error: function (xhr, ajaxOptions, thrownError) {
+			        alert(xhr.status);
+			        alert(thrownError);
+				}	  	
+			});
+		} else {
+			return false;
+		}
 	  }
 
 	  Infinity.prototype.init = function(username) {
