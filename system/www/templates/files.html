@@ -21,7 +21,7 @@
                                         <option value="6">Camcorder</option>
                                     </select><br />
                                     <br />
-                                    <div><input id="dev_passclick" onClick="$('#dev_passform').show();$(this).parent().hide()" type="checkbox"> <a style="padding-top: 3px;" onClick="$('#dev_passform').show();$(this).parent().hide()"  href="#">Protect with password</a></div>
+                                    <div id="password-controller"><input style="margin-bottom: 7px" id="dev_passclick" onClick="$('#dev_passform').show();$(this).parent().hide()" type="checkbox"> <a onClick="$('#dev_passform').show();$(this).parent().hide()"  href="#">Protect with password</a></div>
                                     <div id="dev_passform" style="display:none">
                                         <b>Password</b><br />
                                         <input id="dev_password" type="password" name="password" /><br />
@@ -32,8 +32,8 @@
                                 </form>
                             </div>
                             <div class="modal-footer">
-                                    <button style="float:left;" type="button" onClick="return false;" ng-click="infinity.eraseDevice()" class="btn btn-default"><i class="icon-trash"></i> Delete entire device</button>
-                                    <button style="float:left;" type="button" ng-click="infinity.updateDevice()" class="btn btn-default"><i class="icon-download-alt"></i> Save</button>
+                                    <button id="dev-delete" style="float:left;" type="button" onClick="return false;" ng-click="infinity.eraseDevice()" class="btn btn-default"><i class="icon-trash"></i> Delete entire device</button>
+                                    <button style="float:left;" type="button" ng-click="infinity.updateDevice()" class="btn btn-default"><i class="icon-save"></i> Save</button>
                                     <button style="float: right;" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             </div>
                         </div>
@@ -161,7 +161,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 						<br />
 						<b>Lastname</b><br />
 						<input id="lastname" type="text" name="lastname" value="Nordkvist"><br />
-						<div><input id="passclick" onClick="$('#passform').show();$(this).parent().hide()" type="checkbox"> Change password</div>
+						<div id="password-controller"><input  style="margin-bottom: 7px" id="passclick" onClick="$('#passform').show();$(this).parent().hide()" type="checkbox"> Change password</div>
 						<div id="passform" style="display:none">
 							<b>New password</b><br />
 							<input id="password" type="password" name="password" /><br />
@@ -169,7 +169,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 							<input id="confirmPassword" type="password" name="confirmPassword" />
 						</div>
 						<br />
-						<button ng-click="saveProfile()" class="btn"><i class="icon-download-alt"></i> Save</button>
+						<button ng-click="saveProfile()" class="btn"><i class="icon-Save"></i> Save</button>
 	                </div>
 	                <div class="modal-footer">
 	                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

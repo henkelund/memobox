@@ -116,23 +116,27 @@
 
 	  // Todo, move this from infinity to device 
 	  Infinity.prototype.editDevice = function(device, new_device) {
-	  	  if(device != null) {
-	  	  	this.device = device; 
+	  	  if(device == null) {
+	  	  	device = this.device; 
 	  	  }
 
-		  $('#deviceModal').attr("device", this.device);	
+		  $('#deviceModal').attr("device", device);	
 
 		  $.ajax({
-			    url : "/device/detail?id="+this.device,
+			    url : "/device/detail?id="+device,
 				async: false,
 				context: this,
 			    success : function(result){
+			    	$('#dev_passform').hide();
+			    	$("#password-controller").show()
 			    	if(new_device) {
 			    		$("#deviceModalLabel").text("Set up this new device");
 			    		$("#new-desc").show();
+			    		$("#dev-delete").hide();
 			    	} else {
 						$("#deviceModalLabel").text("Edit device information");
-			    		$("#new-desc").show();
+			    		$("#new-desc").hide();
+			    		$("#dev-delete").show();
 			    	}
 
 			        $("#deviceModalInput").attr("value", result.product_name);
