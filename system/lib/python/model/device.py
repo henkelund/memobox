@@ -97,7 +97,8 @@ class DeviceModel(BaseModel):
                             "last_backup" DATETIME,
                             "state" INT NOT NULL DEFAULT 3, 
                             "type" INT NOT NULL DEFAULT 1,
-                            "new" INT NOT NULL DEFAULT 1
+                            "new" INT NOT NULL DEFAULT 1,
+                            "locked" INT NOT NULL DEFAULT 0
                         )
                     """ % table),
                 DBHelper().query(
