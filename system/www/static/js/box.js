@@ -739,6 +739,9 @@
 		$http({ method: 'GET', url: "/config" }).
 			success(function(data, status, headers, config) {
 		    	$scope.infinity.publish.config = data;
+		    	if(data["islocal"] == "true") {
+		    		$(".islocal").show();
+		    	}
 		    	$("#firstname").val(data["FIRSTNAME"]);
 		    	$("#lastname").val(data["LASTNAME"]);
 			});

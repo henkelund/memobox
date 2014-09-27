@@ -200,7 +200,7 @@ def files_action():
 		
 		data.append(data_list)
 	
-	return jsonify({'files': data, 'sql': models.render()})
+	return jsonify({'files': data})
 
 # Info route that displays box debug information. For administration use only
 @app.route('/info')
