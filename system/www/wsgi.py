@@ -170,7 +170,7 @@ def files_action():
 		vals = args.get(arg).split(',')
 		
 		if arg == 'mode':
-			models = FileModel.all().add_filter("published",  {'eq': (1)}).add_attribute("uuid").where("is_hidden = 0").order('m.created_at', "DESC")
+			models = FileModel.all().add_filter("published",  {'eq': (1)}).add_attribute("description").add_attribute("uuid").where("is_hidden = 0").order('m.created_at', "DESC")
 		if arg == 'year':
 			st = dt.datetime(int(vals[0]), 1, 1)
 			et = dt.datetime(int(vals[0]), 12, 31)
@@ -279,6 +279,9 @@ def upload_action():
 		uid = str(uuid.uuid1())+'.jpg'
 		shutil.copyfile(ff, "../data/public/"+uid)
 		#sftp.put(ff, uid)
+		if request.args.get("description-"+f):
+			_file.description(request.args.get("description-"+f));
+
 		_file.published(1)
 		_file.uuid(uid)
 		_file.save()

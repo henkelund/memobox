@@ -10,6 +10,13 @@ body {
   filter: blur(4px);  
 }
 
+.description {
+  height: 20px;
+  display: block;
+  border: 1px solid right; 
+  overflow: hidden;
+}
+
 .islocal {
   display: none;
 }
@@ -273,6 +280,11 @@ p.text {
 
 .thumbnails{
 	margin-top: 5px; 
+}
+
+.thumbnails textarea {
+  width: 258px;
+  margin-top: 10px; 
 }
 
 .noti_Container {

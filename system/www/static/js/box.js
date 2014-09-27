@@ -251,11 +251,14 @@
 
 		var images = []; 
 		var scp = this; 
+		var descriptions = ""; 
+
 		$.each( this.publish.share, function( key, value ) {
 		  images.push(value.id);
+		  descriptions += "&description-"+value.id+"="+encodeURIComponent($("#description-"+value.id).val()); 
 		});
 
-		$http({ method: 'GET', url: "/upload?files="+images.join(",") }).
+		$http({ method: 'GET', url: "/upload?files="+images.join(",")+descriptions }).
 			success(function(data, status, headers, config) {
 
 		    	if(data == "error") {
@@ -417,7 +420,7 @@
 					this.publish.shared = [];
 					// Loop JSON response and add images to ng-repeat array
 				    for(var i = 0; i < result.files.length; i++) {
-					      this.publish.shared.push({name:result.files[i].name, background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:""});
+					      this.publish.shared.push({description:result.files[i].description, name:result.files[i].name, background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:""});
 				    }
 			    }
 			});
@@ -570,7 +573,7 @@
 				      	  }
 							locked:result.files[i].locked
 				      	  */
-					      this.publish.items.push({product_name:result.files[i].product_name, name:result.files[i].name, background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:_type, type_content:type_content});				      
+					      this.publish.items.push({description:result.files[i].description, product_name:result.files[i].product_name, name:result.files[i].name, background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:_type, type_content:type_content});				      
 				      }
 				    }			    
 
