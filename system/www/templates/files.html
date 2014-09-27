@@ -142,7 +142,40 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 
 		
 
-	    <div class="modal fade" id="filesDetailModal" tabindex="-1" role="dialog" aria-labelledby="filesDetailModalLabel" aria-hidden="true" ng-include src=" '/templates/files.detail.html' ">
+	    <div class="modal fade" id="filesDetailModal" tabindex="-1" role="dialog" aria-labelledby="filesDetailModalLabel" aria-hidden="true" ng-include >
+	        <div class="modal-dialog">
+	            <div class="modal-content">
+	                <div class="modal-header">
+	                    <button id="modalClose" type="button" class="btn btn-default" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
+						 <a class="btn btn-default" onClick="downloadFile()" href="">
+						    <span class="icon-download-alt"></span>
+						</a>
+
+	                    <h4 class="modal-title" id="filesDetailModalLabel">Modal title</h4>
+	                    <div style="font-style: italic;" id="filesDetailModalDate"></div>
+	                </div>
+	                <div class="modal-body">
+						<a id="zoomLink" target="_blank" href=""><img id="modalImage" style="display: none; position: relative; z-index: 9999;" src="" /></a>
+						<img id="originalImage" style="display: none;" src="" />
+						<div id="moddalVideoContainer"><video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay">
+						  <source id="modalSource" src="" type="video/mp4" />
+						</video></div>
+
+	                </div>
+	                <div class="modal-footer">
+						 <a class="islocal btn btn-default" onClick="hideFile()" href="">
+						    <span class="icon-remove"></span> Delete
+						</a>
+						 <a id="print-button" class="btn btn-default" ng-click="infinity.addToCart()" href="">
+						    <span class="icon-remove"></span> <span id="print-label">Order photocopy</span>
+						</a>
+						 <a id="share-button" class="islocal btn btn-default" ng-click="infinity.share()" href="">
+						    <span class="icon-share"></span> <span id="print-label">Share</span>
+						</a>
+						<!-- button type="button" class="btn btn-default" data-dismiss="modal">Close</button -->
+	                </div>
+	            </div>
+	        </div>	    
 	    </div>
 
 	    <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-hidden="true">
