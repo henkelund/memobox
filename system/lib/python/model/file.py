@@ -88,13 +88,11 @@ class FileModel(ExtendedModel):
         extension = None
         basename = os.path.basename(filename)
         segments = basename.split('.')
-
         if len(segments) > 1:
             extension = segments.pop().lower()
         elif mime is not None:
-            _guess = mimetypes.guess_extension( str(mime), strict=False)
-            if _guess is not None:
-                extension = _guess = _guess.lstrip('.')
+            extension = mimetypes.guess_extension(
+                                str(mime), strict=False).lstrip('.')
 
         return extension
 
@@ -188,6 +186,8 @@ class FileModel(ExtendedModel):
             'uuid', 'UUID', 'text', ['Image', 'Video'])
         cls._create_attribute(
             'published', 'Published', 'integer', ['Image', 'Video'])
+        cls._create_attribute(
+            'description', 'Description', 'text', ['Image', 'Video'])
 
     @classmethod
     def _install(cls):
