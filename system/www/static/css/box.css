@@ -14,7 +14,7 @@ span.stars {
     box-shadow: 1px 1px 1px 0px rgba(50, 50, 50, 0.75);
 }
 
-.thumbnail:hover span.stars {
+.thumbnail span.stars {
     display: block;
 }
 
@@ -884,6 +884,7 @@ pre,.well{background:#FFFFFF;}
   	.modal {
   		left: 0px; 
   		right: 0px; 
+      display: none;
   	}
   	
   	.modal-body {
