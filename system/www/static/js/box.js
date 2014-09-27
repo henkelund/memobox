@@ -739,7 +739,7 @@
 		$http({ method: 'GET', url: "/config" }).
 			success(function(data, status, headers, config) {
 		    	$scope.infinity.publish.config = data;
-		    	if(data["islocal"] == "true") {
+		    	if(data["LOCAL"] == "true") {
 		    		$(".islocal").show();
 		    	}
 		    	$("#firstname").val(data["FIRSTNAME"]);

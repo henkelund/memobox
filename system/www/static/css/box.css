@@ -10,6 +10,10 @@ body {
   filter: blur(4px);  
 }
 
+.islocal {
+  display: none;
+}
+
 span.stars {
     display: none;
     background-image: url(/static/images/star-off.png);
