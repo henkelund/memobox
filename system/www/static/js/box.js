@@ -365,25 +365,21 @@
 	  	}
 
 	  	this.publish.currentFile = obj; 
-	  	
-		$.ajax({
-		    url : "/files/details?id="+obj.id,
-			async: false,
-			context: this,
-		    success : function(result){
+
 				var ts = new Date(null);
-				ts.setTime(result.created_at*1000);
+				ts.setTime(obj.created_at*1000);
 				
-				var time = new Date(result.created_at*1000);
+				var time = new Date(obj.created_at*1000);
 				var viewMonth = time.getMonth();
 				var viewYear = time.getFullYear().toString();
 				var viewDate = time.getDate();
 				var month = Array("January","February","March","April","May","June","July","August","September","October","November","December");
 				
-				$("#filesDetailModalLabel").html(result.name+" – "+viewDate +" "+ month[viewMonth] + ", "+viewYear+" – "+result.product_name);
+				$("#filesDetailModalLabel").html(obj.product_name + " > " + obj.name);
+				$("#filesDetailModalDate").html(viewDate +" "+ month[viewMonth] + ", "+viewYear);
 				$("#filesDetailModalLabel").attr("file", obj.id);
 				
-				if(result.type == "video") {
+				if(obj.type == "video") {
 					$("#moddalVideoContainer").html('<video id="modalVideo" style="display: none;" width="100%" height="520" controls="controls" autoplay="autoplay"><source id="modalSource" src="" type="video/mp4" /></video>');					
 					$("#modalVideo > source").attr("src", "/files/stream/"+obj.id+"/null/null/0");
 				
@@ -392,11 +388,11 @@
 					$("#modalImage").hide();
 					$("#print-button").hide();
 				} else {
-					$("#originalImage").attr("src", "/files/stream/"+result._id+"/"+result.name+"/full/0");
+					$("#originalImage").attr("src", "/files/stream/"+obj.id+"/null/full/0");
 					$("#modalVideo").hide();
 					$("#modalImage").show();
-					$("#zoomLink").attr("href", "/files/stream/"+result._id+"/null/nodownload/0");
-					$("#modalImage").attr("src", "/files/stream/"+result._id+"/null/thumbnail/520");
+					$("#zoomLink").attr("href", "/files/stream/"+obj.id+"/null/nodownload/0");
+					$("#modalImage").attr("src", "/files/stream/"+obj.id+"/null/thumbnail/520");
 					$("#print-button").show()
 				}
 				
@@ -406,9 +402,7 @@
 					$("#print-label").html("Order photocopy");
 				}
 		
-		        $('#filesDetailModal').modal('show');				
-		    }
-		});  	
+		        $('#filesDetailModal').modal('show');
 	  }
 
 	  Infinity.prototype.loadShared = function() {
@@ -573,7 +567,7 @@
 				      	  }
 							locked:result.files[i].locked
 				      	  */
-					      this.publish.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:_type, type_content:type_content});				      
+					      this.publish.items.push({product_name:result.files[i].product_name, name:result.files[i].name, background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:_type, type_content:type_content});				      
 				      }
 				    }			    
 

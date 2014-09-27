@@ -164,7 +164,7 @@ def files_action():
 	# Determines wether request contains only media files or documents
 	isMedia = True
 
-	models = FileModel.all().columns(["_id", "created_at", "type"], None, True).join("device", "m.device = device._id", "locked").add_attribute("duration").add_attribute("uuid").add_attribute("published").where("is_hidden = 0").order('m.created_at', "DESC")
+	models = FileModel.all().columns(["_id", "created_at", "type", "name"], None, True).join("device", "m.device = device._id", ["locked", "product_name"]).add_attribute("duration").add_attribute("uuid").add_attribute("published").where("is_hidden = 0").order('m.created_at', "DESC")
 
 	for arg in args.keys():
 		vals = args.get(arg).split(',')
