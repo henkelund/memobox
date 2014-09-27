@@ -20,11 +20,11 @@ function downloadFile() {
 	window.open($("#originalImage").attr("src"));
 }
 
-function hideFile() {
+function hideFile() { 
 	var file_id = $("#filesDetailModalLabel").attr("file");
 	$.get( "/files/hide?id="+file_id, function( data ) {
 	  if(data == "ok") {
-		  $("#"+file_id).parent().hide();
+		  $("#photo-"+file_id).parent().hide();
 	  }
 	});
 	$('#filesDetailModal').modal('hide');

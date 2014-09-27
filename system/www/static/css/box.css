@@ -57,6 +57,10 @@ span.stars:hover, .print span.active {
 	margin-left: 10px;
 }
 
+.modal-title {
+  margin-bottom: 5px; 
+}
+
 .logo {
 	float: left; 
 }
