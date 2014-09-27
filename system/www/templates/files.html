@@ -103,10 +103,10 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 								<li class="span3" ng-repeat="item in items" thumbnail-repeat-done="parseDate()">
 									<div id="photo-{{item.id}}" class="thumbnail">
 										<div style="cursor: pointer;" class="preview">
-											<div ng-show="item.locked == 1" class="print">
+											<!-- div nng-show="item.locked == 1" class="print">
 												<span ng-click="infinity.favourite({{item}}, $event)" class="stars"></span>
-											</div>
-											<div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')">
+											</div -->
+											<div timestamp="{{item.created_at}}" ng-style="{backgroundImage: item.locked == 1 && 'none' || 'url(/files/stream/{{item.id}}/jpg/thumbnail/260)'}" class="preview image" ng-click="infinity.showPicture('{{item}}')">
 												<div class="{{item.type}}"></div>
 											</div>
 										</div>

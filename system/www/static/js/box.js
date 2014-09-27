@@ -338,6 +338,12 @@
 	  // Todo, move this from infinity to device 	  
 	  Infinity.prototype.showPicture = function(file) {
 	  	var obj = JSON.parse(file);
+	  	
+	  	if(obj.locked == 1) {
+	  		alert("You need to login in order to view this file.");
+	  		return false;
+	  	}
+
 	  	this.publish.currentFile = obj; 
 	  	
 		$.ajax({
@@ -541,7 +547,11 @@
 						  
 					      this.publish.files.push(['<img src="/icon/'+result.files[i].type+"-"+result.files[i].subtype+'" />', '<a href="/files/stream/'+result.files[i]._id+'/'+result.files[i].name+'/full/0">'+result.files[i].name+'</a>', dat, humanFileSize(result.files[i].size)]);				      
 				      } else {
-					      this.publish.items.push({background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:result.files[i].type, type_content:type_content});				      
+				      	  _type = result.files[i].type; 
+				      	  if(result.files[i].locked == 1) {
+				      	  	_type = "locked";
+				      	  }
+					      this.publish.items.push({locked:result.files[i].locked, background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:_type, type_content:type_content});				      
 				      }
 				    }			    
 
