@@ -21,13 +21,13 @@
                                         <option value="6">Camcorder</option>
                                     </select><br />
                                     <br />
-                                    <div id="password-controller"><input style="margin-bottom: 7px" id="dev_passclick" onClick="$('#dev_passform').show();$(this).parent().hide()" type="checkbox"> <a onClick="$('#dev_passform').show();$(this).parent().hide()"  href="#">Protect with password</a></div>
+                                    <!-- div id="password-controller"><input style="margin-bottom: 7px" id="dev_passclick" onClick="$('#dev_passform').show();$(this).parent().hide()" type="checkbox"> <a onClick="$('#dev_passform').show();$(this).parent().hide()"  href="#">Protect with password</a></div>
                                     <div id="dev_passform" style="display:none">
                                         <b>Password</b><br />
                                         <input id="dev_password" type="password" name="password" /><br />
                                         <b>Repeat password</b><br />
                                         <input id="dev_confirmPassword" type="password" name="confirmPassword" />
-                                    </div>
+                                    </div -->
                                     <br />
                                 </form>
                             </div>
@@ -106,8 +106,10 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 											<!-- div nng-show="item.locked == 1" class="print">
 												<span ng-click="infinity.favourite({{item}}, $event)" class="stars"></span>
 											</div -->
-											<div timestamp="{{item.created_at}}" ng-style="{backgroundImage: item.locked == 1 && 'none' || 'url(/files/stream/{{item.id}}/jpg/thumbnail/260)'}" class="preview image" ng-click="infinity.showPicture('{{item}}')">
-												<div class="{{item.type}}"></div>
+											<!--div timestamp="{{item.created_at}}" ng-style="{backgroundImage: item.locked == 1 && 'none' || 'url(/files/stream/{{item.id}}/jpg/thumbnail/260)'}" class="preview image" ng-click="infinity.showPicture('{{item}}')">
+												<div class="{{item.type}}"></div-->
+											<div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')">
+												<div class="{{item.type}}"></div>	
 											</div>
 										</div>
 									</div>
@@ -161,15 +163,37 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 						<br />
 						<b>Lastname</b><br />
 						<input id="lastname" type="text" name="lastname" value="Nordkvist"><br />
-						<div id="password-controller"><input  style="margin-bottom: 7px" id="passclick" onClick="$('#passform').show();$(this).parent().hide()" type="checkbox"> Change password</div>
+						<!--div id="password-controller"><input  style="margin-bottom: 7px" id="passclick" onClick="$('#passform').show();$(this).parent().hide()" type="checkbox"> Change password</div>
 						<div id="passform" style="display:none">
 							<b>New password</b><br />
 							<input id="password" type="password" name="password" /><br />
 							<b>Repeat password</b><br />
 							<input id="confirmPassword" type="password" name="confirmPassword" />
-						</div>
+						</div -->
 						<br />
 						<button ng-click="saveProfile()" class="btn"><i class="icon-Save"></i> Save</button>
+	                </div>
+	                <div class="modal-footer">
+	                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+
+	    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-hidden="true">
+	        <div class="modal-dialog">
+	            <div class="modal-content">
+	                <div class="modal-header">
+	                    <button type="button" class="close" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
+	                    <h4 class="modal-title" id="userModal">Login</h4>
+	                </div>
+	                <div class="modal-body">
+						<p>You must login to view the files on this device.</p>
+						<b>Password</b><br />
+						<input id="firstname" type="text" name="firstname" value="Per-Mattas">
+						<br />
+						<br />
+						<button ng-click="saveProfile()" class="btn"><i class="icon-Save"></i> Login</button>
 	                </div>
 	                <div class="modal-footer">
 	                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
