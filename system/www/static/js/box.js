@@ -246,6 +246,18 @@
 	  	this.publish.share = [];
 	  }
 
+	  Infinity.prototype.deleteFile = function(state){
+	  		var file_id = $("#filesDetailModalLabel").attr("file");
+			
+			$.get( "/files/hide?id="+file_id, function( data ) {
+			  if(data == "ok") {
+				  $("#photo-"+file_id).parent().hide();
+			  }
+			});
+			
+			$('#filesDetailModal').modal('hide');
+	  }
+
 	  Infinity.prototype.shareImages = function(state){
 		$.isLoading({ text: "Publishing files... " });
 
@@ -267,6 +279,7 @@
 		            $.isLoading( "hide" );
 		    		scp.publish.share = [];
 		    		scp.loadShared();
+		            $("#busy").show();
 		    	}
 
 			}).
@@ -744,7 +757,7 @@
 		$http({ method: 'GET', url: "/config" }).
 			success(function(data, status, headers, config) {
 		    	$scope.infinity.publish.config = data;
-		    	if(data["LOCAL"] == "true") {
+		    	if(data["ISLOCAL"] == true) {
 		    		$(".islocal").show();
 		    	}
 		    	$("#firstname").val(data["FIRSTNAME"]);

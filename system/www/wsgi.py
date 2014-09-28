@@ -110,8 +110,10 @@ def index_action():
 @app.route('/config')
 def config_action():
 	config = DBHelper.loadconfig()
-	config["username"] = g.username
-	config["islocal"] = g.islocalbox
+	config.pop("LOCAL", None)
+	config.pop("BOXUSER", None)
+	config["USERNAME"] = g.username
+	config["ISLOCAL"] = g.islocalbox
 	return jsonify(config)
 
 # Config route that loads session configuration 

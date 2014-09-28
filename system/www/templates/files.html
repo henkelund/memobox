@@ -44,7 +44,7 @@
 	<div id='cssmenu' style="margin-top: 10px; margin-bottom: 5px;">
 	<ul>
 	   <li ng-class="{active: state == 'list'}" style="margin-left: 10%;" class='active'><a ng-click="infinity.selectTab('list')" href="#"><div class="icon-white icon-home"></div> <span>My files</span></a></li>
-	   <li ng-show="FilesCtrl.fileService.devices.length > 0" ng-class="{active: state == 'cloud'}" ><a ng-click="infinity.selectTab('cloud')" href='#'><div class="icon-white icon-upload"></div> <span>Shared files<span ng-show="share.length > 0" id="cart">({{share.length}})</span></span></a></li>
+	   <li ng-show="FilesCtrl.fileService.devices.length > 0" ng-class="{active: state == 'cloud'}" ><a ng-click="infinity.selectTab('cloud')" href='#'><div class="icon-white icon-upload"></div> <span>Shared files <img id="busy" style="display: none;" src="/static/images/busy.gif" /><span ng-show="share.length > 0" id="cart">({{share.length}})</span></span></a></li>
 	   <li ng-show="FilesCtrl.fileService.devices.length > 0" ng-class="{active: state == 'printouts'}"><a ng-click="infinity.selectTab('printouts')"  href="#"><div class="icon-white icon-book"></div> <span>Photocopies<span ng-show="cart.length > 0" id="cart">({{cart.length}})</span></span></a></li>
 	   <!-- li class='last'><a href='#'><span>Contact</span></a></li -->
 	</ul>
@@ -73,7 +73,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 						<div ng-show="state == 'list'">
 							<div class="navbar">
 								<div class="navbar-inner">
-								  	<a class="brand" href="#">Backupbox.se</a>
+								  	<a ng-click="infinity.nextPage(-1)" class="brand" href="#">Backupbox.se</a>
 								    <ul ng-show="FilesCtrl.fileService.devices.length > 0" id="devices" class="nav">
 								         <li class="devices dropdown-checkbox dropdown device-dropdown"><a href="#"><span id="device-dropdown">All devices</span> <span id="deviceCount"></span><b class="caret"></b></a></li>
 								         <li>
@@ -163,7 +163,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 
 	                </div>
 	                <div class="modal-footer">
-						 <a class="islocal btn btn-default" onClick="hideFile()" href="">
+						 <a class="islocal btn btn-default" ng-click="infinity.deleteFile()" href="">
 						    <span class="icon-remove"></span> Delete
 						</a>
 						 <a id="print-button" class="btn btn-default" ng-click="infinity.addToCart()" href="">
