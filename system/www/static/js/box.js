@@ -279,7 +279,10 @@
 		            $.isLoading( "hide" );
 		    		scp.publish.share = [];
 		    		scp.loadShared();
-		            $("#busy").show();
+		            $(".busy").show();
+		            pendingPublish();
+					intervalID = setInterval(pendingPublish, 5000);
+
 		    	}
 
 			}).

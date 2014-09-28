@@ -110,11 +110,21 @@ setTimeout("refreshDate()", 500);*/
 
 var uploadComplete = false; 
 var progressInterval; 
+var intervalID;
 			
 $( document ).ready(function() {
 	//loadCloudBackupProgress();
 	//progressInterval = setInterval(function(){loadCloudBackupProgress()}, 10000);
 });
+
+function pendingPublish() {
+	$.get( "/config", function( data ) {
+		if(data["PENDING_PUBLISH"] == "false") {
+			clearInterval(intervalID);
+			$(".busy").hide();
+		}
+	});		
+}
 
 function loadCloudBackupProgress() {
 	if(!uploadComplete && browserStatus >= 0) {

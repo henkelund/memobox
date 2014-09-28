@@ -44,7 +44,7 @@
 	<div id='cssmenu' style="margin-top: 10px; margin-bottom: 5px;">
 	<ul>
 	   <li ng-class="{active: state == 'list'}" style="margin-left: 10%;" class='active'><a ng-click="infinity.selectTab('list')" href="#"><div class="icon-white icon-home"></div> <span>My files</span></a></li>
-	   <li ng-show="FilesCtrl.fileService.devices.length > 0" ng-class="{active: state == 'cloud'}" ><a ng-click="infinity.selectTab('cloud')" href='#'><div class="icon-white icon-upload"></div> <span>Shared files <img id="busy" style="display: none;" src="/static/images/busy.gif" /><span ng-show="share.length > 0" id="cart">({{share.length}})</span></span></a></li>
+	   <li ng-show="FilesCtrl.fileService.devices.length > 0" ng-class="{active: state == 'cloud'}" ><a ng-click="infinity.selectTab('cloud')" href='#'><div class="icon-white icon-upload"></div> <span>Shared files <img class="busy" style="display: none;" src="/static/images/busy.gif" /><span ng-show="share.length > 0" id="cart">({{share.length}})</span></span></a></li>
 	   <li ng-show="FilesCtrl.fileService.devices.length > 0" ng-class="{active: state == 'printouts'}"><a ng-click="infinity.selectTab('printouts')"  href="#"><div class="icon-white icon-book"></div> <span>Photocopies<span ng-show="cart.length > 0" id="cart">({{cart.length}})</span></span></a></li>
 	   <!-- li class='last'><a href='#'><span>Contact</span></a></li -->
 	</ul>

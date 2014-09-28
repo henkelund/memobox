@@ -114,6 +114,12 @@ def config_action():
 	config.pop("BOXUSER", None)
 	config["USERNAME"] = g.username
 	config["ISLOCAL"] = g.islocalbox
+
+	if os.path.isfile("../data/public/_publish"):
+		config["PENDING_PUBLISH"] = "true"
+	else:
+		config["PENDING_PUBLISH"] = "false"
+
 	return jsonify(config)
 
 # Config route that loads session configuration 
