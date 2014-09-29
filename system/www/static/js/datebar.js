@@ -115,6 +115,9 @@ var intervalID;
 $( document ).ready(function() {
 	//loadCloudBackupProgress();
 	//progressInterval = setInterval(function(){loadCloudBackupProgress()}, 10000);
+	$( window ).resize(function() {
+	  $( ".dateHolder" ).hide();
+	});
 });
 
 function pendingPublish() {

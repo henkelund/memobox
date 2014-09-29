@@ -1,5 +1,7 @@
 from base import BaseModel
 from helper.db import DBHelper
+from datetime import date
+from datetime import datetime
 import os
 from glob import glob
 
@@ -59,6 +61,40 @@ class DeviceModel(BaseModel):
 
         self.save()
         return self
+
+    def get_backups(self):
+        tree = {}
+        #os.chdir(self._basedir)
+        #for node in os.listdir(self._basedir):
+        res = []
+        path = "../data/devices/"+str(self.serial())+"/backups"
+        for root,dirs,files in os.walk(path, topdown=True):
+            depth = root[len(path) + len(os.path.sep):].count(os.path.sep)
+            if depth == 1:
+                # We're currently two directories in, so all subdirs have depth 3
+                res += [os.path.join(root.replace(path+"/", ""), d) for d in dirs]
+                dirs[:] = [] # Don't recurse any deeper
+
+        #tree[node] = res
+
+        _dates = []
+
+        #for key in tree:
+        #    _dates[key] = []
+        #    for value in tree[key]:
+        #        _d = value.split("/")
+        #        mydate = date(int(_d[0]),int(_d[1]) , int(_d[2]))  #year, month, day
+        #        _dates[key].append(mydate)
+        #    _dates[key].sort()
+
+        for value in res:
+            _d = value.split("/")
+            mydate = str(date(int(_d[0]),int(_d[1]) , int(_d[2])))  #year, month, day
+            _dates.append(mydate)
+        _dates.sort()
+
+
+        return _dates
 
     def image_count(self, device_id):
 	    counts = DBHelper().query("SELECT COUNT(*) as image_count FROM file WHERE device = %s AND type = 'image'" % device_id);

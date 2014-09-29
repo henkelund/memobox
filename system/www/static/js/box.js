@@ -101,6 +101,7 @@
 		this.publish.shared = [];
 		this.publish.orderid = false;
 		this.publish.config = {};
+		this.publish.currentDevice = null;
 		this.photolist = new Object();
 
 	    // Keep track of Infinite Scroll
@@ -449,10 +450,17 @@
 	  Infinity.prototype.nextPage = function(_device, _type, noInvert, tab) {
 	    // Make sure previous request is not running
 	    if (this.busy) return;
-	    
+
 	    // Flag this method as running
 	    this.busy = true;	
 	   	var filters = [];
+
+	   	// Get selected filters
+		$( "li.filters input" ).each(function( index ) {
+		  if($( this ).prop("checked")) {
+		  	filters.push($( this ).prop("id").replace("filter-", ""));
+		  }
+		});	   
 
 	    if(_type == "other") {
 		    if(!noInvert) {
@@ -466,8 +474,6 @@
 				_type = "image,video";
 				this.type = _type;
 			}
-
-			filters.push(_type);
 	    } else 
 	    if(_type != null) {
 			this.type = _type;	    	
@@ -479,13 +485,7 @@
 	    	if($('#filter-other').prop('checked')) {
 	    		$('#filter-other').prop('checked', false);
 	    	}
-	    }
-
-		$( "li.filters input" ).each(function( index ) {
-		  if($( this ).prop("checked")) {
-		  	filters.push($( this ).prop("id").replace("filter-", ""));
-		  }
-		});
+	    } 	
 
 	    // Parameter to determine wether content was replaced or appended. replace => chnageState = true
 	    var changedState = false; 
@@ -494,21 +494,23 @@
 		if((_device) || _type) {
 			changedState = true;
 			this.lastCount = -1; 
-			var _icons = [];
-			_icons[1] = "icon-mobile-phone";
-			_icons[2] = "icon-tablet";
-			_icons[3] = "icon-hdd";
-			_icons[4] = "icon-hdd";
-			_icons[5] = "icon-camera";
-			_icons[6] = "icon-facetime-video";
 
+			// If a new device was selected, show selected device in dropdown
 			if(_device && _device != -1 && this.device != _device) {
+				this.device = _device;
 				$("#device-dropdown").text($("#"+_device + " span").text());
 				$(".device").removeClass("active");
 				$("#"+_device).addClass("active");
 				$("#deviceCount").hide();
-				this.device = _device; 
+
+				// Set current device
+				for(var i=0; i<this.publish.service.devices.length; i++) {
+					if(this.publish.service.devices[i].id == _device) {
+						this.publish.currentDevice = this.publish.service.devices[i];
+					}
+				}
 			} else 
+			// Restore everything back to normal. Showing all devices
 			if(_device) {
 				this.device = -1; 
 				$(".device").removeClass("active");
@@ -516,6 +518,7 @@
 				$("#device-dropdown").text('All devices');
 				$("#deviceCount").show();
 				changedState = true; 
+				this.publish.currentDevice = null;
 				//$(".dropdown-menu").hide();
 			}
 		}
@@ -572,7 +575,7 @@
 						  }
 				      }	*/	
 				      
-				      // Push thumbnail item to ng-repeat array	      
+				      // Push thumbnail item to ng-repeat array	  
 				      if(filters == "other") {
 					      var _months = Array("January","February","March","April","May","June","July","August","September","October","November","December");
 					      var time = new Date(result.files[i].created_at*1000);
@@ -584,11 +587,6 @@
 					      this.publish.files.push(['<img src="/icon/'+result.files[i].type+"-"+result.files[i].subtype+'" />', '<a href="/files/stream/'+result.files[i]._id+'/'+result.files[i].name+'/full/0">'+result.files[i].name+'</a>', dat, humanFileSize(result.files[i].size)]);				      
 				      } else {
 				      	  _type = result.files[i].type; 
-				      	  /*if(result.files[i].locked == 1) {
-				      	  	_type = "locked";
-				      	  }
-							locked:result.files[i].locked
-				      	  */
 					      this.publish.items.push({description:result.files[i].description, product_name:result.files[i].product_name, name:result.files[i].name, background:result.files[i].thumbnail, id:result.files[i].file, created_at:result.files[i].created_at, type:_type, type_content:type_content});				      
 				      }
 				    }			    

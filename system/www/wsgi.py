@@ -270,17 +270,7 @@ def box_erase_action():
 def upload_action():
 	config = DBHelper.loadconfig()
 	files = request.args.get("files").split(",")
-	#ssh = paramiko.SSHClient()
-	#ssh.set_missing_host_key_policy( paramiko.AutoAddPolicy() )
-	#ssh.connect(config["BOXUSER"]+'.backupbox.se', username='root',  password='copiebox')
-	#sftp = paramiko.SFTPClient.from_transport(ssh.get_transport())
-	
-	#try:
-	#	sftp.mkdir("/backups/"+config["BOXUSER"]+"/public")
-	#except IOError as e:
-	#		print str(e)+"--"
 
-	#sftp.chdir("/backups/"+config["BOXUSER"]+"/public")
 	for f in files:
 		_file = FileModel().load(f)
 		ff = str(_file.abspath()+"/"+_file.name())
@@ -293,17 +283,9 @@ def upload_action():
 		_file.published(1)
 		_file.uuid(uid)
 		_file.save()
-
-	#sqlite3 sample.db .dump > sample.bak
 	
 	open("../data/public/_publish", 'a').close()
-	##out, err = p.communicate()
-	#print out
-	#print err
-	#sftp.chdir("/backups/"+config["BOXUSER"])
-	#sftp.put("/tmp/tmp.db", "index.db")
-	#ssh.close()
-	
+		
 	return "ok"
 
 # Debug route that gets public ip of this box
@@ -394,6 +376,8 @@ def file_devices_action():
 		formats = ['image', 'video', 'other' ]
 		count = {}
 
+		backups = device.get_backups()
+
 		for t in formats: 
 			q = ""
 
@@ -426,6 +410,8 @@ def file_devices_action():
 			'videos': count['video'],
 			'others': count['other'],
 			'thumbnails': thumbnailcount,
+			'serial': device.serial(),
+			'backups': backups,
 			'symbol': str(device.type())
 		})    
 

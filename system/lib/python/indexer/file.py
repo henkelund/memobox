@@ -5,7 +5,6 @@ from helper.db import DBHelper
 from helper.log import LogHelper as logger
 from model.device import DeviceModel
 from model.file import FileModel
-from datetime import datetime
 
 class FileIndexer(object):
     """Class responsible for indexing data from new files"""
@@ -13,31 +12,6 @@ class FileIndexer(object):
     def __init__(self, basedir):
         """Initialize this indexer"""
         self._basedir = basedir
-
-    def get_all_backups(self):
-        tree = {}
-        os.chdir(self._basedir)
-        for node in os.listdir(self._basedir):
-            res = []
-            path = self._basedir+"/"+node+"/backups"
-            for root,dirs,files in os.walk(path, topdown=True):
-                depth = root[len(path) + len(os.path.sep):].count(os.path.sep)
-                if depth == 1:
-                    # We're currently two directories in, so all subdirs have depth 3
-                    res += [os.path.join(root.replace(self._basedir+"/"+node+"/backups/", ""), d) for d in dirs]
-                    dirs[:] = [] # Don't recurse any deeper
-
-            tree[node] = res
-
-        _dates = {}
-
-        for key in tree:
-            _dates[key] = []
-            for value in tree[key]:
-                _d = value.split("/")
-                mydate = date(int(_d[0]),int(_d[1]) , int(_d[2]))  #year, month, day
-                _dates[key].append(mydate)
-            _dates[key].sort()
 
     def index_all_devices(self):
         """Index files for every folder that qualifies as a device within
