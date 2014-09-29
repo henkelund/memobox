@@ -455,13 +455,6 @@
 	    this.busy = true;	
 	   	var filters = [];
 
-	   	// Get selected filters
-		$( "li.filters input" ).each(function( index ) {
-		  if($( this ).prop("checked")) {
-		  	filters.push($( this ).prop("id").replace("filter-", ""));
-		  }
-		});	   
-
 	    if(_type == "other") {
 		    if(!noInvert) {
 		    	$("#filter-"+_type).prop("checked", !$("#filter-"+_type).prop("checked"));
@@ -486,6 +479,14 @@
 	    		$('#filter-other').prop('checked', false);
 	    	}
 	    } 	
+
+	   	// Get selected filters
+		$( "li.filters input" ).each(function( index ) {
+		  if($( this ).prop("checked")) {
+		  	filters.push($( this ).prop("id").replace("filter-", ""));
+		  }
+		});	   
+
 
 	    // Parameter to determine wether content was replaced or appended. replace => chnageState = true
 	    var changedState = false; 
