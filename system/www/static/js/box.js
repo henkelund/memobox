@@ -92,9 +92,9 @@
 	  	this.publish.othercount = 0; 
 
 	  	// Shopping cart
-	  	this.publish.product = "Small 9x12cm"; 
-		this.publish.price = 0.2;
-		this.publish.shipping = 5;
+	  	this.publish.product = "9x12cm"; 
+		this.publish.price = 2;
+		this.publish.shipping = 45;
 		this.publish.cart = [];
 		this.publish.share = [];
 		this.publish.favourite = [];
@@ -329,13 +329,18 @@
 
 	  // Used in cart for switching between printing options
 	  Infinity.prototype.selectProduct = function(event){
-		this.price = event.target.attributes.price.value;
-		this.publish.product = $(event.target).html();
-		this.publish.price = this.price;
+	  	var price = $(event.target).find("strong").text();
+		this.price = price.replace("kr", "");
 
+	  	var product = $(event.target).find("span").text();	  
+	  	var shipping = $(event.target).parent().attr("shipping");
+	  	
+		this.publish.shipping = parseInt(shipping);
+		this.publish.product = product;
+		this.publish.price = parseInt(this.price);
+		
+		$(".pricelist ul li").removeClass('active');
 		$(event.target).addClass('active');
-		$(".photosize button").removeClass("active");
-		$(".photocount").html(this.publish.cart.length);
 	  }
 
 	  // Adds a photo to the pringin queue
@@ -384,6 +389,10 @@
 	  		return false;
 	  	}
 
+		if(this.publish.config["ISLOCAL"] == true) {
+			$(".islocal").show();
+		}
+
 	  	this.publish.currentFile = obj; 
 
 		var ts = new Date(null);
@@ -420,9 +429,9 @@
 		}
 		
 		if($.grep(this.publish.cart, function(e){ return e.id == obj.id; }).length == 1) {
-			$("#print-label").html("Remove from print queue");
+			$("#print-label").html("Remove from cart");
 		} else {
-			$("#print-label").html("Order photocopy");
+			$("#print-label").html("Add to cart");
 		}
 
         $('#filesDetailModal').modal('show');

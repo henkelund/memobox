@@ -104,7 +104,10 @@ def index_action():
 		if g.islocalbox or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
 			return render_template('index.html', username=g.username)
 		else:
-			return render_template('public.html', firstname=DBHelper.loadconfig()["FIRSTNAME"], lastname=DBHelper.loadconfig()["LASTNAME"])
+			config = DBHelper.loadconfig()
+			_firstname = "debug" if not "FIRSTNAME" in config else config["FIRSTNAME"]
+			_lastname = "debug" if not "LASTNAME" in config else config["LASTNAME"]
+			return render_template('public.html', firstname=_firstname, lastname=_lastname)
 
 # Config route that loads session configuration 
 @app.route('/config')
