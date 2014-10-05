@@ -92,9 +92,6 @@ if (__name__ == '__main__'):
     if not os.path.isdir(basedir):
         exit(2)
 
-    FileIndexer(basedir).get_all_backups()
-    exit(1)
-
     DBHelper(database)
     DeviceModel.install()
     FileModel.install()
