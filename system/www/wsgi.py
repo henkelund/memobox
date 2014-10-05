@@ -4,7 +4,7 @@ import math
 import datetime as dt, time
 import os
 import json
-import urllib2
+import urllib, urllib2
 import re
 import uuid
 import subprocess
@@ -584,9 +584,10 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 				filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+config["BOXUSER"]), model.name())
 				if type != "nodownload":
 					_headers["Content-Disposition"] = "attachment; filename="+model.name()
+				mimetype = '%s/%s' % (model.type(), model.subtype())
 			else:
-				filename = '%s/%s' % (model.abspath(), model.name())
-			mimetype = '%s/%s' % (model.type(), model.subtype())
+				filename = '%s/%s' % ("/static"+model.abspath().replace("/backupbox/data", ""), urllib.quote(model.name()))
+				return redirect(filename)
 
 	if not os.path.isfile(filename):
 		abort(404)
