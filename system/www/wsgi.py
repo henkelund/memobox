@@ -561,6 +561,7 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 			abort(404)
 
 		model = FileModel().load(file_id);
+		filename = ""
 
 		if not model.id():
 			abort(404)
