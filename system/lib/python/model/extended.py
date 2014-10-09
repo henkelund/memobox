@@ -220,20 +220,24 @@ class ExtendedModel(BaseModel):
     def _create_attribute(cls, code, label, datatype, groups):
         """Create a new attribute for this model"""
 
-        ids = DBHelper().insert('attribute', {
-            'code': code,
-            'label': label,
-            'parent': cls._table,
-            'type': datatype
-        })
-        
-        for group in groups: 
-	        group_id = cls._get_attribute_group(group, True)
-	        for new_id in ids:
-	            DBHelper().insert('attribute_group_attribute', {
-	                'group': group_id,
-	                'attribute': new_id
-	            })
+        select = DBHelper().query('SELECT EXISTS(SELECT 1 FROM attribute WHERE code="'+code+'" LIMIT 1)')
+        row = select.fetchone()
+
+        if list(row.values())[0] == 0:
+            ids = DBHelper().insert('attribute', {
+                'code': code,
+                'label': label,
+                'parent': cls._table,
+                'type': datatype
+            })
+            
+            for group in groups: 
+    	        group_id = cls._get_attribute_group(group, True)
+    	        for new_id in ids:
+    	            DBHelper().insert('attribute_group_attribute', {
+    	                'group': group_id,
+    	                'attribute': new_id
+    	            })
 
     @classmethod
     def _create_attribute_tables(cls):

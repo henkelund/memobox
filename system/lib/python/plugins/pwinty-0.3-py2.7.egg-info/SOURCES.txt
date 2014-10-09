@@ -1,0 +1,8 @@
+setup.cfg
+setup.py
+pwinty/__init__.py
+pwinty.egg-info/PKG-INFO
+pwinty.egg-info/SOURCES.txt
+pwinty.egg-info/dependency_links.txt
+pwinty.egg-info/requires.txt
+pwinty.egg-info/top_level.txt

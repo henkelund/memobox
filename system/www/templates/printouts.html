@@ -1,0 +1,240 @@
+						<!-- div ng-show="orderid + cart.length == 0" class="browserMessage">
+				  			You can order beautiful photocopies from your Backupbox directly to your home. Just click print on the photos you would like to order and return to this page to finalize your order. 
+				  		</div -->
+
+						<div ng-show="orderid > 0" class="browserMessage">
+				  			Your order has been placed successfully. Your order number is #{{orderid}}
+				  		</div>
+						
+						<div>
+				  			<h1>Order photocopies</h1>
+				  			<p>You can instantly order a beautiful printed copy of any of your photos directly from your Backupbox. We provide everything from regular photoprints, larges posters or amazing canvases.</p>
+					  		<!-- button ng-click="infinity.nextCheckoutStep()" class="btn">Yes, Print These Photos</button -->
+					  		<hr />
+					  		<div ng-show="orderid + cart.length == 0">
+				  			<em>Your shopping cart is empty. Go to your image gallery, open an image and press "Add to cart" to order photocopies directly home to your mailbox.</em>
+				  			</div>
+							<ul class="thumbnails">
+								<li class="span3" ng-repeat="item in cart">
+									<div id="{{item.id}}" class="thumbnail"><!--div style="cursor: pointer;" class="preview"><div class="visible print"><img src="/static/images/icons/photoalbum.png" /></div --><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
+								</li>
+							</ul>  		 
+							<hr />
+				  			<div class="checkoutstep" style="width: 240px;">
+									<div class="photo-type shoppingCart">
+								         <ul>							     
+											<li class="active">
+								               <span><img src="/static/images/photo.png" width="60" style="margin-top: 10px; "></span><h3 class="ng-binding" style="float: right; "><a onClick="$('.photo-type ul li').removeClass('active');$(this).parent().parent().addClass('active');$('.pricelist').hide();$('#photo-pricelist').show()" href="">Photos</a></h3> 
+								            </li>
+											<li>
+								               <span><img src="/static/images/poster.png" width="60" style="margin-top: 10px; "></span><h3 class="ng-binding" style="float: right; "><a onClick="$('.photo-type ul li').removeClass('active');$(this).parent().parent().addClass('active');$('.pricelist').hide();$('#poster-pricelist').show()" href="">Posters</a></h3> 
+								            </li>    
+								            <li>
+								               <span><img src="/static/images/canvas.png" width="60" style="margin-top: 0px; "></span><h3 class="ng-binding" style="float: right; "><a onClick="$('.photo-type ul li').removeClass('active');$(this).parent().parent().addClass('active');$('.pricelist').hide();$('#canvas-pricelist').show()" href="">Canvas</a></h3> 
+								            </li>
+								            
+								         </ul>
+								         
+								         
+								    </div>
+					  		</div>
+							<div class="checkoutstep">
+								<div id="photo-pricelist" class="pricelist shoppingCart">
+							         <ul shipping="45">							     
+										<li class="active" ng-click="infinity.selectProduct($event)">
+											<span>9x12 cm</span> 
+											<strong>2kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>9x13 cm</span> 
+											<strong>2kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>10x14 cm</span> 
+											<strong>2kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>10x15 cm</span> 
+											<strong>2kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>11x15 cm</span> 
+											<strong>2.5kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>11x17 cm</span> 
+											<strong>2.5kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>13x17 cm</span> 
+											<strong>4kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>13x19 cm</span> 
+											<strong>4kr</strong>
+							            </li>        
+							         </ul>
+							    </div>					  		
+								<div style="display: none;" id="poster-pricelist" class="pricelist shoppingCart">
+							         <ul shipping="70">							     
+										<li ng-click="infinity.selectProduct($event)">
+											<span>20x27 cm</span> 
+											<strong>30kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>20x30 cm</span> 
+											<strong>30kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>30x40 cm</span> 
+											<strong>40kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>40x40 cm</span> 
+											<strong>110kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>40x53 cm</span> 
+											<strong>110kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>40x60 cm</span> 
+											<strong>110kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>50x66 cm</span> 
+											<strong>130kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>50x70 cm</span> 
+											<strong>130kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>60x80 cm</span> 
+											<strong>180kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>60x90 cm</span> 
+											<strong>180kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>70x93 cm</span> 
+											<strong>250kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>70x105 cm</span> 
+											<strong>250kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>80x106 cm</span> 
+											<strong>350kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>80x120 cm</span> 
+											<strong>350kr</strong>
+							            </li>        
+							         </ul>
+							    </div>				
+								<div style="display: none" id="canvas-pricelist" class="pricelist shoppingCart">
+							         <ul shipping="145">							     
+										<li ng-click="infinity.selectProduct($event)">
+											<span>20x30 cm</span> 
+											<strong>400kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>30x45 cm</span> 
+											<strong>450kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>40x40 cm</span> 
+											<strong>475kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>40x60 cm</span> 
+											<strong>650kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>60x60 cm</span> 
+											<strong>700kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>60x90 cm</span> 
+											<strong>850kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>80x120 cm</span> 
+											<strong>1300kr</strong>
+							            </li>        
+										<li ng-click="infinity.selectProduct($event)">
+											<span>90x90 cm</span> 
+											<strong>1300kr</strong>
+							            </li>        
+							         </ul>
+							    </div>				
+					  		</div>
+					  		<div class="checkoutstep" style="width: 260px;">
+						  		<div class="shoppingCart" style="padding: 20px; ">
+							  		<form id="order-form" class="form-horizontal">
+								  		<div class="form-group">
+								  			Name<br />
+								  			<input id="recipient_name" class="form-control input-append" name="recipient_name" value="" type="text" data-bv-notempty data-bv-notempty-message="This is a required field" />
+								  		</div>
+								  		<div class="form-group">
+								  			Address<br />
+								  			<input id="address_1" class="form-control" name="address_1" value="" type="text" data-bv-notempty data-bv-notempty-message="This is a required field" />
+								  		</div>
+								  		<div class="form-group">
+								  			City<br />
+								  			<input id="address_town_or_city" class="form-control" name="address_town_or_city" value="" type="text" data-bv-notempty data-bv-notempty-message="This is a required field" />
+								  		</div>
+								  		<div class="form-group">
+								  			Postal code<br />
+								  			<input id="postal_or_zip_code" class="form-control" name="postal_or_zip_code" value="" type="text" data-bv-notempty data-bv-notempty-message="This is a required field" />
+								  		</div>
+								  		<div class="form-group">
+								  			Country<br />
+								  			<select id="country" class="form-control" name="country" id="selectCountry"  data-bv-notempty data-bv-notempty-message="This is a required field">
+								  				<option value="AT">AUSTRIA</option>
+								  				<option value="AU">AUSTRALIA</option>
+								  				<option value="BE">BELGIUM</option>
+								  				<option value="BR">BRAZIL</option>
+								  				<option value="CA">CANADA</option>
+								  				<option value="CH">SWITZERLAND</option>
+								  				<option value="CL">CHILE</option>
+								  				<option value="DE">GERMANY</option>
+								  				<option value="DK">DENMARK</option>
+								  				<option value="ES">SPAIN</option>
+								  				<option value="FR">FRANCE</option>
+								  				<option value="GB">UNITED KINGDOM</option>
+								  				<option value="IE">IRELAND</option>
+								  				<option value="IT">ITALY</option>
+								  				<option value="MX">MEXICO</option>
+								  				<option value="NL">NETHERLANDS</option>
+								  				<option selected value="SE">SWEDEN</option>
+								  				<option value="US">UNITED STATES</option>
+								  			</select>
+								  		</div>
+								  	</form>
+								</div>
+					  		</div>	
+				  			<div class="checkoutstep" style="margin-right: 0px;">
+								<section id="content">
+								      <div class="shoppingCart">
+								         <summary>
+								            <h4>Shopping cart</h4>
+								         </summary>
+								         <ul>							         
+								            <li>
+								               <span>{{cart.length}} x <a href="javascript:void(0);">{{product}}</a> á {{price}}kr</span> <strong>{{price*cart.length}}kr</strong>
+								            </li>
+								            <li><span>1x <a href="javascript:void(0);">Shipping</a></span> <strong>{{shipping}}kr</strong></li>
+								         </ul>
+								         <p>
+								            <span>Products: <strong>{{cart.length}}</strong></span> <span>Total: <strong>{{cart.length*price+shipping}}kr</strong></span>
+								         </p>
+								         <button ng-click="infinity.placeOrder($event)" style="float: right; margin-bottom: 10px; margin-right: 10px;" class="btn btn-primary">Complete Order</button>
+								      </div>
+								</section>
+            					<div id="load-overlay"><a name="overlay"></a></div>								
+				  			</div>
+				  		</div>

@@ -1,5 +1,34 @@
-<a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 10px;" class="btn" href="/files/stream/{{FilesDetailCtrl.id}}/{{FilesDetailCtrl.details.name}}">
-    <i class="icon-download-alt"></i> Download
-</a>
-<img id="modalImage" style="display: none; position: relative; z-index: 9999;" src="" />
-<div id="modalVideoContainer"></div>
+	    <div class="modal fade" id="filesDetailModal" tabindex="-1" role="dialog" aria-labelledby="filesDetailModalLabel" aria-hidden="true" >
+	        <div class="modal-dialog">
+	            <div class="modal-content">
+	                <div class="modal-header">
+	                    <button id="modalClose" type="button" class="btn btn-default" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
+						 <a class="btn btn-default" onClick="downloadFile()" href="">
+						    <span class="icon-download-alt"></span>
+						</a>
+
+	                    <h4 class="modal-title" id="filesDetailModalLabel">Modal title</h4>
+	                    <div style="font-style: italic;" id="filesDetailModalDate"></div>
+	                </div>
+	                <div class="modal-body">
+						<a id="zoomLink" target="_blank" href=""><img id="modalImage" style="display: none; position: relative; z-index: 9999;" src="" /></a>
+						<img id="originalImage" style="display: none;" src="" />
+						<div id="moddalVideoContainer"><video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay">
+						  <source id="modalSource" src="" type="video/mp4" />
+						</video></div>
+
+	                </div>
+	                <div class="modal-footer">
+						 <a class="islocal btn btn-default" ng-click="infinity.deleteFile()" href="">
+						    <span class="icon-remove"></span> Delete
+						</a>
+						 <a id="print-button" class="btn btn-default" ng-click="infinity.addToCart()" href="">
+						    <span class="icon-remove"></span> <span id="print-label">Order photocopy</span>
+						</a>
+						 <a id="share-button" class="islocal btn btn-default" ng-click="infinity.share()" href="">
+						    <span class="icon-share"></span> <span id="print-label">Share</span>
+						</a>
+	                </div>
+	            </div>
+	        </div>	    
+	    </div>

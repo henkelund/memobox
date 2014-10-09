@@ -5,7 +5,7 @@ PINGFILE=/tmp/ping.txt
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SYSTEM_DIR="$(dirname "$BIN_DIR")"
 BACKUP_DIR="$(dirname "$SYSTEM_DIR")/data"
-source "$BACKUP_DIR/local.cfg"
+source "$BACKUP_DIR/local.cfg" 
 
 
 # Load helper functions for getting system data

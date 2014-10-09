@@ -1,99 +1,135 @@
-<div ng-controller='FilesCtrl' class="container">
-	<div id="libContainer">
-        <!-- ul class="nav nav-tabs nav-justified" role="tablist">
-			<li><a>Backupbox</a></li>
-			<li><a>Cloudbox</a></li>
-			<li><a>Printouts</a></li>
-  		</ul -->
-		<div id="device-list" class="navbar navbar-inverse navbar-static-top">
-		    <div class="navbar-inner">
-		        <a id="mainNav-btn" class="btn btn-navbar" data-toggle="collapse" data-target=".navbar-inverse-collapse">
-		            <span class="icon-bar"></span>
-		            <span class="icon-bar"></span>
-		            <span class="icon-bar"></span>
-		        </a>
-			    <div id="mainNav" class="nav-collapse collapse navbar-inverse-collapse">
-					<ul id="devicenav" class="nav">
-				        <li ng-repeat="device in FilesCtrl.fileService.devices" device-repeat-directive class="dropdown">
-					        	<a href="javascript:void(0)" id="{{device.id}}" data-placement="bottom" data-trigger="hover" nng-click="infinity.editDevice('{{device.id}}')" data-html="true" ng-attr-title="<div class='imageContainer'><img src='/static/images/icons/{{device.symbol}}.png' /></div>{{device.thumbnails}} photos<br />{{device.videos}} videos<br />Status: {{device.message}}" class="device" ng-click="infinity.nextPage('{{device.id}}');infinity.editDevice('{{device.id}}')"><span>{{device.product_name}}</span></a>
-				        </li>
-					</ul>
-					<ul id="filternav" class="nav" style="float: right;">
-						<li style="border-left: 1px solid grey;" id="formatFilter"><a  href="javascript:void(0)"ng-click="infinity.nextPage(null,'image')" id="type-image" title="Show only photos" class="type"><span><div class="icon-white icon-picture"></div> Photo</span></a><a  href="javascript:void(0)" ng-click="infinity.nextPage(null,'video')" id="type-video" title="Show only videos" class="type"><span><div class="icon-white icon-facetime-video"></div> Video</span></a></li>
-					</ul>
+                 <div style="display: none;" class="modal fade" id="deviceModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" id="deviceModalLabel">Edit device information</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <p id="new-desc" style="display:none;">This is the first time you are using this device. In order to use it, please choose a name and decide wether or not to password protect this device. If the device is password protected. Files, images and videos will only be shown if you provide a password.</p>
+                                    <b>Name</b><br />
+                                    <input id="deviceModalInput" type="text" name="label" /><br />
+                                    <br />
+                                    <b>Type</b><br />
+                                    <select id="device-type">
+                                        <option value="1">Mobile Phone</option>
+                                        <option value="2">Tablet</option>
+                                        <option value="3">USB Drive</option>
+                                        <option value="4">External Harddrive</option>
+                                        <option value="5">Digital Camera</option>
+                                        <option value="6">Camcorder</option>
+                                    </select><br />
+                                    <br />
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                    <button id="dev-delete" style="float:left;" type="button" onClick="return false;" ng-click="infinity.eraseDevice()" class="btn btn-default"><i class="icon-trash"></i> Delete entire device</button>
+                                    <button style="float:left;" type="button" ng-click="infinity.updateDevice()" class="btn btn-default"><i class="icon-save"></i> Save</button>
+                                    <button style="float: right;" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+<div>
+	<div id='cssmenu' style="margin-top: 10px; margin-bottom: 5px;">
+	<ul>
+	   <li ng-class="{active: state == 'list'}" style="margin-left: 10%;" class='active'><a ng-click="infinity.selectTab('list')" href="#"><div class="icon-white icon-home"></div> <span>My files</span></a></li>
+	   <li ng-show="FilesCtrl.fileService.devices.length > 0" ng-class="{active: state == 'cloud'}" ><a ng-click="infinity.selectTab('cloud')" href='#'><div class="icon-white icon-upload"></div> <span>Shared files <img class="busy" style="display: none;" src="/static/images/busy.gif" /><span ng-show="share.length > 0" id="cart">({{share.length}})</span></span></a></li>
+	   <li ng-show="FilesCtrl.fileService.devices.length > 0" ng-class="{active: state == 'printouts'}"><a ng-click="infinity.selectTab('printouts')"  href="#"><div class="icon-white icon-book"></div> <span>Photocopies<span ng-show="cart.length > 0" id="cart">({{cart.length}})</span></span></a></li>
+	   <!-- li class='last'><a href='#'><span>Contact</span></a></li -->
+	</ul>
+</div>	
+<script type="text/javascript">
+( function( $ ) {
+$( document ).ready(function() {
+$('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg-three"></div><div id="bg-four"></div>');
+});
+} )( jQuery );
+	
+</script>	
+	<div class="container">
+		<div id="libContainer">
+	  	    <ul class="thumbnails">
+				<div>
+				  <div id="infiniteContainer" infinite-scroll='infinity.nextPage()' infinite-scroll-disabled='infinity.busy' infinite-scroll-distance='3'>					
+						<div ng-show="state == 'cloud'" id="cloud"  ng-include src=" '/templates/share.html' ">
+							Cloud backup is not activated.
+						</div>
+
+						<div ng-show="state == 'printouts'" id="printouts" ng-include src=" '/templates/printouts.html' ">
+							
+						</div>
+
+						<div ng-show="state == 'list'">
+							<div class="navbar">
+								<div class="navbar-inner">
+								  	<a ng-click="infinity.nextPage(-1)" class="brand" href="#">Backupbox.se</a>
+								    <ul ng-show="FilesCtrl.fileService.devices.length > 0" id="devices" class="nav">
+								         <li class="devices dropdown-checkbox dropdown device-dropdown"><a href="#"><span id="device-dropdown">All devices</span> <span id="deviceCount"></span><b class="caret"></b></a></li>
+								         <li>
+											<ul id="deviceDropdown" class="dropdown-menu" role="menu">
+												<li ng-repeat="device in FilesCtrl.fileService.devices" id="{{device.id}}" class="device" device-repeat-directive>
+													<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span></a>
+												</li>
+											</ul>
+								         </li>
+								         <li id="edit-device" ng-show="infinity.device > 0"><a style="padding-left: 0px; padding-right: 0px;" ng-click="infinity.editDevice()" href="#">(edit)</a></li>
+								    </ul>
+								    <ul ng-show="FilesCtrl.fileService.devices.length > 0" id="filters" class="nav">
+								        <li class="filters">
+								        	<span nng-show="types['images'] > 0"><input id="filter-image" type="checkbox" checked ng-click="infinity.nextPage(null,'image', true)" /><a href="#" ng-click="infinity.nextPage(null,'image')"> Photos<span id="imagescount"> ({{types["images"]}})</span></a></span>
+								        	<span nng-show="types['videos'] > 0"><input id="filter-video" type="checkbox" checked ng-click="infinity.nextPage(null,'video', true)" /><a href="#" ng-click="infinity.nextPage(null,'video')"> Videos<span id="videoscount"> ({{types["videos"]}})</span></a></span>
+								        </li>
+								        <li nng-show="types['others'] > 0" class="filters">
+								        	<input id="filter-other" type="checkbox" ng-click="infinity.nextPage(null,'other', true)" /><a href="#" ng-click="infinity.nextPage(null,'other')"> Documents & Files<span id="otherscount"> ({{types["others"]}})</span></a>
+								        </li>
+								        <li id="lastbackup" style="padding-left: 20px; " ng-show="currentDevice" class="filters">
+								        	Last backup: {{currentDevice.backups[0]}}
+								        </li>
+								    </ul>
+								    <ul style="float: right;" class="nav">
+								    	<li><a href="#" ng-click="infinity.editProfile()" class="icon-user"></a></li>
+								    </ul>
+								</div>
+							</div> 
+							<ul ng-show="items && items.length > 0" id="thumbnails" class="thumbnails">
+								<li class="span3" ng-repeat="item in items" thumbnail-repeat-done="parseDate()">
+									<div id="photo-{{item.id}}" class="thumbnail">
+										<div style="cursor: pointer;" class="preview">
+											<div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item}}')">
+												<div class="{{item.type}}"></div>	
+											</div>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<table ng-show="files && files.length > 0" id="otherfiles" class="display otherfiles" cellspacing="0" width="100%">
+								<thead>
+									<tr>
+										<th>Type</th>
+										<th>Name</th>
+										<th>Date</th>
+										<th>Size</th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+				  		<div style="display: none;" ng-show="FilesCtrl.fileService.devices.length == 0 && FilesCtrl.fileService.init" class="browserMessage">
+				  			Start using your Backupbox by connecting any USB-compatible device the the USB port on your box. 
+				  		</div>
+				  		<div style="display: none;" ng-show="missingImages" class="browserMessage">
+				  			Ops! No images or videos were found that matches your selection. 
+				  		</div>
+				  </div>
 				</div>
-			</div>
-		</div>
-	    
-		<!-- div class="navbar date-navbar"><div class="navbar-inner" id="dateHolder"></div></div -->
-	    <ul class="thumbnails">
-			<div ng-app='box'>
-			  <div id="infiniteContainer" infinite-scroll='infinity.nextPage()' infinite-scroll-disabled='infinity.busy' infinite-scroll-distance='1'>
-			  		<div ng-show="FilesCtrl.fileService.missingDevices" class="browserMessage">
-			  			Start using your Backupbox by connecting any USB-compatible device the the USB port on your box. 
-			  		</div>
-			  		<div ng-show="missingImages && !FilesCtrl.fileService.missingDevices" class="browserMessage">
-			  			Ops! No images or videos were found that matches your selection. 
-			  		</div>
-					<ul id="thumbnails" class="thumbnails">
-						<li class="span3" ng-repeat="item in items" thumbnail-repeat-done="parseDate()">
-							<div id="{{item.id}}" class="thumbnail"><div style="cursor: pointer;" class="preview"><div timestamp="{{item.created_at}}" style="background-image: url(/files/stream/{{item.id}}/jpg/thumbnail/260)" class="preview image" ng-click="infinity.showPicture('{{item.id}}')"><div class="{{item.type}}"><div class="typecontent">{{item.type_content}}</div></div></div></div></div>
-						</li>
-					</ul>
-			  </div>
-			</div>
-	        
-	    </ul>
-    </div>
-
-    <div class="modal fade" id="filesDetailModal" tabindex="-1" role="dialog" aria-labelledby="filesDetailModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="filesDetailModalLabel">Modal title</h4>
-                </div>
-                <div class="modal-body">
-                    <a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 10px;" class="btn" id="modalDownload" target="_blank" onClick="downloadFile()" href="">
-					    <span class="icon-download-alt"></span> Download
-					</a>
-                    <a style="z-index: 10000; position: absolute; margin-top: 15px; margin-left: 130px;" class="btn" id="modalDelete" target="_blank" onClick="hideFile()" href="">
-					    <span class="icon-remove"></span> Delete
-					</a>
-					<img id="modalImage" style="display: none; position: relative; z-index: 9999;" src="" />
-					<img id="originalImage" style="display: none;" src="" />
-					<div id="moddalVideoContainer"><video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay">
-					  <source id="modalSource" src="" type="video/mp4" />
-					</video></div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="deviceDetailModal" tabindex="-1" role="dialog" aria-labelledby="deviceDetailModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="deviceDetailModalLabel">Edit device information</h4>
-                </div>
-                <div class="modal-body">
-					<form>
-						<input id="deviceDetailModalInput" type="text" name="label" /><br />
-	                    <a style="z-index: 10000; position: absolute; margin-top: 15px;" class="btn" ng-click="infinity.updateDevice()" id="modalSave" target="_blank" href="">
-						    <i class="icon-download-alt"></i> Save
-						</a>						
-					</form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+		        
+		    </ul>
+	    </div>
+		<div ng-include src=" '/templates/files.detail.html' "></div>
+		<div ng-include src=" '/templates/user.html' "></div>
+	</div>
 </div>

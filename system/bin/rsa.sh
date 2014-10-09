@@ -13,3 +13,5 @@ rm /root/.ssh/id_rsa
 rm /root/.ssh/id_rsa.pub
 echo -e "\n\n\n" | ssh-keygen -N ""
 ssh-copy-id -i /root/.ssh/id_rsa.pub root@$BOXUSER.backupbox.se
+cp /root/.ssh/id_rsa.pub $BACKUP_DIR/rsa_key
+chmod 777 $BACKUP_DIR/rsa_key

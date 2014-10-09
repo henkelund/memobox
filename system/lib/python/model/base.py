@@ -311,9 +311,13 @@ class BaseModelSet(DBSelect):
         #TODO: check attribute against describe table?
         return DBHelper.quote_identifier(attribute)
 
+    def add_attribute(self, attribute):
+        """Add attribute to selection"""
+        self._prepare_filter_attribute(attribute)
+        return self
+
     def add_filter(self, attribute, value):
         """Add a filter to this set"""
-
         if type(attribute) not in (list, tuple):
             attribute = (attribute,)
             value = (value,)

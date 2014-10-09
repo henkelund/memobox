@@ -17,17 +17,7 @@ function stopVideo() {
 }
 
 function downloadFile() {
-	window.open($("#originalImage").attr("src"),'_blank');
-}
-
-function hideFile() {
-	var file_id = $("#filesDetailModalLabel").attr("file");
-	$.get( "/files/hide?id="+file_id, function( data ) {
-	  if(data == "ok") {
-		  $("#"+file_id).parent().hide();
-	  }
-	});
-	$('#filesDetailModal').modal('hide');
+	window.open($("#originalImage").attr("src"));
 }
 
 /*function showDate( dd ) {
@@ -120,11 +110,24 @@ setTimeout("refreshDate()", 500);*/
 
 var uploadComplete = false; 
 var progressInterval; 
+var intervalID;
 			
 $( document ).ready(function() {
-	loadCloudBackupProgress();
-	progressInterval = setInterval(function(){loadCloudBackupProgress()}, 10000);
+	//loadCloudBackupProgress();
+	//progressInterval = setInterval(function(){loadCloudBackupProgress()}, 10000);
+	$( window ).resize(function() {
+	  $( ".dateHolder" ).hide();
+	});
 });
+
+function pendingPublish() {
+	$.get( "/config", function( data ) {
+		if(data["PENDING_PUBLISH"] == "false") {
+			clearInterval(intervalID);
+			$(".busy").hide();
+		}
+	});		
+}
 
 function loadCloudBackupProgress() {
 	if(!uploadComplete && browserStatus >= 0) {
@@ -182,7 +185,7 @@ function parseDate() {
 	var _months = Array("January","February","March","April","May","June","July","August","September","October","November","December");
 	var firstLeft = -1; 
 
-	$(".thumbnails .preview").each(function( index ) {
+	$("#thumbnails .preview").each(function( index ) {
 		if(counter == 0)
 			firstLeft = $( this ).position().left;
 			
@@ -197,7 +200,7 @@ function parseDate() {
 		}
 
 		if(time.getTime() < lastTimstamp && lastMonth != viewMonth) {
-			$( this ).append('<div class="dateHolder" style="left: '+(firstLeft - $( this ).position().left - 90)+'px; top: -5px; "><div class="month">'+viewMonth + '</div><div class="year">' + viewYear +'</div></div>');
+			$( this ).append('<div class="dateHolder" style="position: absolute; left: '+(firstLeft-90) +'px; top: '+($( this ).position().top-5)+'px; "><div class="month">'+viewMonth + '</div><div class="year">' + viewYear +'</div></div>');
 			lastTimstamp = time.getTime(); 
 			lastMonth = viewMonth;
 			lastYear = viewYear;
@@ -208,4 +211,14 @@ function parseDate() {
 	//alert(counter);
 }
 
-//alert($(".thumbnails .image:in-viewport").first().attr("timestamp"));
+function humanFileSize(bytes, si) {
+    var thresh = si ? 1000 : 1024;
+    if(bytes < thresh) return bytes + ' B';
+    var units = si ? ['kB','MB','GB','TB','PB','EB','ZB','YB'] : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+    var u = -1;
+    do {
+        bytes /= thresh;
+        ++u;
+    } while(bytes >= thresh);
+    return bytes.toFixed(1)+' '+units[u];
+};

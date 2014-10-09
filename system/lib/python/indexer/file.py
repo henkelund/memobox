@@ -1,9 +1,10 @@
-import sys, os, re, sqlite3
+import sys, os, re, sqlite3, os.path
+from datetime import date
+from datetime import datetime
 from helper.db import DBHelper
 from helper.log import LogHelper as logger
 from model.device import DeviceModel
 from model.file import FileModel
-from datetime import datetime
 
 class FileIndexer(object):
     """Class responsible for indexing data from new files"""
@@ -25,7 +26,6 @@ class FileIndexer(object):
 
     def index_device(self, device):
         """Index all new files for a given device"""
-
         transfer_dirs = device.get_transfer_dirs()
         for transfer_dir in transfer_dirs:
 

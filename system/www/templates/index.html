@@ -4,15 +4,23 @@
         <meta charset='utf-8' />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
         <title>Backupbox.se</title>
-        <link href="/static/css/bootstrap/bootstrap.css" rel="stylesheet">
-        <link href="/static/css/bootstrap/bootstrap-responsive.css" rel="stylesheet">
-        <link href="/static/css/box.css" rel="stylesheet">
-		<link rel="icon" type="image/png" href="/static/images/icons/favicon.ico">        
+    		<link rel="icon" type="image/png" href="/static/images/icons/favicon.ico">        
+        <link href="http://netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet">
+        <!-- link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" -->
+        {% assets output="gen/style.css","css/bootstrap/bootstrap.css","css/bootstrap-dropdown-checkbox.css","css/bootstrapValidator.css","css/bootstrap-dropdown-checkbox.css","css/shCore.css","css/jquery.dataTables.css","css/box.css","css/bootstrap/bootstrap-responsive.css" %}
+            <link href="{{ ASSET_URL }}" rel="stylesheet">
+        {% endassets %}
+    		<style>
+        .help-block {
+          color: red;
+        }
+
+        .form-horizontal input + .help-block, .form-horizontal .input-append + .help-block {
+          margin-top: 0px;
+        }
+		</style>
+
         <script>var browserStatus = 0;</script>
-		<script>
-			var isLocal = true;
-			var username = "{{ username }}";
-		</script>
         <!--[if lte IE 7]>
 			<style>#browserError { display: block; }</style>
 			<script>browserStatus = -1;</script>
@@ -23,53 +31,29 @@
 		<style>#browserError { display: block; }</style>
 		<![endif]-->
 		<!--[if IE 8]><!--> <meta http-equiv="X-UA-Compatible" content="IE=8" /> <!--<![endif]-->
-	{% if islocal == false %}
-	<style>
-	  .jumbotron {
-	  	background-color: #2a00ff;
-		box-shadow: 0px 10px 0px #2705d1;
-	  }
-	  
-	  #modalDelete {
-		  display: none; 
-	  }
-	</style>
-	<script>
-		isLocal = false;
-	</script>
-	{% endif %}
     </head>
-    <body>
-        <div class="jumbotron">
-            <div class="container">
-                <h1 class="logo"><a href="#" title="Backupbox.se">Backupbox.se</a><a class="box-info icon-white icon-info-sign" href="/info" target="_blank"></a></h1>
-				<div style="display: none" id="progressContainer" class="progress-container">
-					Safely uploading your data to the cloud<div class="progress" data-placement="bottom" data-trigger="hover" data-html="true" title="This is my conent" >
-					  <div id="cloudbackupprogress" class="progress-bar" role="progressbar" aria-valuenow="" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
-					    
-					  </div>
-					</div>
-				</div>
-            </div>
-        </div>
+    <body id="ng-app" ng-app="box">
         {% raw %}
-        <div id="ng-app" ng-app="box">
-            <div ui-view><span id="browserError" class="browserMessage">This browser is not yet supported by Backupbox. Please use a different web browser.</span></div>
-        </div>
+            <div ui-view>
+                <span id="browserError" class="browserMessage">This browser is not yet supported by Backupbox. Please use a different web browser.</span>
+            </div>            
         {% endraw %}
-        <script type="text/javascript" src="/static/js/jquery/jquery.js"></script>
-        <script type="text/javascript" src="/static/js/jquery.sticky.js"></script>
-        <script type="text/javascript" src="/static/js/jquery.viewport.js"></script>
-        <script type="text/javascript" src="/static/js/bootstrap/bootstrap.js"></script>
-        <script type="text/javascript" src="/static/js/angular/angular.js"></script>
-        <script type="text/javascript" src="/static/js/angular/angular-resource.js"></script>
-        <script type="text/javascript" src="/static/js/angular/angular-ui-router.js"></script>
-        <script type="text/javascript" src="/static/js/angular/ng-infinite-scroll.js"></script>
-        <script type="text/javascript" src="/static/js/angular/sinon-chai.js"></script>
-        <script type="text/javascript" src="/static/js/angular/sinon.js"></script>
-        <script type="text/javascript" src="/static/js/angular/angular-sanitize.min.js"></script>
-        <script type="text/javascript" src="/static/js/box.js"></script>
-        <script type="text/javascript" src="/static/js/datebar.js"></script>
+        </div>
+        
+        <!-- Bootstrap Assests -->
+        {% assets output="gen/basic.js","js/jquery/jquery.js","js/bootstrap/bootstrap.js" %}
+        <script src="{{ ASSET_URL }}" type="text/javascript"></script>
+        {% endassets %}        
+        
+        <!-- Angular Assests -->
+        {% assets output="gen/angular.js","js/angular/angular.js","js/angular/angular-resource.js","js/angular/angular-ui-router.js","js/angular/ng-infinite-scroll.js","js/angular/sinon-chai.js","js/angular/sinon.js","js/angular/angular-sanitize.min.js" %}
+        <script src="{{ ASSET_URL }}" type="text/javascript"></script>
+        {% endassets %}        
+        
+        <!-- Box Assests -->
+        {% assets output="gen/app.js","js/jquery.sticky.js","js/box.js","js/datebar.js","js/bootstrapValidator.js","js/jquery.dataTables.js","js/shCore.js","js/demo.js","js/jquery.isloading.js" %}
+        <script src="{{ ASSET_URL }}" type="text/javascript"></script>
+        {% endassets %}
+
     </body>
 </html>
-

@@ -1,0 +1,23 @@
+	  <div class="navbar">
+	    <div class="navbar-inner">
+	      <a class="brand" href="#">Backupbox.se</a>
+	      <ul class="nav">
+	          <li ng-click="" class="devices dropdown-checkbox dropdown device-dropdown"><a href="#">Devices <span id="deviceCount"></span><b class="caret"></b></a></li>
+	          <li>
+				<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+					<li ng-repeat="device in FilesCtrl.fileService.devices" id="{{device.id}}" class="device" device-repeat-directive>
+						<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')">{{device.product_name}}</a>
+						<div class="unset-filter">x</div>
+					</li>
+				</ul>
+	          </li>
+	        <li class="filters">
+	        	<a href="#" ng-click="infinity.nextPage(null,'image')"><input id="filter-image" type="checkbox" checked ng-click="infinity.nextPage(null,'image')" /> Photos<span id="imagescount">{{FilesCtrl.types["images"]}}</span></a> 
+	        	<a ng-show="FilesCtrl.fileService.videoscount > 0" href="#" ng-click="infinity.nextPage(null,'video')"><input id="filter-video" type="checkbox" checked ng-click="infinity.nextPage(null,'video')" /> Videos<span id="videoscount"></span></a>
+	        </li>
+	        <li class="filters">
+	        	<a href="#" ng-click="infinity.nextPage(null,'other')"><input id="filter-other" type="checkbox" ng-click="infinity.nextPage(null,'other')" /> Documents & Files<span id="otherscount"></span></a>
+	        </li>
+	      </ul>
+	    </div>
+	  </div>   		
