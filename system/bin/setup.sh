@@ -8,5 +8,5 @@ rm -rf $BACKUP_DIR/*
 touch $BACKUP_DIR/index.db
 chown www-data:www-data $BACKUP_DIR/index.db
 
-sed -e "s/{username}/$1/g" -e "s/{password}/$2/g" $SYSTEM_DIR/config/local.cfg.sample > $BACKUP_DIR/local.cfg
+sed -e "s/{username}/$1/g" $SYSTEM_DIR/config/local.cfg.sample > $BACKUP_DIR/local.cfg
 chown www-data:www-data $BACKUP_DIR/local.cfg
