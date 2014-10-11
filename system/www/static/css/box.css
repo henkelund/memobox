@@ -95,6 +95,7 @@ span.stars:hover, .print span.active {
     border-radius: 4px;    
     padding: 20px;
     margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 .splashbox img {
