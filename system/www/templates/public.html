@@ -35,24 +35,20 @@
     <body id="ng-app" ng-app="box">    
     <div id="menuContainer" ng-controller="FilesCtrl">
         <div id='cssmenu'>
-            <ul>
-               <li style="margin-left: 10%;" class='active'><a ng-click="infinity.selectTab('login')" href="#"><div class="icon-white icon-home"></div> <span>Login</span></a></li>
-            </ul>
         </div>  
 
         <div class="container">
             <div id="libContainer">
                 <ul class="thumbnails">
-                    <form ng-show="state == 'login'" action="/login" method="GET" style="display: none; text-align: left;">
+                    {% if localaccess == 0 %}
                         <div class="splashbox">
-                            <p>Login to view all your images</p><p style="color: red;" class="message error">{{message}}</p>
-                                <input type="hidden" name="action" value="post" />
-                                <span class="form-description"></span>
-                                <input style="margin-bottom: 0px;" class="text" type="password" name="password" /> <input style="margin-left: 10px" type="submit" value="Login" />
-                            </div>
+                            <p><img src="/static/images/box-online.png" width="80" /> We have detected that you are logged in to the same network as your Backupbox. <br />
+                            Do you want to login to your box?<br />
+                            <button onClick="window.location='http://{{ localip }}/'"class="button">Yes, Login to my box</button>
+                            </p>
                         </div>
-                    </form>
-                    <div style="float: left; width: 75%;" ng-show="shared && shared.length > 0" ng-init="infinity.loadShared()">
+                    {% endif %}
+                    <div style="display: none; float: left; width: 75%;" ng-show="shared && shared.length > 0" ng-init="infinity.loadShared()">
                         <ul id="thumbnails" class="thumbnails">
                             <li class="span3" ng-repeat="item in shared">
                                 {% raw %}

@@ -98,16 +98,14 @@ def index_action():
 	FileModel.update()
 	FilterHelper.install() 
 
-	if g.localaccess and request.args.get('noredirect') is None:
-		return redirect("http://"+PingModel.lastping()["local_ip"]+"/", code=302)
+	if g.islocalbox or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
+		return render_template('index.html', username=g.username)
 	else:
-		if g.islocalbox or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
-			return render_template('index.html', username=g.username)
-		else:
-			config = DBHelper.loadconfig()
-			_firstname = "debug" if not "FIRSTNAME" in config else config["FIRSTNAME"]
-			_lastname = "debug" if not "LASTNAME" in config else config["LASTNAME"]
-			return render_template('public.html', firstname=_firstname, lastname=_lastname)
+		config = DBHelper.loadconfig()
+		ping = PingModel.lastping()
+		_firstname = "debug" if not "FIRSTNAME" in config else config["FIRSTNAME"]
+		_lastname = "debug" if not "LASTNAME" in config else config["LASTNAME"]
+		return render_template('public.html', firstname=_firstname, lastname=_lastname, localaccess=int(g.localaccess), localip=ping["local_ip"])
 
 # Config route that loads session configuration 
 @app.route('/config')
