@@ -32,6 +32,7 @@ mkdir /HDD/cache
 mkdir /HDD/devices
 chown -R www-data:www-data /HDD
 chmod 777 -R /HDD
+ln -s /HDD /backupbox/data
 
 # Restart NGINX and UWSGI
 /etc/init.d/uwsgi restart

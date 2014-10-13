@@ -38,7 +38,7 @@ end
 # graphicsmagick - Extremely fast thumbnail generation tool
 packages = %w{
   libfuse-dev libusb-1.0-0-dev python-dev pkg-config libxml2-dev pmount libtool automake autoconf autotools-dev tree gphotofs parted python python-werkzeug
-  python-imaging python-flask uwsgi uwsgi-plugin-python nginx curl mediainfo libav-tools graphicsmagick python-pip python-dev libgraphicsmagick++1-dev libboost-python-dev
+  python-imaging python-flask uwsgi uwsgi-plugin-python nginx curl mediainfo libav-tools graphicsmagick python-pip python-dev libgraphicsmagick++1-dev libboost-python-dev sshpass
 }
 packages.each do |package_name|
   package package_name do

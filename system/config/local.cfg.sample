@@ -6,6 +6,11 @@
 # $BASH_SOURCE instead of $0.
 #
 
-BOXUSER="{username}"
-LOCAL="true"
-PASSWORD="{password}"
+BOXUSER={username}
+LOCAL=true
+PASSWORD=
+AUTOUPDATE=true
+CHANNEL=alpha
+CLOUDBACKUP=true
+FIRSTNAME=
+LASTNAME=
