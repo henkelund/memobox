@@ -18,6 +18,7 @@ fi
 
 # Write serial to file
 echo $2 > /backupbox/data/public/serial.txt
+touch /backupbox/data/public/_publish
 
 # Stop all services if they are running
 /etc/init.d/uwsgi stop
