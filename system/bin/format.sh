@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# Create host key and upload it to the server
+/backupbox/system/bin/rsa.sh
+
+REMOTEUSER=`ssh root@nordkvist.backupbox.se "/backupbox/system/bin/user.sh $1"`
+
+if [[ $REMOTEUSER == *Error* ]]
+then
+  echo $REMOTEUSER
+  echo "User already exists. Please choose another username";
+  exit
+fi
+
 # Check if username was provided
 if [ -z "$1" ]
   then
@@ -15,10 +27,6 @@ if [ -z "$2" ]
     echo "usage: ./format.sh username serial"
     exit
 fi
-
-# Write serial to file
-echo $2 > /backupbox/data/public/serial.txt
-touch /backupbox/data/public/_publish
 
 # Stop all services if they are running
 /etc/init.d/uwsgi stop
@@ -43,6 +51,12 @@ mkdir /HDD/log
 mkdir /HDD/public
 mkdir /HDD/cache
 mkdir /HDD/devices
+
+# Write serial to file
+echo $2 > /HDD/public/serial.txt
+touch /HDD/public/_publish
+
+# Fix user permissions
 chown -R www-data:www-data /HDD
 chmod 777 -R /HDD
 ln -s /HDD /backupbox/data
@@ -56,7 +70,5 @@ chmod 777 -R /backupbox/data
 # Initialize config file. First parameter is username, second parameter is password
 /backupbox/system/bin/setup.sh $1
 
-# Create host key and upload it to the server
-/backupbox/system/bin/rsa.sh
-
+# Performing backup
 /backupbox/system/bin/backup.sh
