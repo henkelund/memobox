@@ -9,8 +9,6 @@ source "$BACKUP_DIR/local.cfg"
 
 COMMAND="curl --connect-timeout 5 -s -X GET http://$BOXUSER.backupbox.se/ping?$pingvalues"
 
-echo $COMMAND
-
 response=`$BIN_DIR/timeout.sh -t 5 $COMMAND`
 
 if [ "$?" = "0" ] && [ "$response" = "ok" ]; then
