@@ -91,8 +91,9 @@ class FileModel(ExtendedModel):
         if len(segments) > 1:
             extension = segments.pop().lower()
         elif mime is not None:
-            extension = mimetypes.guess_extension(
-                                str(mime), strict=False).lstrip('.')
+            _extension = mimetypes.guess_extension(str(mime), strict=False)
+            if _extension is not None
+                extension = _extension.lstrip('.')
 
         return extension
 

@@ -31,6 +31,7 @@ from datetime import date
 from subprocess import call
 from datetime import date
 from flask import Flask, session, render_template, request, jsonify, abort, Response, redirect, g, url_for
+from flask.ext.compress import Compress
 
 # CSS & JS Compression lib
 from flask.ext.assets import Environment, Bundle
@@ -57,6 +58,7 @@ app = Flask(__name__)
 app.debug = True
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+Compress(app)
 
 # Initiate asset management(CSS & Javascript)
 assets = Environment(app)
@@ -173,7 +175,7 @@ def files_action():
 	# Determines wether request contains only media files or documents
 	isMedia = True
 
-	models = FileModel.all().columns(["_id", "created_at", "type", "name"], None, True).join("device", "m.device = device._id", ["locked", "product_name"]).add_attribute("duration").add_attribute("uuid").add_attribute("published").where("is_hidden = 0").order('m.created_at', "DESC")
+	models = FileModel.all().columns(["_id", "created_at", "type", "name"], None, True).join("device", "m.device = device._id", ["locked", "product_name"]).add_attribute("duration").where("is_hidden = 0").order('m.created_at', "DESC")
 
 	for arg in args.keys():
 		vals = args.get(arg).split(',')
@@ -209,6 +211,7 @@ def files_action():
 		
 		data.append(data_list)
 	
+	print models
 	return jsonify({'files': data})
 
 # Info route that displays box debug information. For administration use only
@@ -277,9 +280,9 @@ def upload_action():
 		ff = str(_file.abspath()+"/"+_file.name())
 		uid = str(uuid.uuid1())+'.jpg'
 		shutil.copyfile(ff, "../data/public/"+uid)
-		#sftp.put(ff, uid)
-		if request.args.get("description-"+f):
-			_file.description(request.args.get("description-"+f));
+
+		#if request.args.get("description-"+f):
+		#	_file.description(request.args.get("description-"+f));
 
 		_file.published(1)
 		_file.uuid(uid)
@@ -573,10 +576,14 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 				if g.islocalbox == False:
 					config = DBHelper.loadconfig()
 					cache_dir = "/backups/"+config["BOXUSER"]+"/cache"
+					filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
+					mimetype = '%s/%s' % (model.type(), model.subtype())
+					_headers["Content-Disposition"] = "inline"
+				else:
+					#filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
+					filename = '%s/%s' % ("/static/cache", urllib.quote(thumbnail["thumbnail"]))
+					return redirect(filename)
 				
-				filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
-				mimetype = '%s/%s' % (model.type(), model.subtype())
-				_headers["Content-Disposition"] = "inline"
 		else:
 			if g.islocalbox == False:
 				config = DBHelper.loadconfig()
