@@ -620,6 +620,11 @@ def allowed_file(filename):
 
 @app.route('/profileupload', methods=['GET', 'POST'])
 def upload_file():
+    print request.method
+    print os.path.join(app.config['UPLOAD_FOLDER'], "---")
+    file = request.files['file']
+    print secure_filename(file.filename)
+    print os.path.join(app.config['UPLOAD_FOLDER'], filename)
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):

@@ -92,7 +92,7 @@ class FileModel(ExtendedModel):
             extension = segments.pop().lower()
         elif mime is not None:
             _extension = mimetypes.guess_extension(str(mime), strict=False)
-            if _extension is not None
+            if _extension is not None:
                 extension = _extension.lstrip('.')
 
         return extension

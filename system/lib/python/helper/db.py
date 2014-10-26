@@ -161,12 +161,12 @@ class DBHelper(object):
     @staticmethod
     def saveconfig(config, username=None, dbfile=""):
         if dbfile is "":
-            if username is not None:
+            if g.islocalbox is True:
+                dbfile = "../data/local.cfg"
+            elif username is not None:
                 dbfile = "/backups/"+username+"/local.cfg"
             elif hasattr(g, "username"):
                 dbfile = "/backups/"+g.username+"/local.cfg"
-            else:
-                dbfile = "../data/local.cfg"
 
         RE = '(('+'|'.join(config.keys())+')\s*=)[^\r\n]*?(\r?\n|\r)'
         pat = re.compile(RE)
