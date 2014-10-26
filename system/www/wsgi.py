@@ -592,8 +592,13 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 					_headers["Content-Disposition"] = "attachment; filename="+model.name()
 				mimetype = '%s/%s' % (model.type(), model.subtype())
 			else:
-				filename = '%s/%s' % ("/static"+model.abspath().replace("/backupbox/data", ""), urllib.quote(model.name()))
-				return redirect(filename)
+				if type != "nodownload":
+					filename = '%s/%s' % (model.abspath(), model.name())
+					_headers["Content-Disposition"] = "attachment; filename="+model.name()
+					mimetype = '%s/%s' % (model.type(), model.subtype())
+				else:
+					filename = '%s/%s' % ("/static"+model.abspath().replace("/backupbox/data", ""), urllib.quote(model.name()))
+					return redirect(filename)
 
 	if not os.path.isfile(filename):
 		abort(404)
