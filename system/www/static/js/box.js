@@ -408,13 +408,14 @@
 			$("#filesDetailModalLabel").html(obj.product_name + " > " + obj.name);
 		else 
 			$("#filesDetailModalLabel").html(obj.name);
+
 		$("#filesDetailModalDate").html(viewDate +" "+ month[viewMonth] + ", "+viewYear);
 		$("#filesDetailModalLabel").attr("file", obj.id);
 		
 		if(obj.type == "video") {
 			$("#moddalVideoContainer").html('<video id="modalVideo" style="display: none;" width="100%" height="520" controls="controls" autoplay="autoplay"><source id="modalSource" src="" type="video/mp4" /></video>');					
-			$("#modalVideo > source").attr("src", "/files/stream/"+obj.id+"/null/null/0");
-		
+			$("#modalVideo > source").attr("src", "/files/stream/"+obj.id+"/null/nodownload/0");
+			$("#originalImage").attr("src", "/files/stream/"+obj.id+"/null/full/0");
 			$("#modalVideo").load();
 			$("#modalVideo").show();
 			$("#modalImage").hide();
