@@ -382,7 +382,11 @@
 
 	  // Todo, move this from infinity to device 	  
 	  Infinity.prototype.showPicture = function(file) {
-	  	var obj = JSON.parse(file);
+	  	var obj = this.publish.items.filter(function( obj ) {
+		  return obj.id == file;
+		})[0];
+
+	  	//var obj = JSON.parse(file);
 	  	
 	  	if(obj.locked == 1) {
 	  		$("#loginModal").modal("show");
