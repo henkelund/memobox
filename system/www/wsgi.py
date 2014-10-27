@@ -31,7 +31,7 @@ from datetime import date
 from subprocess import call
 from datetime import date
 from flask import Flask, session, render_template, request, jsonify, abort, Response, redirect, g, url_for
-from flask.ext.compress import Compress
+#from flask.ext.compress import Compress
 
 # CSS & JS Compression lib
 from flask.ext.assets import Environment, Bundle
@@ -58,7 +58,7 @@ app = Flask(__name__)
 app.debug = True
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-Compress(app)
+#Compress(app)
 
 # Initiate asset management(CSS & Javascript)
 assets = Environment(app)
