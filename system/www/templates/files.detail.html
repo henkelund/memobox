@@ -1,6 +1,6 @@
-	    <div class="modal fade" id="filesDetailModal" tabindex="-1" role="dialog" aria-labelledby="filesDetailModalLabel" aria-hidden="true" >
-	        <div class="modal-dialog">
-	            <div class="modal-content">
+	    <div class="modal fade" id="filesDetailModal" tabindex="-1" role="dialog" aria-labelledby="filesDetailModalLabel" aria-hidden="true" style="height: 95%;">
+	        <div class="modal-dialog" style="height: 100%;">
+	            <div class="modal-content" style="height: 100%; ">
 	                <div class="modal-header">
 	                    <button id="modalClose" type="button" class="btn btn-default" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
 						 <a class="btn btn-default" onClick="downloadFile()" href="">
@@ -10,7 +10,7 @@
 	                    <h4 class="modal-title" id="filesDetailModalLabel">Modal title</h4>
 	                    <div style="font-style: italic;" id="filesDetailModalDate"></div>
 	                </div>
-	                <div class="modal-body">
+	                <div class="modal-body" style="max-height: 75%;">
 						<a id="zoomLink" target="_blank" href=""><img id="modalImage" style="display: none; position: relative; z-index: 9999;" src="" /></a>
 						<img id="originalImage" style="display: none;" src="" />
 						<div id="moddalVideoContainer"><video id="modalVideo" style="display: none;" width="520" height="520" controls="controls" autoplay="autoplay">
