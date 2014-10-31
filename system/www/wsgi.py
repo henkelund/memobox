@@ -193,7 +193,15 @@ def files_action():
 				models.where("m.type not in ('image', 'video')").limit(1000, (after-1)*1000)
 				isMedia = False
 			else:
-				models.where("m.type in ('image', 'video')")
+				sql = "m.type IN (%s)"
+				_vals = ""
+				for value in str(vals[0]).split(','): 
+					_vals = _vals + "'"+value+"'"
+					if str(vals[0]).split(',')[-1] != str(value):
+						_vals = _vals + ","
+
+				print sql % _vals
+				models.where(sql % _vals)
 
 		elif arg == 'device' and (len(vals) > 0) and vals[0] != "-1":
 			models.where('m.device in ('+str(vals[0])+')')
@@ -552,7 +560,7 @@ def icon_action(type=None):
 def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	_headers = {}	
 	if type == "profile":
-		filename = os.path.abspath("/backups/"+DBHelper.loadconfig()["BOXUSER"]+"/cache/profile.jpg")
+		filename = os.path.abspath("/HDD/cache/profile.jpg")
 
 		if not os.path.isfile(filename):
 			filename = os.path.abspath("static/images/profile.jpg");
@@ -626,11 +634,6 @@ def allowed_file(filename):
 
 @app.route('/profileupload', methods=['GET', 'POST'])
 def upload_file():
-    print request.method
-    print os.path.join(app.config['UPLOAD_FOLDER'], "---")
-    file = request.files['file']
-    print secure_filename(file.filename)
-    print os.path.join(app.config['UPLOAD_FOLDER'], filename)
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
@@ -654,9 +657,10 @@ def upload_file():
             	'+profile',
             	'"*"',
             	'-auto-orient',
-            	'/backups/dev/cache/profile.jpg'
+            	'/HDD/cache/profile.jpg'
             	]                 	
             	
+            print " ".join(cmdline)
             subprocess.call(cmdline)
 
             # Write flag to public-dir in order to perform file upload
