@@ -1,0 +1,5 @@
+#<file system>	<mount point>	<type>	<options>	<dump>	<pass>
+/dev/sda1	/HDD		ext3	defaults	0	0
+/dev/nandb	/		ext4	defaults,noatime	0	1
+tmpfs		/tmp		tmpfs	defaults	0	0
+tmpfs		/var/tmp	tmpfs	defaults	0	0
