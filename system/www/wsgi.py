@@ -560,9 +560,14 @@ def icon_action(type=None):
 def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	_headers = {}	
 	if type == "profile":
-		filename = os.path.abspath("/HDD/cache/profile.jpg")
+		public_filename = os.path.abspath("/backups/"+DBHelper.loadconfig()["BOXUSER"]+"/cache/profile.jpg")
+		local_filename = os.path.abspath("/HDD/cache/profile.jpg")
 
-		if not os.path.isfile(filename):
+		if os.path.isfile(public_filename):
+			filename = public_filename
+		elif os.path.isfile(local_filename):
+			filename = local_filename
+		else:
 			filename = os.path.abspath("static/images/profile.jpg");
 
 		mimetype = "image/jpeg"
