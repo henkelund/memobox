@@ -385,6 +385,12 @@
 	  	var obj = this.publish.items.filter(function( obj ) {
 		  return obj.id == file;
 		})[0];
+		
+		if (obj == null) {
+			obj = this.publish.shared.filter(function( obj ) {
+			  return obj.id == file;
+			})[0];
+		}
 
 	  	//var obj = JSON.parse(file);
 	  	
