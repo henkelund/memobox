@@ -7,7 +7,7 @@ BACKUP_DIR="$(dirname "$SYSTEM_DIR")/data"
 source "$BACKUP_DIR/local.cfg"
 
 if [[ -z "$CHANNEL" ]]; then
-	CHANNEL="prototype"
+	CHANNEL="alpha"
 fi
 
 if [[ -z "$AUTOUPDATE" ]]; then
