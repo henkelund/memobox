@@ -32,7 +32,7 @@ mkdir /HDD
 /backupbox/system/bin/rsa.sh
 
 echo "Start checking for username"
-REMOTEUSER=`ssh root@nordkvist.backupbox.se "/backupbox/system/bin/user.sh $1"`
+REMOTEUSER=`ssh root@$1.backupbox.se "/backupbox/system/bin/user.sh $1"`
 echo "Finished checking for username"
 
 if [[ $REMOTEUSER == *Error* ]]
