@@ -80,6 +80,7 @@ chmod 777 -R /backupbox/data
 
 # Try mounting the harddrive
 mount /dev/sda1 /HDD
+chown www-data:www-data /HDD
 
 # Create mount folder and give www-data full rights
 mkdir /backupbox/data/log
@@ -89,6 +90,8 @@ mkdir /backupbox/data/devices
 mkdir /backupbox/data/static
 mkdir /backupbox/data/static/gen
 mkdir /backupbox/data/static/.webassets-cache
+
+chown -R www-data:www-data /backupbox/data/*
 
 # Write serial to file
 echo $2 > /backupbox/data/public/serial.txt
