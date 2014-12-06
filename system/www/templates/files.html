@@ -121,8 +121,8 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 				  		<div style="display: none;" ng-show="FilesCtrl.fileService.devices.length == 0 && FilesCtrl.fileService.init" class="browserMessage">
 				  			Start using your Backupbox by connecting any USB-compatible device the the USB port on your box. 
 				  		</div>
-				  		<div style="display: none;" ng-show="missingImages" class="browserMessage">
-				  			Ops! No images or videos were found that matches your selection. 
+				  		<div style="display: none;" ng-show="FilesCtrl.fileService.devices.length > 0 && missingImages" class="browserMessage">
+				  			Ops! No images or videos were found that matches your selection.
 				  		</div>
 				  </div>
 				</div>

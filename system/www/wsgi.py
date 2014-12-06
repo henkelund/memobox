@@ -200,7 +200,6 @@ def files_action():
 					if str(vals[0]).split(',')[-1] != str(value):
 						_vals = _vals + ","
 
-				print sql % _vals
 				models.where(sql % _vals)
 
 		elif arg == 'device' and (len(vals) > 0) and vals[0] != "-1":
@@ -220,7 +219,6 @@ def files_action():
 		
 		data.append(data_list)
 	
-	print models
 	return jsonify({'files': data})
 
 # Info route that displays box debug information. For administration use only
