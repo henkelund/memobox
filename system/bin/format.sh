@@ -33,7 +33,7 @@ mkdir /HDD
 chown -R www-data:www-data /HDD
 chmod 777 -R /HDD
 ln -s /HDD /backupbox/data
-chown www-data:www-data /backupbox/data
+chown -h www-data:www-data /backupbox/data
 chmod 777 -R /backupbox/data
 
 # Initialize config file. First parameter is username, second parameter is password
@@ -75,7 +75,7 @@ mkdir /HDD
 chown -R www-data:www-data /HDD
 chmod 777 -R /HDD
 ln -s /HDD /backupbox/data
-chown www-data:www-data /backupbox/data
+chown -h www-data:www-data /backupbox/data
 chmod 777 -R /backupbox/data
 
 # Try mounting the harddrive
