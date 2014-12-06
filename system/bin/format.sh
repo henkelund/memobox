@@ -16,6 +16,10 @@ if [ -z "$2" ]
     exit
 fi
 
+# Create root .ssh folder if missing
+mkdir /root/.ssh
+touch /root/.ssh/known_hosts
+
 # Remove old folders, if they exist
 /etc/init.d/uwsgi stop
 /etc/init.d/nginx stop
@@ -24,6 +28,13 @@ umount /HDD
 rm -rf /backupbox/data
 rm -rf /HDD
 mkdir /HDD
+
+# Fix user permissions and create symlink to hard drive mount point
+chown -R www-data:www-data /HDD
+chmod 777 -R /HDD
+ln -s /HDD /backupbox/data
+chown www-data:www-data /backupbox/data
+chmod 777 -R /backupbox/data
 
 # Initialize config file. First parameter is username, second parameter is password
 /backupbox/system/bin/setup.sh $1
@@ -83,6 +94,9 @@ touch /backupbox/data/public/_publish
 # Restart NGINX and UWSGI
 /etc/init.d/uwsgi restart
 /etc/init.d/nginx restart
+
+# Generate new config file since we hav formated the hard drive
+/backupbox/system/bin/setup.sh $1
 
 # Regenerate rsa keys since we have since formatted the hard drive
 /backupbox/system/bin/rsa.sh

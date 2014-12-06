@@ -16,7 +16,8 @@ echo "BOXUSER: $BOXUSER"
 rm /root/.ssh/id_rsa
 rm /root/.ssh/id_rsa.pub
 echo -e "\n\n\n" | ssh-keygen -N ""
-ssh-keyscan -t rsa,dsa $BOXUSER.backupbox.se 2>&1 | sort -u - /root/.ssh/known_hosts > /root/.ssh/tmp_hostscat /root/.ssh/tmp_hosts >> /root/.ssh/known_hosts
+ssh-keyscan -t rsa,dsa $BOXUSER.backupbox.se 2>&1 | sort -u - /root/.ssh/known_hosts > /root/.ssh/tmp_hosts
+cat /root/.ssh/tmp_hosts >> /root/.ssh/known_hosts
 sshpass -p 'copiebox' ssh-copy-id -i /root/.ssh/id_rsa.pub root@$BOXUSER.backupbox.se
 cp /root/.ssh/id_rsa.pub $BACKUP_DIR/rsa_key
 chmod 777 $BACKUP_DIR/rsa_key
