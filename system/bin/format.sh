@@ -86,6 +86,9 @@ mkdir /backupbox/data/log
 mkdir /backupbox/data/public
 mkdir /backupbox/data/cache
 mkdir /backupbox/data/devices
+mkdir /backupbox/data/static
+mkdir /backupbox/data/static/gen
+mkdir /backupbox/data/static/.webassets-cache
 
 # Write serial to file
 echo $2 > /backupbox/data/public/serial.txt
