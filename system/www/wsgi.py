@@ -69,7 +69,11 @@ b=BoxModel()
 # Creates DB Helper, loads config and determines wether box is local or cloud
 @app.before_request
 def before_request():
-	if not DBHelper.islocal() and not PingModel.validate_ip(request.host):
+	if request.host == "www.sivula.se":
+		g.username = "sivula"
+	elif request.host == "www.nordkvist.me":
+		g.username = "nordkvist"
+	elif not DBHelper.islocal() and not PingModel.validate_ip(request.host):
 		g.username = request.base_url.split(".")[0].split("//")[1]
 	else:
 		g.username = DBHelper.loadconfig()["BOXUSER"]
