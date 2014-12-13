@@ -82,11 +82,14 @@ def before_request():
 	g.islocalbox = DBHelper.islocal()
 	g.iscloudbox = not g.islocalbox
 	
-	if request.path.startswith("/ping") or request.path.startswith("/lastping"):
-		DBHelper.initdb("ping.db")
-	else:
-		if not request.path.startswith("/ping"):
-			DBHelper.initdb()
+	try:
+		if request.path.startswith("/ping") or request.path.startswith("/lastping"):
+			DBHelper.initdb("ping.db")
+		else:
+			if not request.path.startswith("/ping"):
+				DBHelper.initdb()
+	except:
+		print "Database not found"
 
 	g.localaccess = PingModel.haslocalaccess(request)
 
@@ -94,6 +97,9 @@ def before_request():
 # Start page route that redirects to login if box is on cloud
 @app.route('/')
 def index_action():
+	if not os.path.isfile("/backups/"+g.username+"/index.db"):
+		return render_template('404.html', username=g.username)
+
 	DeviceModel.install()
 	try:
 		BoxModel.install()	
@@ -104,7 +110,11 @@ def index_action():
 	FileModel.update()
 	FilterHelper.install() 
 
-	if g.islocalbox or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
+	if g.username == "admin":
+		output = ""
+		
+		return render_template('admin.html', admin=os.walk("/backups").next()[1])
+	elif g.islocalbox or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
 		return render_template('index.html', username=g.username)
 	else:
 		config = DBHelper.loadconfig()
