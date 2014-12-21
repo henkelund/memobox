@@ -1,7 +1,23 @@
 
 <h1>Activated boxes</h1>
 <ul>
-{% for x in admin %}
-	<li>{{ x }}</li>
+{% for key, value in admin.iteritems() %}
+	<li>{{ key }} (<a href="#" onClick="toggle('{{ key }}')">info</a>)</li>
+	<ul id="{{ key }}" style="display: none;">
+		{% for _k, _v in value.iteritems() %}
+			<li><b>{{ _k }}: </b>{{ _v }}</li>
+		{% endfor %}		
+	</ul>
 {% endfor %}
 </ul>
+
+<script>
+	function toggle(id) {
+		var d = document.getElementById(id);
+		if(d.style.display == "block") {
+			d.style.display = "none";
+		} else {
+			d.style.display = "block";
+		}
+	}
+</script>

@@ -8,11 +8,11 @@ class DBHelper(object):
 
     _instance = None
 
-    def __new__(cls, db=':memory:', *args, **kwargs):
+    def __new__(cls, db=':memory:', fullpath='no', *args, **kwargs):
         """Override __new__ to implement singleton pattern"""
 
         if g and not g.islocalbox:
-	        if not hasattr(g, "sqlite_db"):
+	        if fullpath == 'yes' or not hasattr(g, "sqlite_db"):
 	            g.sqlite_db = super(DBHelper, cls).__new__(cls, *args, **kwargs)
 	            g.sqlite_db._conn = None
 	            g.sqlite_db.set_db(db)
@@ -120,11 +120,13 @@ class DBHelper(object):
 				return False
 
     @staticmethod
-    def initdb(filename="index.db"):
+    def initdb(filename="index.db", fullpath=False):
     	config = DBHelper.loadconfig(None, "../data/local.cfg")
     	dbname = ""
     	
-    	if config["LOCAL"] and config["LOCAL"] == "true":
+        if fullpath:
+            DBHelper(filename, 'yes')
+        elif config["LOCAL"] and config["LOCAL"] == "true":
 			print "../data/"+filename
 			DBHelper("../data/"+filename)
     	else:

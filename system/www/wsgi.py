@@ -111,9 +111,24 @@ def index_action():
 	FilterHelper.install() 
 
 	if g.username == "admin":
-		output = ""
+		output = {}
 		
-		return render_template('admin.html', admin=os.walk("/backups").next()[1])
+		for d in os.walk("/backups").next()[1]:
+			dbfile = '/backups/'+d+"/ping.db"
+			if os.path.isfile(dbfile):
+				try:
+					_output = ""
+					_output = _output + d
+					_rows = {}
+					DBHelper.initdb(dbfile, True)
+					result = DBSelect('ping','*').order("last_ping", 'DESC').limit(1).query()
+					for r in result:
+						for row in r:
+							_rows[row] = str(r[row])
+					output[d] = _rows
+				except Exception as e:
+					print e
+		return render_template('admin.html', admin=output)
 	elif g.islocalbox or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
 		return render_template('index.html', username=g.username)
 	else:
