@@ -98,7 +98,7 @@ def before_request():
 # Start page route that redirects to login if box is on cloud
 @app.route('/')
 def index_action():
-	if not os.path.isfile("/backups/"+g.username+"/index.db"):
+	if g.iscloudbox and not os.path.isfile("/backups/"+g.username+"/index.db"):
 		return render_template('404.html', username=g.username)
 
 	DeviceModel.install()
