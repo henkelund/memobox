@@ -27,6 +27,7 @@ from fabric.operations import put
 from fabric.operations import get
 from ftplib import FTP
 
+#from dateutil.parser import parse
 from datetime import date
 from subprocess import call
 from datetime import date
@@ -111,7 +112,8 @@ def index_action():
 	FilterHelper.install() 
 
 	if g.username == "admin":
-		output = {}
+		boxes = {}
+		online = {}
 		
 		for d in os.walk("/backups").next()[1]:
 			dbfile = '/backups/'+d+"/ping.db"
@@ -121,14 +123,15 @@ def index_action():
 					_output = _output + d
 					_rows = {}
 					DBHelper.initdb(dbfile, True)
-					result = DBSelect('ping','*').order("last_ping", 'DESC').limit(1).query()
+					result = DBSelect('ping', ['last_ping', 'local_ip', 'public_ip', 'uuid', 'capacity', 'used_space', "strftime('%s','now') - strftime('%s', last_ping) as last_online"] ).order("last_ping", 'DESC').limit(1).query()
 					for r in result:
 						for row in r:
 							_rows[row] = str(r[row])
-					output[d] = _rows
+						online[d] = r["last_online"]
+					boxes[d] = _rows
 				except Exception as e:
 					print e
-		return render_template('admin.html', admin=output)
+		return render_template('admin.html', boxes=boxes, online=online)
 	elif g.islocalbox or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
 		return render_template('index.html', username=g.username)
 	else:

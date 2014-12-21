@@ -1,8 +1,8 @@
 
 <h1>Activated boxes</h1>
 <ul>
-{% for key, value in admin.iteritems() %}
-	<li>{{ key }} (<a href="#" onClick="toggle('{{ key }}')">info</a>)</li>
+{% for key, value in boxes.iteritems() %}
+	<li> <span {% if boxes[key]["last_online"] is defined and boxes[key]["last_online"]|int < 120 %} style="color: #46FA46;" {% else %} style="color: red;" {% endif %} >{{ key }}</span> (<a href="#" onClick="toggle('{{ key }}')">info</a>)</li>
 	<ul id="{{ key }}" style="display: none;">
 		{% for _k, _v in value.iteritems() %}
 			<li><b>{{ _k }}: </b>{{ _v }}</li>
