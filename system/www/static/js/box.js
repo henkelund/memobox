@@ -762,6 +762,9 @@
 
 				$(".navbar").show();
 				$("#deviceCount").html("("+this.devices.length+")");
+				$('#filesDetailModal').on('hidden', function () {
+					$(".nav-left, .nav-right").hide();
+				})				
 				$(".device-dropdown").click(function() {
 					$("#devices .dropdown-menu").toggle();
 				});				
