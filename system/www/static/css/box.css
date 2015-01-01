@@ -12,6 +12,7 @@ body {
   background-repeat: no-repeat; 
   z-index: 20000;
   cursor: pointer;
+  display: none;
 }
 
 .nav-right {
@@ -25,6 +26,7 @@ body {
   background-position: -36px;
   z-index: 20000;
   cursor: pointer;  
+  display: none;
 }
 
 .blur {

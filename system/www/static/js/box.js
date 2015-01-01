@@ -453,13 +453,13 @@
 		if(this.publish.selectedIndex == 0) {
 			$(".nav-left").hide();
 		} else {
-			$(".nav-left").show();
+			$(".nav-left").delay(500).fadeIn();
 		}
 
 		if(this.publish.selectedIndex == this.publish.items.length -1) {
 			$(".nav-right").hide();
 		} else {
-			$(".nav-right").show();
+			$(".nav-right").delay(500).fadeIn();
 		}
 
 
@@ -516,6 +516,7 @@
 			$("#print-label").html("Add to cart");
 		}
 
+		//$('.nav-left, .nav-right').fadeIn(1000);
         $('#filesDetailModal').modal('show');
 	  }
 
