@@ -10,6 +10,17 @@
 	                    <h4 class="modal-title" id="filesDetailModalLabel">Modal title</h4>
 	                    <div style="font-style: italic;" id="filesDetailModalDate"></div>
 	                </div>
+	                <div class="modal-footer">
+						 <a class="islocal btn btn-default" ng-click="infinity.deleteFile()" style="display: inline;" href="">
+						    <span class="icon-remove"></span> Delete
+						</a>
+						 <a id="print-button" class="btn btn-default" ng-click="infinity.addToCart()" style="display: inline;" href="">
+						    <span class="icon-remove"></span> <span id="print-label">Order photocopy</span>
+						</a>
+						 <a id="share-button" class="islocal btn btn-default" ng-click="infinity.share()" style="display: inline;" href="">
+						    <span class="icon-share"></span> <span id="print-label">Share</span>
+						</a>
+	                </div>	                
 	                <div class="modal-body" style="max-height: 75%;">
 						<a id="zoomLink" target="_blank" href=""><img id="modalImage" style="display: none; position: relative; z-index: 9999;" src="" /></a>
 						<img id="originalImage" style="display: none;" src="" />
@@ -18,17 +29,8 @@
 						</video></div>
 
 	                </div>
-	                <div class="modal-footer">
-						 <a class="islocal btn btn-default" ng-click="infinity.deleteFile()" href="">
-						    <span class="icon-remove"></span> Delete
-						</a>
-						 <a id="print-button" class="btn btn-default" ng-click="infinity.addToCart()" href="">
-						    <span class="icon-remove"></span> <span id="print-label">Order photocopy</span>
-						</a>
-						 <a id="share-button" class="islocal btn btn-default" ng-click="infinity.share()" href="">
-						    <span class="icon-share"></span> <span id="print-label">Share</span>
-						</a>
-	                </div>
 	            </div>
-	        </div>	    
+	        </div>	   
+	        <div ng-click="infinity.previousPicture()" class="nav-left"></div>
+	        <div ng-click="infinity.nextPicture()" class="nav-right"></div>
 	    </div>

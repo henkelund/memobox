@@ -2,6 +2,31 @@ body {
 /*    background-color: #EDF4F5;*/ /* #054950 #789A9F #EDF4F5 #FFFFFF #F78F1E */
 }
 
+.nav-left {
+  width:  36px; 
+  height:  36px; 
+  position: absolute; 
+  top: 50%; 
+  left: -46px; 
+  background-image: url(/static/images/slider-nav.png); 
+  background-repeat: no-repeat; 
+  z-index: 20000;
+  cursor: pointer;
+}
+
+.nav-right {
+  width:  36px; 
+  height:  36px; 
+  position: absolute; 
+  top: 50%; 
+  left: 570px; 
+  background-image: url(/static/images/slider-nav.png); 
+  background-repeat: no-repeat; 
+  background-position: -36px;
+  z-index: 20000;
+  cursor: pointer;  
+}
+
 .blur {
   -webkit-filter: blur(4px);
   -moz-filter: blur(4px);
@@ -380,6 +405,7 @@ div.video .typecontent {
 
 .modal-body {
 	min-height: 400px;
+  overflow-y: scroll;
 }
 
 #progressContainer div.tooltip-inner {

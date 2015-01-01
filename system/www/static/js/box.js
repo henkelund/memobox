@@ -104,6 +104,9 @@
 		this.publish.currentDevice = null;
 		this.photolist = new Object();
 
+		// File detail dialog
+		this.publish.selectedIndex = -1;
+
 	    // Keep track of Infinite Scroll
 	    this.busy = false;
 	    this.page = 1;
@@ -111,6 +114,7 @@
 		this.type = null; 
 		this.lastCount = -1; 
 
+		// Local variables
 		this.imageCount = -1; 
 		this.device_info = null;
 	};
@@ -380,9 +384,21 @@
 		$('#filesDetailModal').modal('hide');
 	  }
 
+	  Infinity.prototype.previousPicture = function( ) {
+	  	if(this.publish.selectedIndex > 0) {
+	  		this.showPicture(this.publish.items[this.publish.selectedIndex-1].id);
+	  	}
+	  }
+
+	  Infinity.prototype.nextPicture = function( ) {
+	  	if(this.publish.selectedIndex < this.publish.items.length - 1) {
+	  		this.showPicture(this.publish.items[this.publish.selectedIndex+1].id);
+	  	}
+	  }
+
 	  // Todo, move this from infinity to device 	  
-	  Infinity.prototype.showPicture = function(file) {
-	  	var obj = this.publish.items.filter(function( obj ) {
+	  Infinity.prototype.showPicture = function(file, indexvalue) {
+	  	var obj = this.publish.items.filter(function( obj, index ) {
 		  return obj.id == file;
 		})[0];
 		
@@ -391,6 +407,23 @@
 			  return obj.id == file;
 			})[0];
 		}
+
+		if(this.publish.items.indexOf(obj) >= 0) {
+			this.publish.selectedIndex = this.publish.items.indexOf(obj);
+		}
+
+		if(this.publish.selectedIndex == 0) {
+			$(".nav-left").hide();
+		} else {
+			$(".nav-left").show();
+		}
+
+		if(this.publish.selectedIndex == this.publish.items.length -1) {
+			$(".nav-right").hide();
+		} else {
+			$(".nav-right").show();
+		}
+
 
 	  	//var obj = JSON.parse(file);
 	  	
