@@ -36,6 +36,41 @@
         }
      });
 
+	/* Repeat directive that activates tooltip  on loaded devices for device info on mouseover*/
+	box.directive('rangeRepeatDirective', function ($compile, $timeout) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attr) {
+                if (scope.$last === true) {
+                    $timeout(function () {
+                        /*scope.$emit('rangeRepeatDirective');
+						var template = '<li class="divider"></li><li id="allDevices" class="device active"><a href="javascript:void(0)" ng-click="infinity.nextPage(-1)">All devices</a></li>';
+			            var linkFn = $compile(template);
+			            var content = linkFn(scope);
+			            element.parent().append(content); */
+
+						/*$(".navbar").sticky();*/
+
+			            $('#rangeDropdown li').unbind();
+						$('#rangeDropdown li').bind("click", function()
+						{
+						  $('#rangeDropdown').delay(500).fadeOut(600);
+						  scope.$emit('ngRepeatFinished', $( this ).attr("id"));
+						});
+
+						scope.$emit('ngRepeatFinished', -1);
+                    });
+                } else {
+                	/*scope.$emit('rangeRepeatDirective');
+					var template = '<li class="divider"></li><li id="allDevices" class="device active"><a href="javascript:void(0)" ng-click="infinity.nextPage(-1)">Alla devices</a></li>';
+			        var linkFn = $compile(template);
+			        var content = linkFn(scope);                	
+                	element.parent.append();*/
+                }
+            }
+        }
+     });
+
 	box.directive('fileModel', ['$parse', function ($parse) {
 	    return {
 	        restrict: 'A',
@@ -86,6 +121,9 @@
 	  var Infinity = function($scope) {
 	  	this.publish = $scope;
 	  	
+	  	// Constants
+	  	this.publish.months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 	  	// Devices
 	  	this.publish.imagecount = 0; 
 	  	this.publish.videocount = 0; 
@@ -724,7 +762,10 @@
 				$(".navbar").show();
 				$("#deviceCount").html("("+this.devices.length+")");
 				$(".device-dropdown").click(function() {
-					$(".dropdown-menu").toggle();
+					$("#devices .dropdown-menu").toggle();
+				});				
+				$(".range-dropdown").click(function() {
+					$("#range .dropdown-menu").toggle();
 				});				
             },
 

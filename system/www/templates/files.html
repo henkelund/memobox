@@ -85,10 +85,21 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 								        <li nng-show="types['others'] > 0" class="filters">
 								        	<input id="filter-other" type="checkbox" ng-click="infinity.nextPage(null,'other', true)" /><a href="#" ng-click="infinity.nextPage(null,'other')"> Documents & Files<span id="otherscount"> ({{types["others"]}})</span></a>
 								        </li>
-								        <li id="lastbackup" style="padding-left: 20px; " ng-show="currentDevice" class="filters">
+								        <!-- li id="lastbackup" style="padding-left: 20px; " ng-show="currentDevice" class="filters">
 								        	Last backup: {{currentDevice.backups[0]}}
-								        </li>
+								        </li -->
 								    </ul>
+								    <ul ng-show="currentDevice" id="range" class="nav">
+								         <li style="padding-left: 20px;" class="filters devices dropdown-checkbox dropdown range-dropdown"><a href="#"><span id="range-dropdown">Any time</span> <b class="caret"></b></a></li>
+								         <li>
+											<ul id="rangeDropdown" class="dropdown-menu" role="menu">
+												<li ng-repeat="r in currentDevice.range" class="device" range-repeat-directive>
+														<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')"><span>{{ months[r.split("-")[1].replace("0", "")] }}, {{ r.split("-")[0] }}</span></a>
+												</li>
+											</ul>
+								         </li>
+								         <!-- li id="edit-device" ng-show="infinity.device > 0"><a style="padding-left: 0px; padding-right: 0px;" ng-click="infinity.editDevice()" href="#">(edit)</a></li -->
+								    </ul>								    
 								    <ul style="float: right;" class="nav">
 								    	<li><a href="#" ng-click="infinity.editProfile()" class="icon-user"></a></li>
 								    </ul>

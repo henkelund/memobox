@@ -66,7 +66,7 @@ class DeviceModel(BaseModel):
     def get_daterange(self):
         date_range = DBSelect('file',"strftime('%Y-%m', datetime(created_at, 'unixepoch')) as date").distinct(True).order('date','DESC')
         date_range.where("device = "+str(self.id()))
-        
+        print date_range
         rang = date_range.query()
         
         _data = []
