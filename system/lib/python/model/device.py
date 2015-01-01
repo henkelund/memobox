@@ -1,5 +1,6 @@
 from base import BaseModel
 from helper.db import DBHelper
+from helper.db import DBSelect
 from datetime import date
 from datetime import datetime
 import os
@@ -61,6 +62,21 @@ class DeviceModel(BaseModel):
 
         self.save()
         return self
+
+    def get_daterange(self):
+        date_range = DBSelect('file',"strftime('%Y-%m', datetime(created_at, 'unixepoch')) as date").distinct(True).order('date','DESC')
+        date_range.where("device = "+str(self.id()))
+        
+        rang = date_range.query()
+        
+        _data = []
+        counter = 0
+        
+        for r in rang:
+            _data.append(r["date"])
+            counter = counter + 1
+
+        return _data
 
     def get_backups(self):
         tree = {}

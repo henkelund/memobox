@@ -420,6 +420,7 @@ def file_devices_action():
 		count = {}
 
 		backups = device.get_backups()
+		date_range = device.get_daterange()
 
 		for t in formats: 
 			q = ""
@@ -455,6 +456,7 @@ def file_devices_action():
 			'thumbnails': thumbnailcount,
 			'serial': device.serial(),
 			'backups': backups,
+			'range': date_range,
 			'symbol': str(device.type())
 		})    
 
