@@ -11,6 +11,7 @@ class DeviceModel(BaseModel):
 
     _table = 'device'
     _pk = '_id'
+    _daterange = {}
     _info_file_map = {
         'serial': 'serial',
         'product_id': 'idProduct',
@@ -62,6 +63,35 @@ class DeviceModel(BaseModel):
 
         self.save()
         return self
+
+    def get_fulldaterange(self, device):
+        if len(self._daterange) == 0:
+            date_range = DBSelect('file',"device, strftime('%Y-%m', datetime(created_at, 'unixepoch')) as date, count(strftime('%Y-%m', datetime(created_at, 'unixepoch'))) as files").where("is_hidden = 0").where("width = 260").join("file_thumbnail", "file._id = file_thumbnail.file").group("device").group("date").order('device,date','DESC')
+            print date_range
+            rang = date_range.query()
+            
+            _lastdevice = -1
+            _data = []
+
+            for r in rang:
+                if int(r["device"]) != _lastdevice:
+                    if _lastdevice != -1:
+                        print r["device"]
+                        self._daterange[int(r["device"])] = _data
+                    _data = []
+                    _lastdevice = int(r["device"])
+
+                _temp = {}
+                _temp["date"]   = r["date"]
+                _temp["files"]  = r["files"]
+                _data.append(_temp)
+
+            self._daterange[int(_lastdevice)] = _data
+
+        if int(device) in self._daterange:
+            return self._daterange[int(device)]
+        else:
+            return {}
 
     def get_daterange(self):
         date_range = DBSelect('file',"strftime('%Y-%m', datetime(created_at, 'unixepoch')) as date, count(strftime('%Y-%m', datetime(created_at, 'unixepoch'))) as files").where("is_hidden = 0").where("device = "+str(self.id())).where("width = 260").join("file_thumbnail", "file._id = file_thumbnail.file").distinct(True).group("date").order('date','DESC')

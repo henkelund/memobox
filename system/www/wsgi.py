@@ -425,7 +425,7 @@ def file_devices_action():
 		count = {}
 
 		backups = device.get_backups()
-		date_range = device.get_daterange()
+		date_range = device.get_fulldaterange(device.id())
 
 		for t in formats: 
 			q = ""
