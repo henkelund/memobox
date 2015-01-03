@@ -8,7 +8,6 @@ import urllib, urllib2
 import re
 import uuid
 import subprocess
-import time
 
 from werkzeug import secure_filename
 
@@ -420,35 +419,30 @@ def device_detail_action():
 @app.route('/devices')
 def file_devices_action():
 	devices = []
-	current_milli_time = lambda: int(round(time.time() * 1000))
-
-	start = current_milli_time()
+	
 	for device in DeviceModel.all():
 		states = { -1 : 'Error', 1 : 'Preparing', 2 : 'Transfering files', 3 : 'Preparing images', 4 : 'Ready' }
 		formats = ['image', 'video', 'other' ]
 		count = {}
+		images = 0
+		videos = 0
+		documents = 0
 
 		backups = device.get_backups()
-		date_range = device.get_fulldaterange(device.id())
-
-		for t in formats: 
-			q = ""
-
-			if t == "other":
-				q = "not in ('image', 'video')"
-			else:
-				q = "in ('"+t+"')"
-
-			result = DBSelect('file','count(*) as count').join('device', 'device._id = file.device', None).where("device._id = "+str(device.id())).where("file.type " + q).query()
-			for r in result:
-				count[t] = r["count"]
-
-		thumbnails = DBSelect('file','count(*) as thumbnailcount').join('device', 'device._id = file.device', None).join('file_thumbnail', 'file_thumbnail.file = file._id', None).where("device._id = "+str(device.id())).where("file.type = 'image'").where("file_thumbnail.width = 260").query()    			
-		thumbnailcount = 0; 
-
-		for thumbnail in thumbnails:
-			thumbnailcount = thumbnail['thumbnailcount']
+		date_range = device.get_daterange(device.id())
+		typecount = device.get_typecount(device.id())
 		
+		print typecount
+
+		if "image" in typecount:
+			images = typecount["image"]
+
+		if "video" in typecount:
+			videos = typecount["video"]
+
+		if "all" in typecount:
+			documents = typecount["all"] - images - videos
+
 		devices.insert(0, {
 			'id': device.id(),
 			'new': device.new(),
@@ -459,16 +453,14 @@ def file_devices_action():
 			'model': device.model(),
 			'product_id': device.product_id(),
 			'last_backup': DeviceModel().last_backup(str(device.id())),
-			'images': count['image'],
-			'videos': count['video'],
-			'others': count['other'],
-			'thumbnails': thumbnailcount,
+			'images': images,
+			'videos': videos,
+			'others': documents,
 			'serial': device.serial(),
 			'backups': backups,
 			'range': date_range,
 			'symbol': str(device.type())
 		})    
-		print current_milli_time()-start
 
 	return jsonify({'devices': devices})
 
