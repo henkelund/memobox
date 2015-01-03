@@ -227,11 +227,11 @@ def files_action():
 			else:
 				sql = "m.type IN (%s)"
 				_vals = ""
-				
-				for value in vals: 
-					_vals = _vals + "'"+value+"'"
-					if str(vals[0]).split(',')[-1] != str(value):
-						_vals = _vals + ","
+
+				for value in vals:
+				        _vals = _vals + "'"+value+"'"
+				        if vals[-1] != str(value):
+				                _vals = _vals + ","
 
 				models.where(sql % _vals)
 
