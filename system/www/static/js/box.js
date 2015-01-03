@@ -542,7 +542,7 @@
 	  Infinity.prototype.nextPage = function(_device, _type, noInvert, tab, daterange) {
 	    // Make sure previous request is not running
 	    if (this.busy) return;
-	    
+
 	    // Flag this method as running
 	    this.busy = true;	
 	   	var filters = [];
@@ -605,6 +605,7 @@
 				for(var i=0; i<this.publish.service.devices.length; i++) {
 					if(this.publish.service.devices[i].id == _device) {
 						this.publish.currentDevice = this.publish.service.devices[i];
+						$("#range-dropdown").text("All dates");
 					}
 				}
 			} else 

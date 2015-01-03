@@ -89,12 +89,12 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 								        	Last backup: {{currentDevice.backups[0]}}
 								        </li -->
 								    </ul>
-								    <ul ng-show="currentDevice" id="range" class="nav">
+								    <ul ng-show="currentDevice && currentDevice.range.length > 0" id="range" class="nav">
 								         <li style="padding-left: 20px;" class="filters devices dropdown-checkbox dropdown range-dropdown"><a href="#"><span id="range-dropdown">Any time</span> <b class="caret"></b></a></li>
 								         <li>
 											<ul id="rangeDropdown" class="dropdown-menu" role="menu">
 												<li ng-repeat="r in currentDevice.range" class="device" range-repeat-directive>
-														<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}', null, null, null, '{{r}}')"><span id="{{ r }}">{{ months[r.split("-")[1].replace("0", "")] }}, {{ r.split("-")[0] }}</span></a>
+														<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}', null, null, null, '{{ r['date'] }}')"><span id="{{ r['date'] }}">{{ months[r["date"].split("-")[1].replace("0", "")] }}, {{ r["date"].split("-")[0] }}</span> ({{ r['files'] }})</a>
 												</li>
 											</ul>
 								         </li>
