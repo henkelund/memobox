@@ -225,7 +225,7 @@ def files_action():
 				models.where("m.type not in ('image', 'video')").limit(1000, (after-1)*1000)
 				isMedia = False
 			else:
-				sql = "m.type IN (%s)"
+				sql = "m.type IN ('%s')"
 				models.where(sql % vals[0])
 
 		elif arg == 'device' and (len(vals) > 0) and vals[0] != "-1":
