@@ -193,10 +193,11 @@ class DBSelect(object):
     COLUMNS = 1 << 1
     FROM = 1 << 2
     WHERE = 1 << 3
-    ORDER = 1 << 4
-    LIMIT = 1 << 5
-    OFFSET = 1 << 6
-    ALL = DISTINCT | COLUMNS | FROM | WHERE | ORDER | LIMIT | OFFSET
+    GROUP = 1 << 4    
+    ORDER = 1 << 5
+    LIMIT = 1 << 6
+    OFFSET = 1 << 7
+    ALL = DISTINCT | COLUMNS | FROM | WHERE | GROUP | ORDER | LIMIT | OFFSET
 
     def __init__(self, table, cols='*'):
         """Constructor"""
@@ -219,6 +220,8 @@ class DBSelect(object):
         if parts & self.WHERE:
             self._wheres = []
             self._bind = []
+        if parts & self.GROUP:
+            self._groups = []
         if parts & self.ORDER:
             self._orders = []
         if parts & self.LIMIT:
@@ -237,6 +240,7 @@ class DBSelect(object):
         clone._tables = deepcopy(self._tables)
         clone._wheres = deepcopy(self._wheres)
         clone._bind = deepcopy(self._bind)
+        clone._groups = deepcopy(self._groups)
         clone._orders = deepcopy(self._orders)
         clone._limit = self._limit
         clone._offset = self._offset
@@ -388,6 +392,16 @@ class DBSelect(object):
         """Natural join a table"""
         return self._join('NATURAL JOIN', name, cond, cols, schema)
 
+    def group(self, field):
+        """Add an GROUP to this SELECT"""
+
+        self._groups.append((
+            field
+        ))
+
+        return self
+
+
     def order(self, field, direction='ASC'):
         """Add an ORDER to this SELECT"""
 
@@ -489,6 +503,21 @@ class DBSelect(object):
 
         return sql
 
+    def _render_group(self):
+        """Render the ORDER BY part of this SELECT"""
+
+        sql = ''
+        if len(self._groups) > 0:
+            q = DBHelper.quote_identifier
+            groups = []
+            for group in self._groups:
+                groups.append('%s' % (q(group)))
+
+            sql = ' GROUP BY %s' % ', '.join(groups)
+
+        return sql
+
+
     def _render_order(self):
         """Render the ORDER BY part of this SELECT"""
 
@@ -523,6 +552,7 @@ class DBSelect(object):
         sql += self._render_columns()
         sql += self._render_from()
         sql += self._render_where()
+        sql += self._render_group()
         sql += self._render_order()
         sql += self._render_limit()
         return sql

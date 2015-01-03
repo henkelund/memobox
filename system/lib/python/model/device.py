@@ -64,16 +64,21 @@ class DeviceModel(BaseModel):
         return self
 
     def get_daterange(self):
-        date_range = DBSelect('file',"strftime('%Y-%m', datetime(created_at, 'unixepoch')) as date").distinct(True).order('date','DESC')
-        date_range.where("device = "+str(self.id()))
+        date_range = DBSelect('file',"strftime('%Y-%m', datetime(created_at, 'unixepoch')) as date, count(strftime('%Y-%m', datetime(created_at, 'unixepoch'))) as files").where("is_hidden = 0").where("device = "+str(self.id())).where("width = 260").join("file_thumbnail", "file._id = file_thumbnail.file").distinct(True).group("date").order('date','DESC')
+
         print date_range
+
         rang = date_range.query()
         
         _data = []
         counter = 0
         
         for r in rang:
-            _data.append(r["date"])
+            _temp = {}
+            _temp["date"]   = r["date"]
+            _temp["files"]  = r["files"]
+            _data.append(_temp)
+
             counter = counter + 1
 
         return _data
