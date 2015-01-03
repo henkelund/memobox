@@ -99,7 +99,7 @@ class DeviceModel(BaseModel):
 
     def get_daterange(self, device):
         if len(self._daterange) == 0:
-            date_range = DBSelect('file',"device, strftime('%Y-%m', datetime(created_at, 'unixepoch')) as date, count(strftime('%Y-%m', datetime(created_at, 'unixepoch'))) as files").where("is_hidden = 0").where("width = 260").join("file_thumbnail", "file._id = file_thumbnail.file").group("device").group("date").order('device,date','DESC')
+            date_range = DBSelect('file',"device, strftime('%Y-%m', datetime(created_at, 'unixepoch')) as date, count(strftime('%Y-%m', datetime(created_at, 'unixepoch'))) as files").where("is_hidden = 0").where("width = 260").join("file_thumbnail", "file._id = file_thumbnail.file").group("device").group("date").order('device','DESC').order('date', 'DESC')
             print date_range
             rang = date_range.query()
             
