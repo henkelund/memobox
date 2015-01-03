@@ -8,6 +8,7 @@ import urllib, urllib2
 import re
 import uuid
 import subprocess
+import time
 
 from werkzeug import secure_filename
 
@@ -419,6 +420,9 @@ def device_detail_action():
 @app.route('/devices')
 def file_devices_action():
 	devices = []
+	current_milli_time = lambda: int(round(time.time() * 1000))
+
+	start = current_milli_time()
 	for device in DeviceModel.all():
 		states = { -1 : 'Error', 1 : 'Preparing', 2 : 'Transfering files', 3 : 'Preparing images', 4 : 'Ready' }
 		formats = ['image', 'video', 'other' ]
@@ -464,6 +468,7 @@ def file_devices_action():
 			'range': date_range,
 			'symbol': str(device.type())
 		})    
+		print current_milli_time()-start
 
 	return jsonify({'devices': devices})
 
