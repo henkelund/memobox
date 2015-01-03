@@ -610,7 +610,7 @@
 				}
 			} else 
 			// Restore everything back to normal. Showing all devices
-			if(_device) {
+			if(_device == -1) {
 				this.device = -1; 
 				$(".device").removeClass("active");
 				$("#allDevices").addClass("active");
