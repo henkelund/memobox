@@ -539,10 +539,10 @@
 	  * Method that loads next page in the infinite scroll. Device ID and File type ID can be passed as filtering parameters. 
 	  *	  
 	  **/
-	  Infinity.prototype.nextPage = function(_device, _type, noInvert, tab) {
+	  Infinity.prototype.nextPage = function(_device, _type, noInvert, tab, daterange) {
 	    // Make sure previous request is not running
 	    if (this.busy) return;
-
+	    
 	    // Flag this method as running
 	    this.busy = true;	
 	   	var filters = [];
@@ -582,6 +582,11 @@
 
 	    // Parameter to determine wether content was replaced or appended. replace => chnageState = true
 	    var changedState = false; 
+
+	    if(daterange != null) {
+	    	changedState = true;
+	    	$("#range-dropdown").text($("#"+daterange).text());
+	    }
 
 		// If a device ID was passed, let's filter on device
 		if((_device) || _type) {
@@ -632,7 +637,7 @@
 		// Lead request
 		if(changedState || this.type != "other" && this.lastCount != 0) {
 			$.ajax({
-			    url : "/files?after="+this.page+"&device="+this.device+"&format="+filters.join(","),
+			    url : "/files?after="+this.page+"&device="+this.device+"&format="+filters.join(",")+"&daterange="+daterange,
 				async: false,
 				context: this,
 			    success : function(result){
