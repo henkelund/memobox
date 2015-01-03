@@ -226,13 +226,7 @@ def files_action():
 				isMedia = False
 			else:
 				sql = "m.type IN (%s)"
-				_vals = ""
-				for value in str(vals[0]).split(','): 
-					_vals = _vals + "'"+value+"'"
-					if str(vals[0]).split(',')[-1] != str(value):
-						_vals = _vals + ","
-
-				models.where(sql % _vals)
+				models.where(sql % vals[0])
 
 		elif arg == 'device' and (len(vals) > 0) and vals[0] != "-1":
 			models.where('m.device in ('+str(vals[0])+')')
