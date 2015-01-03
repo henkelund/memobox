@@ -109,8 +109,7 @@ class DeviceModel(BaseModel):
             for r in rang:
                 if int(r["device"]) != _lastdevice:
                     if _lastdevice != -1:
-                        print r["device"]
-                        self._daterange[int(r["device"])] = _data
+                        self._daterange[_lastdevice] = _data
                     _data = []
                     _lastdevice = int(r["device"])
 

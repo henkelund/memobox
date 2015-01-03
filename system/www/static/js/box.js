@@ -604,7 +604,6 @@
 				// Set current device
 				for(var i=0; i<this.publish.service.devices.length; i++) {
 					if(this.publish.service.devices[i].id == _device) {
-						alert(_device + "/" + this.publish.service.devices[i].id);
 						this.publish.currentDevice = this.publish.service.devices[i];
 						$("#range-dropdown").text("All dates");
 					}
