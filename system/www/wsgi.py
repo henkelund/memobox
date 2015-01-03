@@ -427,12 +427,15 @@ def file_devices_action():
 		images = 0
 		videos = 0
 		documents = 0
+		date_range = {}
+		typecount = {}
 
 		backups = device.get_backups()
 		date_range = device.get_daterange(device.id())
 		typecount = device.get_typecount(device.id())
 		
 		print typecount
+		print date_range
 
 		if "image" in typecount:
 			images = typecount["image"]
