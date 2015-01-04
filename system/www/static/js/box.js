@@ -43,29 +43,32 @@
             link: function (scope, element, attr) {
                 if (scope.$last === true) {
                     $timeout(function () {
-                        /*scope.$emit('rangeRepeatDirective');
-						var template = '<li class="divider"></li><li id="allDevices" class="device active"><a href="javascript:void(0)" ng-click="infinity.nextPage(-1)">All devices</a></li>';
+                        scope.$emit('rangeRepeatDirective');
+						var template = '<li class="divider"></li><li id="allDates" class="range active"><a href="javascript:void(0)" ng-click="infinity.nextPage(null, null, null, null, null)">All dates</a></li>';
 			            var linkFn = $compile(template);
 			            var content = linkFn(scope);
-			            element.parent().append(content); */
+			            
+			            if($("#allDates", $(element.parent())).length == 0) {
+			            	element.parent().append(content);
+			            }
 
 						/*$(".navbar").sticky();*/
 
 			            $('#rangeDropdown li').unbind();
-						$('#rangeDropdown li').bind("click", function()
+						$('#rangeDropdown li, #allDates').bind("click", function()
 						{
+						  if($(this).attr("id") == "allDates") {
+						  	scope.infinity.nextPage(scope.infinity.publish.currentDevice.id);
+						  }
+
+						  $(".range").removeClass("active");
+						  $(this).addClass("active");
 						  $('#rangeDropdown').delay(500).fadeOut(600);
 						  scope.$emit('ngRepeatFinished', $( this ).attr("id"));
 						});
 
 						scope.$emit('ngRepeatFinished', -1);
                     });
-                } else {
-                	/*scope.$emit('rangeRepeatDirective');
-					var template = '<li class="divider"></li><li id="allDevices" class="device active"><a href="javascript:void(0)" ng-click="infinity.nextPage(-1)">Alla devices</a></li>';
-			        var linkFn = $compile(template);
-			        var content = linkFn(scope);                	
-                	element.parent.append();*/
                 }
             }
         }

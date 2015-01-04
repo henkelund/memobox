@@ -840,9 +840,7 @@ pre,.well{background:#FFFFFF;}
 	font-size: 14px;
 	color: #777;
 	padding-top: 2px;
-	border-left: 1px solid #777;
 	padding-left: 0px;
-	margin-left: 10px;
 	margin-top: 8px;
 }
 
@@ -950,6 +948,10 @@ pre,.well{background:#FFFFFF;}
 
     .filters {
     	display: none;
+    }
+
+    #range .filters {
+    	display: block;
     }
 
     .box-info {
