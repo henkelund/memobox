@@ -619,6 +619,10 @@
 				$("#allDevices").addClass("active");
 				$("#device-dropdown").text('All devices');
 				$("#deviceCount").show();
+				
+				if(daterange == null)
+					$("#range-dropdown").text("All dates");
+				
 				changedState = true; 
 				this.publish.currentDevice = this.publish.service.devices[0];
 			}
