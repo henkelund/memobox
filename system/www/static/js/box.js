@@ -620,8 +620,7 @@
 				$("#device-dropdown").text('All devices');
 				$("#deviceCount").show();
 				changedState = true; 
-				this.publish.currentDevice = null;
-				//$(".dropdown-menu").hide();
+				this.publish.currentDevice = this.publish.service.devices[0];
 			}
 		}
 		
@@ -749,7 +748,6 @@
             this.detailsResource = $resource('/files/details');
             this.deviceResource = $resource('/devices');
             this.devices = [];
-            this.infinity = null;
             this.init = false;
             this.details = [];
         };
@@ -770,10 +768,7 @@
                 this.devices = data.devices;
                 this.init = true;
 
-                alert(JSON.stringify(data.devices[0]));
-                $rootScope.boxscope.infinity.publish.currentDevice = data.devices[0];
-                alert($rootScope.boxscope.infinity.publish.currentDevice.range.length);
-
+                $rootScope.boxscope.infinity.publish.currentDevice = this.devices[0];
 
 				$(".navbar").show();
 				$("#deviceCount").html("("+(this.devices.length-1)+")");
@@ -861,6 +856,7 @@
      */
     box.controller('FilesCtrl', function ($scope, $rootScope, $http, $location, FileService, Infinity, fileUpload) {
         $rootScope.boxscope = $scope;
+        this.fileService = FileService.loadDevices();        
         $scope.service = this.fileService;
         $scope.infinity = new Infinity($scope);
         $scope.items = [];
@@ -868,8 +864,6 @@
         $scope.types = {}
         $scope.state = "list"; 
 		$scope.infinity.loadShared();
-
-        this.fileService = FileService.loadDevices();
 
 		$http({ method: 'GET', url: "/config" }).
 			success(function(data, status, headers, config) {
