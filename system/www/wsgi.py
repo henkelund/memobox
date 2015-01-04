@@ -464,6 +464,11 @@ def file_devices_action():
 			'range': date_range,
 			'symbol': str(device.type())
 		})    
+		
+	devices.insert(0, {
+		'id': -1,
+		'range': device.get_daterange(-1)
+		});
 
 	return jsonify({'devices': devices})
 

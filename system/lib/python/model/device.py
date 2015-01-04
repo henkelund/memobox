@@ -4,6 +4,7 @@ from helper.db import DBSelect
 from datetime import date
 from datetime import datetime
 import os
+import collections
 from glob import glob
 
 class DeviceModel(BaseModel):
@@ -69,7 +70,6 @@ class DeviceModel(BaseModel):
         #SELECT device, file.type, count(*) as count FROM "file" INNER JOIN "device" ON device._id = file.device GROUP BY device,file.type;
         if len(self._typecount) == 0:
             typecount = DBSelect('file',"device, file.type as t, count(*) as count").where("is_hidden = 0").join("device", "device._id = file.device").group("device").group("t")
-            print typecount
             result = typecount.query();
             
             _lastdevice = -1
@@ -79,7 +79,6 @@ class DeviceModel(BaseModel):
             for r in result:
                 if int(r["device"]) != _lastdevice:
                     if _lastdevice != -1:
-                        print r["device"]
                         _data["all"] = _total
                         self._typecount[int(r["device"])] = _data
                     _data = {}
@@ -100,7 +99,6 @@ class DeviceModel(BaseModel):
     def get_daterange(self, device):
         if len(self._daterange) == 0:
             date_range = DBSelect('file',"device, strftime('%Y-%m', datetime(created_at, 'unixepoch')) as date, count(strftime('%Y-%m', datetime(created_at, 'unixepoch'))) as files").where("is_hidden = 0").where("width = 260").join("file_thumbnail", "file._id = file_thumbnail.file").group("device").group("date").order('device','DESC').order('date', 'DESC')
-            print date_range
             rang = date_range.query()
             
             _lastdevice = -1
@@ -119,6 +117,24 @@ class DeviceModel(BaseModel):
                 _data.append(_temp)
 
             self._daterange[int(_lastdevice)] = _data
+
+            _all = {}
+            _all_months = []
+
+            for key, value in self._daterange.iteritems():
+                for month in value:
+                    if month["date"] in _all:
+                        _all[month["date"]] += month["files"]
+                    else:
+                        _all[month["date"]] = month["files"]
+            
+            _all = collections.OrderedDict(sorted(_all.items(), reverse=True))
+
+            for key, value in _all.iteritems():
+                _all_months.append({ "date": key, "files":value });
+
+            self._daterange[-1] = _all_months
+
         else:
             print "No range"
 

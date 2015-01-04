@@ -740,7 +740,7 @@
     /**
      * File service
      */
-    box.factory('FileService', function ($resource, $window, $q) {
+    box.factory('FileService', function ($rootScope, $resource, $window, $q) {
 
         /**
          *
@@ -749,6 +749,7 @@
             this.detailsResource = $resource('/files/details');
             this.deviceResource = $resource('/devices');
             this.devices = [];
+            this.infinity = null;
             this.init = false;
             this.details = [];
         };
@@ -769,8 +770,13 @@
                 this.devices = data.devices;
                 this.init = true;
 
+                alert(JSON.stringify(data.devices[0]));
+                $rootScope.boxscope.infinity.publish.currentDevice = data.devices[0];
+                alert($rootScope.boxscope.infinity.publish.currentDevice.range.length);
+
+
 				$(".navbar").show();
-				$("#deviceCount").html("("+this.devices.length+")");
+				$("#deviceCount").html("("+(this.devices.length-1)+")");
 				$('#filesDetailModal').on('hidden', function () {
 					$(".nav-left, .nav-right").hide();
 				})				
@@ -779,7 +785,7 @@
 				});				
 				$(".range-dropdown").click(function() {
 					$("#range .dropdown-menu").toggle();
-				});				
+				});
             },
 
 
@@ -853,8 +859,8 @@
     /**
      * Files controller
      */
-    box.controller('FilesCtrl', function ($scope, $http, $location, FileService, Infinity, fileUpload) {
-        this.fileService = FileService.loadDevices();
+    box.controller('FilesCtrl', function ($scope, $rootScope, $http, $location, FileService, Infinity, fileUpload) {
+        $rootScope.boxscope = $scope;
         $scope.service = this.fileService;
         $scope.infinity = new Infinity($scope);
         $scope.items = [];
@@ -862,6 +868,8 @@
         $scope.types = {}
         $scope.state = "list"; 
 		$scope.infinity.loadShared();
+
+        this.fileService = FileService.loadDevices();
 
 		$http({ method: 'GET', url: "/config" }).
 			success(function(data, status, headers, config) {
