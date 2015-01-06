@@ -237,7 +237,7 @@ def files_action():
 
 		elif arg == 'device' and (len(vals) > 0) and vals[0] != "-1":
 			models.where('m.device in ('+str(vals[0])+')')
-		elif arg == 'daterange' and (len(vals) > 0) and vals[0] != "undefined":
+		elif arg == 'daterange' and (len(vals) > 0) and vals[0] != "undefined" and vals[0] != "null":
 			models.where("strftime('%Y-%m', datetime(created_at, 'unixepoch')) = '"+str(vals[0])+"'")
 
 	if isMedia:

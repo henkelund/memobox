@@ -154,6 +154,7 @@
 		this.device = -1; 
 		this.type = null; 
 		this.lastCount = -1; 
+		this.daterange = null; 
 
 		// Local variables
 		this.imageCount = -1; 
@@ -634,6 +635,7 @@
 			this.publish.items = [];
 			this.publish.files = [];
 			resetDate();
+			this.daterange = daterange;
 		}
 		
 		// Format input string to request page
@@ -644,7 +646,7 @@
 		// Lead request
 		if(changedState || this.type != "other" && this.lastCount != 0) {
 			$.ajax({
-			    url : "/files?after="+this.page+"&device="+this.device+"&format="+filters.join(",")+"&daterange="+daterange,
+			    url : "/files?after="+this.page+"&device="+this.device+"&format="+filters.join(",")+"&daterange="+this.daterange,
 				async: false,
 				context: this,
 			    success : function(result){
