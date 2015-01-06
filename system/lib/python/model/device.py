@@ -80,7 +80,7 @@ class DeviceModel(BaseModel):
                 if int(r["device"]) != _lastdevice:
                     if _lastdevice != -1:
                         _data["all"] = _total
-                        self._typecount[int(r["device"])] = _data
+                        self._typecount[_lastdevice] = _data
                     _data = {}
                     _total = 0
                     _lastdevice = int(r["device"])
@@ -89,10 +89,25 @@ class DeviceModel(BaseModel):
                 _total = _total + int(r["count"])
 
             _data["all"] = _total
-            self._typecount[int(_lastdevice)] = _data
+            self._typecount[_lastdevice] = _data
 
-        if int(device) in self._typecount:
-            return self._typecount[int(device)]
+            _images = 0
+            _videos = 0
+            _documents = 0
+            
+            for key, value in self._typecount.iteritems():
+                if "image" in value:
+                    _images += int(value["image"])
+
+                if "video" in value:
+                    _videos += int(value["video"])
+
+                _documents += int(value["all"])
+
+            self._typecount[-1] = { "images": _images, "videos": _videos, "documents": (_documents - _images - _videos) }
+
+        if device in self._typecount:
+            return self._typecount[device]
         else:
             return {}
 
@@ -134,9 +149,6 @@ class DeviceModel(BaseModel):
                 _all_months.append({ "date": key, "files":value });
 
             self._daterange[-1] = _all_months
-
-        else:
-            print "No range"
 
         if int(device) in self._daterange:
             return self._daterange[int(device)]

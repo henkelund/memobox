@@ -243,8 +243,6 @@ def files_action():
 	if isMedia:
 		models.where("width = 260").join("file_thumbnail", "m._id = file_thumbnail.file").limit(32, (after-1)*32)
 
-	print models
-
 	for model in models:
 		#model.
 		data_list = model.get_data()
@@ -434,9 +432,6 @@ def file_devices_action():
 		date_range = device.get_daterange(device.id())
 		typecount = device.get_typecount(device.id())
 		
-		print typecount
-		print date_range
-
 		if "image" in typecount:
 			images = typecount["image"]
 
@@ -467,6 +462,9 @@ def file_devices_action():
 		
 	devices.insert(0, {
 		'id': -1,
+		'images': device.get_typecount(-1)["images"],
+		'videos': device.get_typecount(-1)["videos"],
+		'others': device.get_typecount(-1)["documents"],
 		'range': device.get_daterange(-1)
 		});
 

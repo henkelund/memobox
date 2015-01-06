@@ -2,6 +2,14 @@ body {
 /*    background-color: #EDF4F5;*/ /* #054950 #789A9F #EDF4F5 #FFFFFF #F78F1E */
 }
 
+.daterange {
+  float: left;
+}
+
+.filecount {
+  float: right;
+}
+
 .nav-left {
   width:  36px; 
   height:  36px; 

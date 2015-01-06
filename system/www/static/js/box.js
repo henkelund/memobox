@@ -25,7 +25,7 @@
 			            $('#deviceDropdown li').unbind();
 						$('#deviceDropdown li').bind("click", function()
 						{
-						  $('#deviceDropdown').delay(500).fadeOut(600);
+						  $('#deviceDropdown').fadeOut(600);
 						  scope.$emit('ngRepeatFinished', $( this ).attr("id"));
 						});
 
@@ -44,7 +44,7 @@
                 if (scope.$last === true) {
                     $timeout(function () {
                         scope.$emit('rangeRepeatDirective');
-						var template = '<li class="divider"></li><li id="allDates" class="range active"><a href="javascript:void(0)" ng-click="infinity.nextPage(null, null, null, null, null)">All dates</a></li>';
+						var template = '<li id="showmore" class="range"><a href="javascript:void(0)" ng-click="$parent.showalldates = !$parent.showalldates"><span ng-if="$parent.showalldates == false">Show more...</span><span ng-if="$parent.showalldates">Show less...</span></a></li><li class="divider"></li><li id="allDates" class="range active"><a href="javascript:void(0)" ng-click="infinity.nextPage(null, null, null, null, null)">All dates</a></li>';
 			            var linkFn = $compile(template);
 			            var content = linkFn(scope);
 			            
@@ -61,9 +61,13 @@
 						  	scope.infinity.nextPage(scope.infinity.publish.currentDevice.id);
 						  }
 
-						  $(".range").removeClass("active");
-						  $(this).addClass("active");
-						  $('#rangeDropdown').delay(500).fadeOut(600);
+
+						  if($(this).attr("id") != "showmore") {
+								$(".range").removeClass("active");
+								$(this).addClass("active");
+								$('#rangeDropdown').fadeOut(600);
+						  }
+						  
 						  scope.$emit('ngRepeatFinished', $( this ).attr("id"));
 						});
 
@@ -143,6 +147,7 @@
 		this.publish.orderid = false;
 		this.publish.config = {};
 		this.publish.currentDevice = null;
+		this.publish.showalldates = false;
 		this.photolist = new Object();
 
 		// File detail dialog
