@@ -44,10 +44,16 @@
                 if (scope.$last === true) {
                     $timeout(function () {
                         scope.$emit('rangeRepeatDirective');
-						var template = '<li id="showmore" class="range"><a href="javascript:void(0)" ng-click="$parent.showalldates = !$parent.showalldates"><span ng-if="$parent.showalldates == false">Show more...</span><span ng-if="$parent.showalldates">Show less...</span></a></li><li class="divider"></li><li id="allDates" class="range active"><a href="javascript:void(0)" ng-click="infinity.nextPage(null, null, null, null, null)">All dates</a></li>';
+                        var show = "block";
+                        if(scope.infinity.publish.currentDevice.range.length < 15) {
+                        	show = "none";
+                        }
+                        
+						var template = '<li style="display: '+show+'" id="showmore" class="range"><a href="javascript:void(0)" ng-click="$parent.showalldates = !$parent.showalldates"><span ng-if="$parent.showalldates == false">Show more...</span><span ng-if="$parent.showalldates">Show less...</span></a></li><li id="divider" class="divider"></li><li id="allDates" class="range active"><a href="javascript:void(0)" ng-click="infinity.nextPage(null, null, null, null, null)">All dates</a></li>';
 			            var linkFn = $compile(template);
 			            var content = linkFn(scope);
 			            
+			            $("#allDates, #divider, #showmore").remove();
 			            if($("#allDates", $(element.parent())).length == 0) {
 			            	element.parent().append(content);
 			            }
@@ -148,6 +154,7 @@
 		this.publish.config = {};
 		this.publish.currentDevice = null;
 		this.publish.showalldates = false;
+		this.publish.showmore = false;
 		this.photolist = new Object();
 
 		// File detail dialog
@@ -614,6 +621,9 @@
 				for(var i=0; i<this.publish.service.devices.length; i++) {
 					if(this.publish.service.devices[i].id == _device) {
 						this.publish.currentDevice = this.publish.service.devices[i];
+						if(this.publish.currentDevice.range.length > 15) {
+							this.publish.showmore = true;
+						}
 						$("#range-dropdown").text("All dates");
 					}
 				}
@@ -631,6 +641,9 @@
 				
 				changedState = true; 
 				this.publish.currentDevice = this.publish.service.devices[0];
+				if(this.publish.currentDevice.range.length > 15) {
+					this.publish.showmore = true;
+				}				
 			}
 		}
 		

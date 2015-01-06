@@ -82,7 +82,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 								         <li>
 											<ul id="rangeDropdown" class="dropdown-menu" role="menu">
 												<li ng-repeat="r in currentDevice.range" class="range" range-repeat-directive>
-														<a href="javascript:void(0)" ng-show="$index < 15 || showalldates" ng-click="infinity.nextPage('{{currentDevice.id}}', null, null, null, '{{ r['date'] }}')"><span class="daterange" id="{{ r['date'] }}">{{ months[r["date"].split("-")[1].replace("0", "")] }}, {{ r["date"].split("-")[0] }}</span> <span class="filecount">{{ r['files'] }}</span><br style="clear:both;" /></a>
+														<a href="javascript:void(0)" ng-show="($index < 15 || showalldates) && (showmore == false || showmore)" ng-click="infinity.nextPage('{{currentDevice.id}}', null, null, null, '{{ r['date'] }}')"><span class="daterange" id="{{ r['date'] }}">{{ months[r["date"].split("-")[1].replace("0", "")] }}, {{ r["date"].split("-")[0] }}</span> <span class="filecount">{{ r['files'] }}</span><br style="clear:both;" /></a>
 												</li>
 											</ul>
 								         </li>
