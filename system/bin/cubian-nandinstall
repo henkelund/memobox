@@ -198,7 +198,7 @@ END
 ### DISABLE BACKUPBOX SERVICES ###
 /etc/init.d/nginx stop
 /etc/init.d/uwsgi stop
-umount /HDD
+umount /HDD || true
 
 ### check if root
 if [[ ${EUID} -ne 0 ]]; then

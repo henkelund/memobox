@@ -40,7 +40,6 @@ else
 		echo "Pending publication. Let's upload some files"
 
 		eval $(ssh-agent) # Create agent and environment variables
-		ssh-add /backups/dev/rsa_key # Read BOX rsa key
 
 		# Upload public dir
 		rsync -avz --progress $BACKUP_DIR/public root@$BOXUSER.backupbox.se:/backups/$BOXUSER
