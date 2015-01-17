@@ -29,6 +29,13 @@ then
     echo "[$DATETIME] A backup process is already running, exiting.."
 else	
 	echo "$PUBLISH_FILE"
+	if [ "$1" == "LOGBACKUP" ]; then 
+		mkdir -p /HDD/public/log
+		cp /HDD/log/* /HDD/public/log
+		touch /HDD/public/_publish
+		echo "Performing log backup"
+	fi
+
 	if [ -f $PUBLISH_FILE ]; then		
 		echo "Pending publication. Let's upload some files"
 
@@ -45,8 +52,11 @@ else
 		rsync -avz --progress $BACKUP_DIR/tmp.db root@$BOXUSER.backupbox.se:/backups/$BOXUSER/index.db
 		rsync -avz --progress $BACKUP_DIR/local.cfg root@$BOXUSER.backupbox.se:/backups/$BOXUSER
 
+		# Give www-data owner ship to the recently uploaded files
+		ssh root@$BOXUSER.backupbox.se "chown -R www-data:www-data  /backups/$BOXUSER"
+		
 		# Upload thumbnails
-		rsync -avz --progress $BACKUP_DIR/cache root@$BOXUSER.backupbox.se:/backups/$BOXUSER
+		# rsync -avz --progress $BACKUP_DIR/cache root@$BOXUSER.backupbox.se:/backups/$BOXUSER
 
 		# When all is said and done, remove publish_flag
 		rm $PUBLISH_FILE
