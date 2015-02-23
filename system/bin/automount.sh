@@ -59,8 +59,6 @@ done
 export DEVPATH
 source "$BIN_DIR/synchelper.sh"
 
-messagemanager PENDING $LABEL
-
 # Check if data dir is a mountpoint
 #$CHKMNT -q "$DATA_DIR"
 #if [ $? -ne 0 ]; then echo "$DATA_DIR is not a mounted volume" 1>&2; exitmanager 2; fi
@@ -108,6 +106,8 @@ then
     exitmanager 4
 fi
 trap _cleanup EXIT INT TERM
+
+messagemanager PENDING $LABEL
 
 # Time to do what we came here for
 while [ $COUNT -lt $MAX ]
