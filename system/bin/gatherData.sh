@@ -44,5 +44,5 @@ devicecount=`find $BACKUP_DIR/devices -type f | wc -l`
 echo "devicecount=$devicecount&" >> $PINGFILE
 cachecount=`find $BACKUP_DIR/cache -type f | wc -l`
 echo "cachecount=$cachecount&" >> $PINGFILE
-
+echo "software=$ver&" >> $PINGFILE
 freespace computer $BACKUP_DIR >> $PINGFILE
