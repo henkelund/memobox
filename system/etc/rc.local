@@ -13,6 +13,7 @@
 
 cpufreq-set -g performance
 
+/backupbox/system/bin/ping.sh
 /etc/init.d/nginx start
 /etc/init.d/uwsgi start
 /etc/rc.local.PmM &
