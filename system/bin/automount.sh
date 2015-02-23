@@ -118,8 +118,8 @@ do
             $PMOUNT --read-only "$LABEL" "$LABEL" > /dev/null
             ;;
         "ifuse")
-            #$IDEVICEPAIR --udid "$LABEL" unpair #> /dev/null
-            #$IDEVICEPAIR --udid "$LABEL" validate #> /dev/null
+            $IDEVICEPAIR --udid "$LABEL" unpair #> /dev/null
+            $IDEVICEPAIR --udid "$LABEL" validate #> /dev/null
             $IDEVICEPAIR --udid "$LABEL" pair #> /dev/null
 			$IFUSE "$MNTPNT" --udid "$LABEL" -o nonempty > /dev/null
             ;;
