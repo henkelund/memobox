@@ -11,10 +11,10 @@ COMMAND="curl --connect-timeout 5 -s -X GET http://$BOXUSER.backupbox.se/ping?$p
 
 response=`$BIN_DIR/timeout.sh -t 5 $COMMAND`
 
-if [ "$?" = "0" ] && [ "$response" = "ok" ]; then
+if [ "$?" = "0" ] || [ "$response" = "ok" ]; then
 	echo "yes"
 	$BIN_DIR/lights.sh GREEN ON &
 else
-	echo "$response"
+	echo "$response $?"
 	$BIN_DIR/lights.sh GREEN OFF &
 fi
