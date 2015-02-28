@@ -28,7 +28,7 @@
 				</li>
 			{% else %}
 				{%  if _k == "local_ip" %}
-					<li><b>{{ _k }}:</b> <a href="http://{{ _v }}">{{ _v }}</a></li>
+					<li><b>{{ _k }}:</b> <a target="_blank" href="http://{{ _v }}">{{ _v }}</a></li>
 				{% else %}
 					<li><b>{{ _k }}:</b> {{ _v }}</li>
 				{% endif %}
