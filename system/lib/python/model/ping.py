@@ -81,7 +81,7 @@ class PingModel(BaseModel):
          else:
 	         _ping_array = _db_ping.split("|")
 	         
-	         if len(_ping_array) != 12:
+	         if len(_ping_array) < 12:
 	         	return None
 	         	
 	         else:
