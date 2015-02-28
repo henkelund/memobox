@@ -32,6 +32,7 @@ else
 	if [ "$1" == "LOGBACKUP" ]; then 
 		mkdir -p /HDD/public/log
 		cp /HDD/log/* /HDD/public/log
+		cp /var/log/uwsgi/app/box.log /HDD/public/log
 		touch /HDD/public/_publish
 		echo "Performing log backup"
 	fi
