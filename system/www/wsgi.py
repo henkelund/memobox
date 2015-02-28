@@ -96,6 +96,47 @@ def before_request():
 
 
 # Start page route that redirects to login if box is on cloud
+@app.route('/admin')
+def admin_action():
+	if g.iscloudbox and not os.path.isfile("/backups/"+g.username+"/index.db"):
+		return render_template('404.html', username=g.username)
+
+	boxes = {}
+	online = {}
+	
+	for d in os.walk("/backups").next()[1]:
+		pingdb = '/backups/'+d+"/ping.db"
+		userdb = '/backups/'+d+"/index.db"
+		if os.path.isfile(pingdb):
+			try:
+				_output = ""
+				_output = _output + d
+				_rows = {}
+				DBHelper.initdb(pingdb, True)
+				result = DBSelect('ping', ['last_ping', 'local_ip', 'public_ip', 'uuid', 'capacity', 'used_space', "strftime('%s','now') - strftime('%s', last_ping) as last_online", 'temp', 'software'] ).order("last_ping", 'DESC').limit(1).query()
+				
+				for r in result:
+					for row in r:
+						_rows[row] = str(r[row])
+					online[d] = r["last_online"]
+					
+				_devices = {}
+				DBHelper.initdb(userdb, True)
+				device_list = DBSelect('device', ['serial', 'product_id', 'product_name', 'model', 'vendor_id', 'vendor_name', 'manufacturer', 'last_backup', 'state', 'new'] ).order("product_name", 'ASC').query()
+				
+				for rr in device_list:
+						_raws = {}
+						for raw in rr:
+							_raws[raw] = str(rr[raw])
+						_devices[_raws['serial']] = _raws
+				
+				_rows['devices'] = _devices
+				boxes[d] = _rows
+			except Exception as e:
+				print e
+	return render_template('admin.html', boxes=boxes, online=online)
+
+# Start page route that redirects to login if box is on cloud
 @app.route('/')
 def index_action():
 	if g.iscloudbox and not os.path.isfile("/backups/"+g.username+"/index.db"):
@@ -112,45 +153,14 @@ def index_action():
 	FilterHelper.install() 
 
 	if g.username == "admin":
-		boxes = {}
-		online = {}
-		
-		for d in os.walk("/backups").next()[1]:
-			pingdb = '/backups/'+d+"/ping.db"
-			userdb = '/backups/'+d+"/index.db"
-			if os.path.isfile(pingdb):
-				try:
-					_output = ""
-					_output = _output + d
-					_rows = {}
-					DBHelper.initdb(pingdb, True)
-					result = DBSelect('ping', ['last_ping', 'local_ip', 'public_ip', 'uuid', 'capacity', 'used_space', "strftime('%s','now') - strftime('%s', last_ping) as last_online", 'temp', 'software'] ).order("last_ping", 'DESC').limit(1).query()
-					
-					for r in result:
-						for row in r:
-							_rows[row] = str(r[row])
-						online[d] = r["last_online"]
-						
-					_devices = {}
-					DBHelper.initdb(userdb, True)
-					device_list = DBSelect('device', ['serial', 'product_id', 'product_name', 'model', 'vendor_id', 'vendor_name', 'manufacturer', 'last_backup', 'state', 'new'] ).order("product_name", 'ASC').query()
-					
-					for rr in device_list:
-							_raws = {}
-							for raw in rr:
-								_raws[raw] = str(rr[raw])
-							_devices[_raws['serial']] = _raws
-					
-					_rows['devices'] = _devices
-					boxes[d] = _rows
-				except Exception as e:
-					print e
-		return render_template('admin.html', boxes=boxes, online=online)
+		return redirect("/admin")
 	elif g.islocalbox or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
 		return render_template('index.html', username=g.username)
 	else:
 		config = DBHelper.loadconfig()
+		print config
 		ping = PingModel.lastping()
+		print ping
 		_firstname = "debug" if not "FIRSTNAME" in config else config["FIRSTNAME"]
 		_lastname = "debug" if not "LASTNAME" in config else config["LASTNAME"]
 		return render_template('public.html', firstname=_firstname, lastname=_lastname, localaccess=int(g.localaccess), localip=ping["local_ip"])
