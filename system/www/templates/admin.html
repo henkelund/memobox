@@ -1,8 +1,8 @@
 
 <h1>Activated boxes</h1>
-<ul>
+<ul style="padding: 0px; margin: 0px; margin-left: 10px;">
 {% for key, value in boxes.iteritems() %}
-	<li> <span {% if boxes[key]["last_online"] is defined and boxes[key]["last_online"]|int < 120 %} style="color: #46FA46;" {% else %} style="color: red;" {% endif %} >{{ key }}</span> (<a href="#" onClick="toggle('{{ key }}')">+</a>)</li>
+	<li style="list-style: none; padding: 0px; margin: 0px;"> <span {% if boxes[key]["last_online"] is defined and boxes[key]["last_online"]|int < 120 %} style="color: #46FA46;" {% else %} style="color: red;" {% endif %} >{{ key }}</span> (<a href="#" onClick="toggle('{{ key }}')">+</a>)</li>
 	<ul id="{{ key }}" style="display: none;">
 		{% for _k, _v in value.iteritems() %}
 			{%  if _k == "devices" %}
@@ -12,19 +12,19 @@
 						<li>{{ _vv['product_name'] }}</li>
 						<ul>
 							<li>{{ _vv['serial'] }}</li>
-							<li>{{ _vv['model'] }}</li>
-							<li>{{ _vv['vendor_id'] }}</li>
-							<li>{{ _vv['vendor_name'] }}</li>
-							<li>{{ _vv['manufacturer'] }}</li>
-							<li>{{ _vv['last_backup'] }}</li>
-							<li>{{ _vv['state'] }}</li>
-							<li>{{ _vv['new'] }}</li>
+							<li><b>Modell: </b>{{ _vv['model'] }}</li>
+							<li><b>Vendor ID: </b>{{ _vv['vendor_id'] }}</li>
+							<li><b>Vendor: </b>{{ _vv['vendor_name'] }}</li>
+							<li><b>Tillverkare: </b>{{ _vv['manufacturer'] }}</li>
+							<li><b>Senaste backup: </b>{{ _vv['last_backup'] }}</li>
+							<li><b>Status: </b>{{ _vv['state'] }}</li>
+							<li><b>Ny: </b>{{ _vv['new'] }}</li>
 						</ul>
 					{% endfor %}
 					</ul>
 				</li>
 			{% else %}
-				<li><b>{{ _k }}: {{ _v }}</b></li>
+				<li><b>{{ _k }}:</b> {{ _v }}</li>
 			{% endif %}
 		{% endfor %}		
 	</ul>
