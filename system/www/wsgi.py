@@ -610,6 +610,30 @@ def icon_action(type=None):
 		return redirect("/static/images/icons/mint/48/unknown.png")
 
 # Bloated action that fetches thumbnail or original file of an object. 
+@app.route('/files/log/<display_name>')
+def file_log_action(display_name=None):
+	filename = os.path.abspath("/backups/"+DBHelper.loadconfig()["BOXUSER"]+"/public/log/"+display_name)	
+	
+	if not os.path.isfile(filename):
+		abort(404)
+	
+	t = os.stat(filename)
+	sz = str(t.st_size)
+	
+	_headers = {}	
+	_headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+	_headers['Cache-Control'] = 'public, max-age=0'
+	_headers["Content-Transfer-Enconding"] = "binary"
+	_headers["Content-Length"] = sz
+	mimetype = "text/plain"
+
+	return Response(
+				file(filename),
+				headers=_headers,
+				direct_passthrough=True,
+				content_type=mimetype)
+
+# Bloated action that fetches thumbnail or original file of an object. 
 @app.route('/files/stream/<file_id>/<display_name>/<type>/<size>')
 def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	_headers = {}	
@@ -677,9 +701,7 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 	_headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
 	_headers['Cache-Control'] = 'public, max-age=0'
 	_headers["Content-Transfer-Enconding"] = "binary"
-	_headers["Content-Length"] = "video/mp4"
-	_headers["Content-Type"] = sz
-	#mimetype = "video/mp4"
+	_headers["Content-Length"] = sz
 
 	return Response(
 				file(filename),
