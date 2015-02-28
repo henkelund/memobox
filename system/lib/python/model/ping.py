@@ -25,6 +25,8 @@ class PingModel(BaseModel):
                         "used_space"   TEXT NOT NULL DEFAULT '', 
                         "last_ping"	   DATETIME, 
                         "username"     TEXT NOT NULL DEFAULT '', 
+                        "temp"     	   TEXT NOT NULL DEFAULT '', 
+                        "software"     	   TEXT NOT NULL DEFAULT '', 
                         "devicecount"  INT, 
                         "cachecount"   INT,
                         "remote_devicecount"  INT, 
@@ -33,7 +35,7 @@ class PingModel(BaseModel):
                 """)
         )
     @staticmethod
-    def ping(local_ip, public_ip, uuid, capacity, used_space, username, devicecount, cachecount):
+    def ping(local_ip, public_ip, uuid, capacity, used_space, username, devicecount, cachecount, temp, software):
          config = DBHelper.loadconfig()
 
          # Count files in cache folder
@@ -58,13 +60,14 @@ class PingModel(BaseModel):
          if pingcount == 0:
 	         DBHelper().query(
 	                    """
-	                        INSERT INTO ping (local_ip, public_ip, uuid, capacity, used_space, last_ping, username, devicecount, cachecount, remote_devicecount, remote_cachecount) VALUES("%s", "%s", "%s", "%s", "%s", datetime(), "%s", "%s", "%s", "%s", "%s")
-	                    """ % (local_ip, public_ip, uuid, capacity, used_space, username, devicecount, cachecount, remote_devicecount, remote_cachecount))
+	                        INSERT INTO ping (local_ip, public_ip, uuid, capacity, used_space, last_ping, username, devicecount, cachecount, remote_devicecount, remote_cachecount, temp, software) VALUES("%s", "%s", "%s", "%s", "%s", datetime(), "%s", "%s", "%s", "%s", "%s", "%s", "%s")
+	                    """ % (local_ip, public_ip, uuid, capacity, used_space, username, devicecount, cachecount, remote_devicecount, remote_cachecount, temp))
          else:
+	         print "Temp: "+str(temp)
 	         DBHelper().query(
 	                    """
-	                        UPDATE ping SET local_ip = "%s", public_ip = "%s", capacity = "%s", used_space = "%s", last_ping = datetime(), username = "%s", devicecount = "%s", cachecount = "%s", remote_devicecount = "%s", remote_cachecount = "%s" WHERE uuid = "%s"
-	                    """ % (local_ip, public_ip, capacity, used_space, username, devicecount, cachecount, remote_devicecount, remote_cachecount, uuid))
+	                        UPDATE ping SET local_ip = "%s", public_ip = "%s", capacity = "%s", used_space = "%s", last_ping = datetime(), username = "%s", devicecount = "%s", cachecount = "%s", remote_devicecount = "%s", remote_cachecount = "%s", temp = "%s", software = "%s" WHERE uuid = "%s"
+	                    """ % (local_ip, public_ip, capacity, used_space, username, devicecount, cachecount, remote_devicecount, remote_cachecount, temp, software, uuid))
 
     @staticmethod
     def lastping():

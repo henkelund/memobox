@@ -124,7 +124,7 @@ def index_action():
 					_output = _output + d
 					_rows = {}
 					DBHelper.initdb(pingdb, True)
-					result = DBSelect('ping', ['last_ping', 'local_ip', 'public_ip', 'uuid', 'capacity', 'used_space', "strftime('%s','now') - strftime('%s', last_ping) as last_online"] ).order("last_ping", 'DESC').limit(1).query()
+					result = DBSelect('ping', ['last_ping', 'local_ip', 'public_ip', 'uuid', 'capacity', 'used_space', "strftime('%s','now') - strftime('%s', last_ping) as last_online", 'temp', 'software'] ).order("last_ping", 'DESC').limit(1).query()
 					
 					for r in result:
 						for row in r:
@@ -380,7 +380,7 @@ def ping_action():
 		print "Ping table already exists"
 	
 	# Retreive information from the ping request and store that information in the ping database
-	PingModel.ping(request.args.get('local_ip'), request.args.get('public_ip'), request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'), request.args.get('username'), request.args.get('devicecount'), request.args.get('cachecount'));
+	PingModel.ping(request.args.get('local_ip'), request.args.get('public_ip'), request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'), request.args.get('username'), request.args.get('devicecount'), request.args.get('cachecount'), request.args.get('temp'), request.args.get('software'));
 	
 	# If no errors where thrown, respond ok to the local box. Any other response will cause green LED to start blinking. 
 	return "ok"
