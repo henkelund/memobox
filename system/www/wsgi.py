@@ -474,13 +474,14 @@ def file_devices_action():
 			'symbol': str(device.type())
 		})    
 		
-	devices.insert(0, {
-		'id': -1,
-		'images': device.get_typecount(-1)["images"],
-		'videos': device.get_typecount(-1)["videos"],
-		'others': device.get_typecount(-1)["documents"],
-		'range': device.get_daterange(-1)
-		});
+	if len(devices) > 0:
+		devices.insert(0, {
+			'id': -1,
+			'images': device.get_typecount(-1)["images"],
+			'videos': device.get_typecount(-1)["videos"],
+			'others': device.get_typecount(-1)["documents"],
+			'range': device.get_daterange(-1)
+			});
 
 	return jsonify({'devices': devices})
 
