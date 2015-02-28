@@ -71,7 +71,7 @@ b=BoxModel()
 @app.before_request
 def before_request():
 	if request.host == "www.sivula.se":
-		g.username = "sivula"
+		g.username = "sari"
 	elif request.host == "www.nordkvist.me":
 		g.username = "nordkvist"
 	elif not DBHelper.islocal() and not PingModel.validate_ip(request.host):
@@ -116,18 +116,32 @@ def index_action():
 		online = {}
 		
 		for d in os.walk("/backups").next()[1]:
-			dbfile = '/backups/'+d+"/ping.db"
-			if os.path.isfile(dbfile):
+			pingdb = '/backups/'+d+"/ping.db"
+			userdb = '/backups/'+d+"/index.db"
+			if os.path.isfile(pingdb):
 				try:
 					_output = ""
 					_output = _output + d
 					_rows = {}
-					DBHelper.initdb(dbfile, True)
+					DBHelper.initdb(pingdb, True)
 					result = DBSelect('ping', ['last_ping', 'local_ip', 'public_ip', 'uuid', 'capacity', 'used_space', "strftime('%s','now') - strftime('%s', last_ping) as last_online"] ).order("last_ping", 'DESC').limit(1).query()
+					
 					for r in result:
 						for row in r:
 							_rows[row] = str(r[row])
 						online[d] = r["last_online"]
+						
+					_devices = {}
+					DBHelper.initdb(userdb, True)
+					device_list = DBSelect('device', ['serial', 'product_id', 'product_name', 'model', 'vendor_id', 'vendor_name', 'manufacturer', 'last_backup', 'state', 'new'] ).order("product_name", 'ASC').query()
+					
+					for rr in device_list:
+							_raws = {}
+							for raw in rr:
+								_raws[raw] = str(rr[raw])
+							_devices[_raws['serial']] = _raws
+					
+					_rows['devices'] = _devices
 					boxes[d] = _rows
 				except Exception as e:
 					print e

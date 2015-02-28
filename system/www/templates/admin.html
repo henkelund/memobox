@@ -2,10 +2,30 @@
 <h1>Activated boxes</h1>
 <ul>
 {% for key, value in boxes.iteritems() %}
-	<li> <span {% if boxes[key]["last_online"] is defined and boxes[key]["last_online"]|int < 120 %} style="color: #46FA46;" {% else %} style="color: red;" {% endif %} >{{ key }}</span> (<a href="#" onClick="toggle('{{ key }}')">info</a>)</li>
+	<li> <span {% if boxes[key]["last_online"] is defined and boxes[key]["last_online"]|int < 120 %} style="color: #46FA46;" {% else %} style="color: red;" {% endif %} >{{ key }}</span> (<a href="#" onClick="toggle('{{ key }}')">+</a>)</li>
 	<ul id="{{ key }}" style="display: none;">
 		{% for _k, _v in value.iteritems() %}
-			<li><b>{{ _k }}: </b>{{ _v }}</li>
+			{%  if _k == "devices" %}
+				<li><b>Devices</b> (<a href="#" onClick="toggle('{{ key }}_{{ _k }}')">+</a>)
+					<ul id="{{ key }}_{{ _k }}" style="display: none;">
+					{% for _kk, _vv in _v.iteritems() %}
+						<li>{{ _vv['product_name'] }}</li>
+						<ul>
+							<li>{{ _vv['serial'] }}</li>
+							<li>{{ _vv['model'] }}</li>
+							<li>{{ _vv['vendor_id'] }}</li>
+							<li>{{ _vv['vendor_name'] }}</li>
+							<li>{{ _vv['manufacturer'] }}</li>
+							<li>{{ _vv['last_backup'] }}</li>
+							<li>{{ _vv['state'] }}</li>
+							<li>{{ _vv['new'] }}</li>
+						</ul>
+					{% endfor %}
+					</ul>
+				</li>
+			{% else %}
+				<li><b>{{ _k }}: {{ _v }}</b></li>
+			{% endif %}
 		{% endfor %}		
 	</ul>
 {% endfor %}
