@@ -1,12 +1,25 @@
 #!/bin/bash
 INFOFILE=/tmp/info.txt
 PINGFILE=/tmp/ping.txt
+TEMPFILE=/sys/devices/platform/sunxi-i2c.0/i2c-0/0-0034/temp1_input
 
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SYSTEM_DIR="$(dirname "$BIN_DIR")"
 BACKUP_DIR="$(dirname "$SYSTEM_DIR")/data"
 source "$BACKUP_DIR/local.cfg" 
 
+urlencode() {
+    # urlencode <string>
+ 
+    local length="${#1}"
+    for (( i = 0; i < length; i++ )); do
+        local c="${1:i:1}"
+        case $c in
+            [a-zA-Z0-9.~_-]) printf "$c" ;;
+            *) printf '%%%02X' "'$c"
+        esac
+    done
+}
 
 # Load helper functions for getting system data
 source $BIN_DIR/pinghelper.sh
@@ -30,9 +43,12 @@ freespace human $BACKUP_DIR >> $INFOFILE
 ver=$(cd /backupbox && git log -1 --format=%cd .)
 echo "Current Software Version: $ver" >> $INFOFILE
 
-# Get CPU temperature
-temp=`cat /sys/devices/platform/sunxi-i2c.0/i2c-0/0-0034/temp1_input`
-echo "CPU Temperature: $temp" >> $INFOFILE
+if [ -f $TEMPFILE ];
+then
+   # Get CPU temperature
+   temp=`cat /sys/devices/platform/sunxi-i2c.0/i2c-0/0-0034/temp1_input`
+   echo "CPU Temperature: $temp" >> $INFOFILE
+fi
 
 # Load information of all backed up devices
 #gatherdevices $1>> $INFOFILE
@@ -54,6 +70,10 @@ devicecount=`find $BACKUP_DIR/devices -type f | wc -l`
 echo "devicecount=$devicecount&" >> $PINGFILE
 cachecount=`find $BACKUP_DIR/cache -type f | wc -l`
 echo "cachecount=$cachecount&" >> $PINGFILE
-echo "software=$ver&" >> $PINGFILE
-echo "temp=$temp&" >> $PINGFILE
+v=`urlencode "$ver"`
+echo "software=$v&" >> $PINGFILE
+if [ -f $TEMPFILE ];
+then
+   echo "temp=$temp&" >> $PINGFILE
+fi
 freespace computer $BACKUP_DIR >> $PINGFILE
