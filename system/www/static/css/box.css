@@ -131,6 +131,8 @@ span.stars:hover, .print span.active {
     padding: 20px;
     margin-bottom: 20px;
     margin-top: 20px;
+    width: 70%; 
+    float: left;    
 }
 
 .splashbox img {
