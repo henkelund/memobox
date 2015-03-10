@@ -83,58 +83,12 @@ def before_request():
 	g.islocalbox = DBHelper.islocal()
 	g.iscloudbox = not g.islocalbox
 	
-	try:
-		if request.path.startswith("/ping") or request.path.startswith("/lastping"):
-			DBHelper.initdb("ping.db")
-		else:
-			if not request.path.startswith("/ping"):
-				DBHelper.initdb()
+	DBHelper.initdb()
+
 	except:
 		print "Database not found"
 
 	g.localaccess = PingModel.haslocalaccess(request)
-
-
-# Start page route that redirects to login if box is on cloud
-@app.route('/admin')
-def admin_action():
-	if g.iscloudbox and not os.path.isfile("/backups/"+g.username+"/index.db"):
-		return render_template('404.html', username=g.username)
-
-	boxes = {}
-	online = {}
-	
-	for d in os.walk("/backups").next()[1]:
-		pingdb = '/backups/'+d+"/ping.db"
-		userdb = '/backups/'+d+"/index.db"
-		if os.path.isfile(pingdb):
-			try:
-				_output = ""
-				_output = _output + d
-				_rows = {}
-				DBHelper.initdb(pingdb, True)
-				result = DBSelect('ping', ['last_ping', 'local_ip', 'public_ip', 'uuid', 'capacity', 'used_space', "strftime('%s','now') - strftime('%s', last_ping) as last_online", 'temp', 'software'] ).order("last_ping", 'DESC').limit(1).query()
-				
-				for r in result:
-					for row in r:
-						_rows[row] = str(r[row])
-					online[d] = r["last_online"]
-					
-				_devices = {}
-				DBHelper.initdb(userdb, True)
-				device_list = DBSelect('device', ['serial', 'product_id', 'product_name', 'model', 'vendor_id', 'vendor_name', 'manufacturer', 'last_backup', 'state', 'new'] ).order("product_name", 'ASC').query()
-				
-				for rr in device_list:
-						_raws = {}
-						for raw in rr:
-							_raws[raw] = str(rr[raw])
-						_devices[_raws['serial']] = _raws
-				
-				_rows['devices'] = _devices
-				boxes[d] = _rows
-			except Exception as e:
-				print e
-	return render_template('admin.html', boxes=boxes, online=online)
 
 # Start page route that redirects to login if box is on cloud
 @app.route('/')
@@ -379,48 +333,6 @@ def lastping():
 	
 		ping = PingModel.lastping()
 		return jsonify(ping)
-
-# Called by the local box client to send box information to the cloud software. Will never be used localy. 
-@app.route('/ping-mysql')
-def ping_mysql_action():
-	response = ""; 
-	
-	try:
-	    con = mdb.connect('localhost', 'root', 'root', 'backupbox');
-	    cur = con.cursor()
-	    cur.execute("INSERT INTO example VALUES(7, 'PM Nordkvist')")
-	    con.commit()
-
-	    cur.execute("SELECT * FROM example")
-	    rows = cur.fetchall()
-
-	    for row in rows:
-	    	response = response + str(row[0]) + ": "+ str(row[1]) + "<br />"
-
-	except mdb.Error, e:
-		print "Error %d: %s" % (e.args[0],e.args[1])
-	    
-	finally:    
-	        
-	    if con:    
-	        con.close()
-	
-	return response
-
-# Called by the local box client to send box information to the cloud software. Will never be used localy. 
-@app.route('/ping')
-def ping_action():
-	# Call installer script that creats the ping database if it is not present
-	try:
-		PingModel.install();	
-	except:
-		print "Ping table already exists"
-	
-	# Retreive information from the ping request and store that information in the ping database
-	PingModel.ping(request.args.get('local_ip'), request.args.get('public_ip'), request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'), request.args.get('username'), request.args.get('devicecount'), request.args.get('cachecount'), request.args.get('temp'), request.args.get('software'));
-	
-	# If no errors where thrown, respond ok to the local box. Any other response will cause green LED to start blinking. 
-	return "ok"
 
 # Used to change the name of a backup device
 @app.route('/device/update')
