@@ -381,6 +381,33 @@ def lastping():
 		return jsonify(ping)
 
 # Called by the local box client to send box information to the cloud software. Will never be used localy. 
+@app.route('/ping-mysql')
+def ping_mysql_action():
+	response = ""; 
+	
+	try:
+	    con = mdb.connect('localhost', 'root', 'root', 'backupbox');
+	    cur = con.cursor()
+	    cur.execute("INSERT INTO example VALUES(7, 'PM Nordkvist')")
+	    con.commit()
+
+	    cur.execute("SELECT * FROM example")
+	    rows = cur.fetchall()
+
+	    for row in rows:
+	    	response = response + str(row[0]) + ": "+ str(row[1]) + "<br />"
+
+	except mdb.Error, e:
+		print "Error %d: %s" % (e.args[0],e.args[1])
+	    
+	finally:    
+	        
+	    if con:    
+	        con.close()
+	
+	return response
+
+# Called by the local box client to send box information to the cloud software. Will never be used localy. 
 @app.route('/ping')
 def ping_action():
 	# Call installer script that creats the ping database if it is not present
