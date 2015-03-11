@@ -7,7 +7,7 @@ $BIN_DIR/gatherData.sh
 pingvalues=`sed '{:q;N;s/\n//g;t q}' /tmp/ping.txt`
 source "$BACKUP_DIR/local.cfg"
 
-COMMAND="curl --connect-timeout 5 -s -X GET http://ping.backupbox.se:8000/ping?$pingvalues"
+COMMAND="curl --connect-timeout 5 -s -X GET http://ping.backupbox.se/ping?$pingvalues"
 
 response=`$BIN_DIR/timeout.sh -t 5 $COMMAND`
 

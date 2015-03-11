@@ -58,11 +58,29 @@ b=BoxModel()
 # Start page route that redirects to login if box is on cloud
 @app.route('/admin')
 def admin_action():
-	if g.iscloudbox and not os.path.isfile("/backups/"+g.username+"/index.db"):
-		return render_template('404.html', username=g.username)
-
 	boxes = {}
 	online = {}
+
+	response = ""; 
+	
+	try:
+	    con = mdb.connect('localhost', 'root', 'root', 'backupbox');
+	    cur = con.cursor()
+	    cur.execute("SELECT * FROM ping")
+	    rows = cur.fetchall()
+
+	    for row in rows:
+	    	response = response + str(row[0]) + ": "+ str(row[1]) + "<br />"
+
+	except mdb.Error, e:
+		print "Error %d: %s" % (e.args[0],e.args[1])
+	    
+	finally:    
+	        
+	    if con:    
+	        con.close()
+	
+	return response
 	
 	for d in os.walk("/backups").next()[1]:
 		pingdb = '/backups/'+d+"/ping.db"
@@ -104,26 +122,7 @@ def index_action():
 # Called by the local box client to send box information to the cloud software. Will never be used localy. 
 @app.route('/ping')
 def ping_action():
-	response = ""; 
-	
-	try:
-	    con = mdb.connect('localhost', 'root', 'root', 'backupbox');
-	    cur = con.cursor()
-	    cur.execute("INSERT INTO example VALUES(7, 'PM Nordkvist')")
-	    con.commit()
+	response = "" 
+	PingModel.ping(request.args.get('local_ip'), request.args.get('public_ip'), request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'), request.args.get('username'), request.args.get('devicecount'), request.args.get('cachecount'), request.args.get('temp'), request.args.get('software'))
 
-	    cur.execute("SELECT * FROM example")
-	    rows = cur.fetchall()
-
-	    for row in rows:
-	    	response = response + str(row[0]) + ": "+ str(row[1]) + "<br />"
-
-	except mdb.Error, e:
-		print "Error %d: %s" % (e.args[0],e.args[1])
-	    
-	finally:    
-	        
-	    if con:    
-	        con.close()
-	
-	return response
+	return "yes"

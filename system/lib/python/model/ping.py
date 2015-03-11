@@ -1,4 +1,5 @@
 import subprocess
+import MySQLdb as mdb
 from base import BaseModel
 from helper.db import DBHelper, DBSelect
 from helper.filter import FilterHelper
@@ -36,38 +37,50 @@ class PingModel(BaseModel):
         )
     @staticmethod
     def ping(local_ip, public_ip, uuid, capacity, used_space, username, devicecount, cachecount, temp, software):
-         config = DBHelper.loadconfig()
+		config = DBHelper.loadconfig()
 
-         # Count files in cache folder
-         find = subprocess.Popen(['find', '/backups/'+config["BOXUSER"]+'/cache', '-type', 'f'],stdout=subprocess.PIPE)
-         wc = subprocess.Popen(['wc', '-l'], stdin = find.stdout, stdout=subprocess.PIPE)
-         remote_cachecount = wc.stdout.readline().replace("\\n", "")
+		# Count files in cache folder
+		find = subprocess.Popen(['find', '/backupbox/data/cache', '-type', 'f'],stdout=subprocess.PIPE)
+		wc = subprocess.Popen(['wc', '-l'], stdin = find.stdout, stdout=subprocess.PIPE)
+		remote_cachecount = wc.stdout.readline().replace("\\n", "")
 
-         # Count files in cache folder
-         find = subprocess.Popen(['find', '/backups/'+config["BOXUSER"]+'/devices', '-type', 'f'],stdout=subprocess.PIPE)
-         wc = subprocess.Popen(['wc', '-l'], stdin = find.stdout, stdout=subprocess.PIPE)
-         remote_devicecount = wc.stdout.readline().replace("\\n", "")
+		# Count files in cache folder
+		find = subprocess.Popen(['find', '/backupbox/data/devices', '-type', 'f'],stdout=subprocess.PIPE)
+		wc = subprocess.Popen(['wc', '-l'], stdin = find.stdout, stdout=subprocess.PIPE)
+		remote_devicecount = wc.stdout.readline().replace("\\n", "")
 
-         print "removedev:"+remote_devicecount
-         print "removecache:"+remote_cachecount
-         
-         pings = DBSelect('ping','count(*) as pingcount').where("uuid = '%s'" % uuid).query()
-         pingcount = 0; 
+		con = None
+		print "Start"
 
-         for ping in pings:
-         	pingcount = ping['pingcount']
-         
-         if pingcount == 0:
-	         DBHelper().query(
-	                    """
-	                        INSERT INTO ping (local_ip, public_ip, uuid, capacity, used_space, last_ping, username, devicecount, cachecount, remote_devicecount, remote_cachecount, temp, software) VALUES("%s", "%s", "%s", "%s", "%s", datetime(), "%s", "%s", "%s", "%s", "%s", "%s", "%s")
-	                    """ % (local_ip, public_ip, uuid, capacity, used_space, username, devicecount, cachecount, remote_devicecount, remote_cachecount, temp))
-         else:
-	         print "Temp: "+str(temp)
-	         DBHelper().query(
-	                    """
-	                        UPDATE ping SET local_ip = "%s", public_ip = "%s", capacity = "%s", used_space = "%s", last_ping = datetime(), username = "%s", devicecount = "%s", cachecount = "%s", remote_devicecount = "%s", remote_cachecount = "%s", temp = "%s", software = "%s" WHERE uuid = "%s"
-	                    """ % (local_ip, public_ip, capacity, used_space, username, devicecount, cachecount, remote_devicecount, remote_cachecount, temp, software, uuid))
+		try:
+			con = mdb.connect('localhost', 'root', 'root', 'backupbox');
+			cur = con.cursor()
+			cur.execute("SELECT count(*)as pingcount FROM ping WHERE uuid = '"+uuid+"'")
+			rows = cur.fetchall()
+			pingcount = 0;
+
+			for row in rows:
+				pingcount = row[0];
+
+			if pingcount == 0:
+				cur.execute(
+			                """
+			                    INSERT INTO ping (local_ip, public_ip, uuid, capacity, used_space, last_ping, username, devicecount, cachecount, remote_devicecount, remote_cachecount, temp, software) VALUES("%s", "%s", "%s", "%s", "%s", NOW(), "%s", "%s", "%s", "%s", "%s", "%s", "%s")
+			                """ % (local_ip, public_ip, uuid, capacity, used_space, username, devicecount, cachecount, remote_devicecount, remote_cachecount, temp, software))
+				con.commit()
+			else:
+			     cur.execute(
+			                """
+			                    UPDATE ping SET local_ip = "%s", public_ip = "%s", capacity = "%s", used_space = "%s", last_ping = NOW(), username = "%s", devicecount = "%s", cachecount = "%s", remote_devicecount = "%s", remote_cachecount = "%s", temp = "%s", software = "%s" WHERE uuid = "%s"
+			                """ % (local_ip, public_ip, capacity, used_space, username, devicecount, cachecount, remote_devicecount, remote_cachecount, temp, software, uuid))
+			     con.commit()
+
+		except mdb.Error, e:
+			print "Error %d: %s" % (e.args[0],e.args[1])
+
+		finally:    
+			if con:    
+			    con.close()
 
     @staticmethod
     def lastping():
