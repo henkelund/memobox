@@ -82,11 +82,8 @@ def before_request():
 	g.host = request.host
 	g.islocalbox = DBHelper.islocal()
 	g.iscloudbox = not g.islocalbox
-	
-	DBHelper.initdb()
 
-	except:
-		print "Database not found"
+	DBHelper.initdb()
 
 	g.localaccess = PingModel.haslocalaccess(request)
 
