@@ -314,23 +314,6 @@ def upload_action():
 def public_ip():
 	return request.remote_addr
 
-# Route for fetching last ping. Only used in cloud server. 
-@app.route('/lastping')
-def lastping():
-	if g.islocalbox:
-		response = urllib2.urlopen('http://'+g.username+'.backupbox.se/lastping')
-		json = response.read()
-		response.close()
-		return json
-	else:
-		try:
-			PingModel.install();	
-		except:
-			print "Ping table already exists"
-	
-		ping = PingModel.lastping()
-		return jsonify(ping)
-
 # Used to change the name of a backup device
 @app.route('/device/update')
 def device_update_action():

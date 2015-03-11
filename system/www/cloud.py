@@ -126,3 +126,9 @@ def ping_action():
 	PingModel.ping(request.args.get('local_ip'), request.args.get('public_ip'), request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'), request.args.get('username'), request.args.get('devicecount'), request.args.get('cachecount'), request.args.get('temp'), request.args.get('software'))
 
 	return "yes"
+
+# Route for fetching last ping. Only used in cloud server. 
+@app.route('/lastping')
+def lastping():
+		ping = PingModel.lastping(request.args.get('uuid'))
+		return jsonify(ping)	

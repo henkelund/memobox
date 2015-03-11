@@ -55,7 +55,7 @@ class PingModel(BaseModel):
 		try:
 			con = mdb.connect('localhost', 'root', 'root', 'backupbox');
 			cur = con.cursor()
-			cur.execute("SELECT count(*)as pingcount FROM ping WHERE uuid = '"+uuid+"'")
+			cur.execute("SELECT count(*) as pingcount FROM ping WHERE uuid = '"+uuid+"'")
 			rows = cur.fetchall()
 			pingcount = 0;
 
@@ -83,34 +83,38 @@ class PingModel(BaseModel):
 			    con.close()
 
     @staticmethod
-    def lastping():
-         _ping = {}
-         
-         _sqlite = subprocess.Popen(['sqlite3', '/backups/'+g.username+'/ping.db', 'SELECT * FROM ping WHERE LENGTH(uuid) > 10 ORDER BY last_ping DESC LIMIT 1'], stdout=subprocess.PIPE)
-         _db_ping = _sqlite.stdout.readline()
-         
-         if not _db_ping or len(_db_ping) == 0:
-         	return None
-         else:
-	         _ping_array = _db_ping.split("|")
-	         
-	         if len(_ping_array) < 12:
-	         	return None
-	         	
-	         else:
-	         	_ping["local_ip"] = _ping_array[1]
-	         	_ping["public_ip"] = _ping_array[2]
-	         	_ping["uuid"] = _ping_array[3]
-	         	_ping["capacity"] = _ping_array[4]
-	         	_ping["used_space"] = _ping_array[5]
-	         	_ping["last_ping"] = _ping_array[6]
-	         	_ping["username"] = _ping_array[7]
-	         	_ping["devicecount"] = _ping_array[8]
-	         	_ping["cachecount"] = _ping_array[9]
-	         	_ping["remote_devicecount"] = _ping_array[10].rstrip()
-	         	_ping["remote_cachecount"] = _ping_array[11].rstrip()
-	         
-	         	return _ping
+    def lastping( uuid ):
+		_ping = {}
+		con = None
+
+		try:
+			con = mdb.connect('localhost', 'root', 'root', 'backupbox');
+			cur = con.cursor()
+			cur.execute("SELECT * FROM ping WHERE uuid = '%s'" % (uuid))
+			rows = cur.fetchall()
+			pingcount = 0;
+
+			for row in rows:
+				_ping["local_ip"] = row[0]
+				_ping["public_ip"] = row[1]
+				_ping["uuid"] = row[2]
+				_ping["capacity"] = row[3]
+				_ping["used_space"] = row[4]
+				_ping["last_ping"] = str(row[5])
+				_ping["username"] = row[6]
+				_ping["devicecount"] = row[9]
+				_ping["cachecount"] = row[10]
+				_ping["remote_devicecount"] = row[11]
+				_ping["remote_cachecount"] = row[12]
+
+		except mdb.Error, e:
+			print "Error %d: %s" % (e.args[0],e.args[1])
+
+		finally:    
+			if con:    
+			    con.close()
+
+		return _ping
 
     @staticmethod
     def validate_ip(s):
