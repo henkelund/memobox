@@ -263,7 +263,7 @@ def configuration_save_action():
 # Dangerous route that erases an entire box. Use carefully...
 @app.route('/box/erase')
 def box_erase_action():
-	folders = ['../../data/cache/thumbnails', '../../data/devices', '../../data/index.db', '../../data/ping.db' ]
+	folders = ['../../data/cache/thumbnails', '../../data/devices', '../../data/index.db' ]
 	for folder in folders:
 		try:
 			if(os.path.isdir(folder)):
