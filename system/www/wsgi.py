@@ -103,18 +103,7 @@ def index_action():
 	FileModel.update()
 	FilterHelper.install() 
 
-	if g.username == "admin":
-		return redirect("/admin")
-	elif g.islocalbox or AccessHelper.authorized(AccessHelper.requestuser(request.base_url)):
-		return render_template('index.html', username=g.username)
-	else:
-		config = DBHelper.loadconfig()
-		print config
-		ping = PingModel.lastping()
-		print ping
-		_firstname = "debug" if not "FIRSTNAME" in config else config["FIRSTNAME"]
-		_lastname = "debug" if not "LASTNAME" in config else config["LASTNAME"]
-		return render_template('public.html', firstname=_firstname, lastname=_lastname, localaccess=int(g.localaccess), localip=ping["local_ip"])
+	return render_template('index.html', username=g.username)
 
 # Config route that loads session configuration 
 @app.route('/config')
