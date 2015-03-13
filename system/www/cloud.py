@@ -1,23 +1,10 @@
 from __future__ import division
 import uwsgi
-import math
-import datetime as dt, time
-import os
 import json
-import urllib, urllib2
 import re
-import uuid
-import subprocess
 import MySQLdb as mdb
 
-from werkzeug import secure_filename
-
-# Used to remove recursive directories
-import shutil
-
 #from dateutil.parser import parse
-from datetime import date
-from subprocess import call
 from datetime import date
 from flask import Flask, session, render_template, request, jsonify, abort, Response, redirect, g, url_for
 #from flask.ext.compress import Compress
@@ -27,17 +14,9 @@ from flask.ext.assets import Environment, Bundle
 
 # Box Helpers
 from helper.db import DBHelper, DBSelect
-from helper.filter import FilterHelper
-from helper.image import ImageHelper
-from helper.access import AccessHelper
 
 # Box Models
-from model.device import DeviceModel
-from model.box import BoxModel
 from model.ping import PingModel
-from model.file import FileModel
-
-ImageHelper('static/images', 'mint')
 
 UPLOAD_FOLDER = '/tmp'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -122,28 +101,6 @@ def admin_action():
 	    if con:    
 	        con.close()
 
-	
-	#for d in os.walk("/backups").next()[1]:
-	#	pingdb = '/backups/'+d+"/ping.db"
-	#	userdb = '/backups/'+d+"/index.db"
-	#	if os.path.isfile(pingdb):
-	#		try:
-	#			_output = ""
-	#			_output = _output + d
-	#			_rows = {}
-	#			DBHelper.initdb(pingdb, True)
-	#			result = DBSelect('ping', ['last_ping', 'local_ip', 'public_ip', 'uuid', 'capacity', 'used_space', "strftime('%s','now') - strftime('%s', last_ping) as last_online", 'temp', 'software'] ).order("last_ping", 'DESC').limit(1).query()
-	#			
-	#			for r in result:
-	#				for row in r:
-	#					_rows[row] = str(r[row])
-	#				online[d] = r["last_online"]
-	#				
-				
-	#			_rows['devices'] = _devices
-	#			boxes[d] = _rows
-	#		except Exception as e:
-	#			print e
 	return render_template('admin.html', boxes=boxes, online=online)
 
 # Start page route that redirects to login if box is on cloud
