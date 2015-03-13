@@ -298,11 +298,6 @@ def upload_action():
 		
 	return "ok"
 
-# Debug route that gets public ip of this box
-@app.route('/public_ip')
-def public_ip():
-	return request.remote_addr
-
 # Used to change the name of a backup device
 @app.route('/device/update')
 def device_update_action():
