@@ -37,8 +37,6 @@ class PingModel(BaseModel):
         )
     @staticmethod
     def ping(local_ip, public_ip, uuid, capacity, used_space, username, devicecount, cachecount, temp, software):
-		config = DBHelper.loadconfig()
-
 		# Count files in cache folder
 		find = subprocess.Popen(['find', '/backupbox/data/cache', '-type', 'f'],stdout=subprocess.PIPE)
 		wc = subprocess.Popen(['wc', '-l'], stdin = find.stdout, stdout=subprocess.PIPE)
@@ -50,7 +48,6 @@ class PingModel(BaseModel):
 		remote_devicecount = wc.stdout.readline().replace("\\n", "")
 
 		con = None
-		print "Start"
 
 		try:
 			con = mdb.connect('localhost', 'root', 'root', 'backupbox');
@@ -83,14 +80,14 @@ class PingModel(BaseModel):
 			    con.close()
 
     @staticmethod
-    def lastping( uuid ):
+    def lastping( username ):
 		_ping = {}
 		con = None
 
 		try:
 			con = mdb.connect('localhost', 'root', 'root', 'backupbox');
 			cur = con.cursor()
-			cur.execute("SELECT * FROM ping WHERE uuid = '%s'" % (uuid))
+			cur.execute("SELECT * FROM ping WHERE username = '%s'" % (username))
 			rows = cur.fetchall()
 			pingcount = 0;
 
@@ -137,7 +134,7 @@ class PingModel(BaseModel):
 		user_public_ip = request.remote_addr
 		user_host = request.host
 				
-		ping = PingModel.lastping()
+		ping = PingModel.lastping(g.username)
 		if ping and len(ping) > 0 and user_public_ip == ping["public_ip"]:
 			return True
 		else:

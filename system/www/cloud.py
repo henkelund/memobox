@@ -52,8 +52,22 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Initiate asset management(CSS & Javascript)
 assets = Environment(app)
 
-# Set up Box Model object
-b=BoxModel()
+# Creates DB Helper, loads config and determines wether box is local or cloud
+@app.before_request
+def before_request():
+	if request.host == "www.sivula.se":
+		g.username = "sari"
+	elif request.host == "www.nordkvist.me":
+		g.username = "nordkvist"
+	elif not PingModel.validate_ip(request.host):
+		g.username = request.base_url.split(".")[0].split("//")[1]
+	else:
+		g.username = None
+		
+	g.host = request.host
+	g.islocalbox = False
+	g.iscloudbox = not g.islocalbox
+	g.localaccess = PingModel.haslocalaccess(request)
 
 # Start page route that redirects to login if box is on cloud
 @app.route('/admin')
@@ -66,11 +80,39 @@ def admin_action():
 	try:
 	    con = mdb.connect('localhost', 'root', 'root', 'backupbox');
 	    cur = con.cursor()
-	    cur.execute("SELECT * FROM ping")
+	    cur.execute("SELECT *, DATE_FORMAT(NOW(), '%s') - DATE_FORMAT(last_ping, '%s') as last_online FROM ping")
 	    rows = cur.fetchall()
 
 	    for row in rows:
-	    	response = response + str(row[0]) + ": "+ str(row[1]) + "<br />"
+			_rows = {}
+			_rows['local_ip'] 		= row[0]
+			_rows['public_ip'] 		= row[1]
+			_rows['uuid'] 			= row[2]
+			_rows['capacity'] 		= row[3]
+			_rows['used_space'] 	= row[4]
+			#_rows['last_ping'] 		= row[5]
+			_rows['username'] 		= row[6]
+			_rows['temp'] 			= row[7]
+			_rows['software'] 		= row[8]
+			_rows['last_online'] 	= row[9]
+	    	
+			pingdb = '/backups/'+_rows['username']+"/ping.db"
+			userdb = '/backups/'+_rows['username']+"/index.db"
+			
+			_devices = {}
+			DBHelper.initdb(userdb, True)
+			device_list = DBSelect('device', ['serial', 'product_id', 'product_name', 'model', 'vendor_id', 'vendor_name', 'manufacturer', 'last_backup', 'state', 'new'] ).order("product_name", 'ASC').query()
+			
+			for rr in device_list:
+					_raws = {}
+					for raw in rr:
+						_raws[raw] = str(rr[raw])
+					_devices[_raws['serial']] = _raws
+			
+			_rows['devices'] = _devices
+
+			boxes[_rows['username']] 	= _rows
+			online[_rows['username']] 	= _rows['last_online']
 
 	except mdb.Error, e:
 		print "Error %d: %s" % (e.args[0],e.args[1])
@@ -79,56 +121,58 @@ def admin_action():
 	        
 	    if con:    
 	        con.close()
+
 	
-	return response
-	
-	for d in os.walk("/backups").next()[1]:
-		pingdb = '/backups/'+d+"/ping.db"
-		userdb = '/backups/'+d+"/index.db"
-		if os.path.isfile(pingdb):
-			try:
-				_output = ""
-				_output = _output + d
-				_rows = {}
-				DBHelper.initdb(pingdb, True)
-				result = DBSelect('ping', ['last_ping', 'local_ip', 'public_ip', 'uuid', 'capacity', 'used_space', "strftime('%s','now') - strftime('%s', last_ping) as last_online", 'temp', 'software'] ).order("last_ping", 'DESC').limit(1).query()
+	#for d in os.walk("/backups").next()[1]:
+	#	pingdb = '/backups/'+d+"/ping.db"
+	#	userdb = '/backups/'+d+"/index.db"
+	#	if os.path.isfile(pingdb):
+	#		try:
+	#			_output = ""
+	#			_output = _output + d
+	#			_rows = {}
+	#			DBHelper.initdb(pingdb, True)
+	#			result = DBSelect('ping', ['last_ping', 'local_ip', 'public_ip', 'uuid', 'capacity', 'used_space', "strftime('%s','now') - strftime('%s', last_ping) as last_online", 'temp', 'software'] ).order("last_ping", 'DESC').limit(1).query()
+	#			
+	#			for r in result:
+	#				for row in r:
+	#					_rows[row] = str(r[row])
+	#				online[d] = r["last_online"]
+	#				
 				
-				for r in result:
-					for row in r:
-						_rows[row] = str(r[row])
-					online[d] = r["last_online"]
-					
-				_devices = {}
-				DBHelper.initdb(userdb, True)
-				device_list = DBSelect('device', ['serial', 'product_id', 'product_name', 'model', 'vendor_id', 'vendor_name', 'manufacturer', 'last_backup', 'state', 'new'] ).order("product_name", 'ASC').query()
-				
-				for rr in device_list:
-						_raws = {}
-						for raw in rr:
-							_raws[raw] = str(rr[raw])
-						_devices[_raws['serial']] = _raws
-				
-				_rows['devices'] = _devices
-				boxes[d] = _rows
-			except Exception as e:
-				print e
+	#			_rows['devices'] = _devices
+	#			boxes[d] = _rows
+	#		except Exception as e:
+	#			print e
 	return render_template('admin.html', boxes=boxes, online=online)
 
 # Start page route that redirects to login if box is on cloud
 @app.route('/')
 def index_action():
-	return "forbidden"
+	config = DBHelper.loadconfig(g.username)
+	ping = PingModel.lastping(g.username)
+
+	if len(ping.keys()) > 0:
+		_firstname = "debug" if not "FIRSTNAME" in config else config["FIRSTNAME"]
+		_lastname = "debug" if not "LASTNAME" in config else config["LASTNAME"]
+		return render_template('public.html', firstname=_firstname, lastname=_lastname, localaccess=int(g.localaccess), localip=ping["local_ip"])
+	else:
+		print "No user found"
+		return render_template('nouser.html', username=str(g.username))
 
 # Called by the local box client to send box information to the cloud software. Will never be used localy. 
 @app.route('/ping')
 def ping_action():
 	response = "" 
-	PingModel.ping(request.args.get('local_ip'), request.args.get('public_ip'), request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'), request.args.get('username'), request.args.get('devicecount'), request.args.get('cachecount'), request.args.get('temp'), request.args.get('software'))
+	PingModel.ping(request.args.get('local_ip'), request.remote_addr, request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'), request.args.get('username'), request.args.get('devicecount'), request.args.get('cachecount'), request.args.get('temp'), request.args.get('software'))
 
 	return "yes"
 
 # Route for fetching last ping. Only used in cloud server. 
 @app.route('/lastping')
 def lastping():
-		ping = PingModel.lastping(request.args.get('uuid'))
+		if g.username is None:
+			ping = PingModel.lastping(request.args.get('username'))
+		else:
+			ping = PingModel.lastping(g.username)
 		return jsonify(ping)	
