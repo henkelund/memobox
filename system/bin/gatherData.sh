@@ -24,13 +24,9 @@ urlencode() {
 # Load helper functions for getting system data
 source $BIN_DIR/pinghelper.sh
 
-# Load the public IP of the memorybox
-pip=$(curl --connect-timeout 5 -s -X GET http://$BOXUSER.backupbox.se/public_ip)
-echo "Public IP Address: $pip" > $INFOFILE
-
 # Load the local IP on the router
 lip=$(/sbin/ifconfig eth0 | /bin/grep 'inet addr:' | /usr/bin/cut -d: -f2 | /usr/bin/awk '{ print $1}')
-echo "Local IP Address: $lip" >> $INFOFILE
+echo "Local IP Address: $lip" > $INFOFILE
 
 #Load Unique ID of backup hard drive
 uuid=`/sbin/blkid -s UUID -o value /dev/sda1`
@@ -58,10 +54,8 @@ echo "All Connected Devices" >> $INFOFILE
 
 ## Start writing the file used for pingin central server ##
 
-# Load the public IP of the memorybox
-echo "public_ip=$pip&" > $PINGFILE
 # Load the local IP on the router
-echo "local_ip=$lip&" >> $PINGFILE
+echo "local_ip=$lip&" > $PINGFILE
 #Load Unique ID of backup hard drive
 echo "uuid=$uuid&" >> $PINGFILE
 #Append username to 
