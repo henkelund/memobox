@@ -11,22 +11,6 @@ import subprocess
 
 from werkzeug import secure_filename
 
-# API for ordering photo prints
-import pwinty
-
-# Used to remove recursive directories
-import shutil
-
-# Used to connect through sftp
-import paramiko
-import socket
-
-# FTP connection utils
-from fabric.api import * 
-from fabric.operations import put 
-from fabric.operations import get
-from ftplib import FTP
-
 #from dateutil.parser import parse
 from datetime import date
 from subprocess import call
@@ -41,12 +25,10 @@ from flask.ext.assets import Environment, Bundle
 from helper.db import DBHelper, DBSelect
 from helper.filter import FilterHelper
 from helper.image import ImageHelper
-from helper.access import AccessHelper
 
 # Box Models
 from model.device import DeviceModel
 from model.box import BoxModel
-from model.ping import PingModel
 from model.file import FileModel
 
 ImageHelper('static/images', 'mint')
@@ -85,7 +67,7 @@ def before_request():
 
 	DBHelper.initdb()
 
-	g.localaccess = PingModel.haslocalaccess(request)
+	g.localaccess = False
 
 # Start page route that redirects to login if box is on cloud
 @app.route('/')
