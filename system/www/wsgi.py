@@ -311,8 +311,8 @@ def device_update_action():
 
 # Used to change the name of a backup device
 @app.route('/device/state/update')
-def device_status_update_action():
-	device = DeviceModel().load(str(request.args.get('id')))
+def device_state_update_action():
+	device = DeviceModel().load(str(request.args.get('id')), "serial")
 	device.add_data({"state" : int(request.args.get('state'))})
 	device.save()
 	return "ok"
