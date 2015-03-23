@@ -13,25 +13,24 @@ function messagemanager
         if [ "$1" = "DONE" ]; then
                 $LIGHT_PATH BLUE OFF &
                 if [ "$length" -ne 0 ]; then
-                	echo "/usr/bin/sqlite3 -init <(echo .timeout 5000) -line /HDD/index.db UPDATE device SET state = 3, last_backup = date('now') WHERE serial = '$2'"
-                	/usr/bin/sqlite3 -init <(echo .timeout 5000) -line /HDD/index.db "UPDATE device SET state = 3, last_backup = date('now') WHERE serial = '$2'" &
+                	/usr/bin/wget -q http://localhost/device/state/update?id=$2&state=4
                 fi
         fi
 
         if [ "$1" = "ERROR" ]; then
                 $LIGHT_PATH BLUE OFF &
-                /usr/bin/sqlite3 -init <(echo .timeout 5000) -line /HDD/index.db "UPDATE device SET state = -1 WHERE serial = '$2'"
+                /usr/bin/wget -q http://localhost/device/state/update?id=$2&state=3
         fi
 
         if [ "$1" = "PENDING" ]; then
                 $LIGHT_PATH BLUE ON &
-                /usr/bin/sqlite3 -init <(echo .timeout 5000) -line /HDD/index.db "UPDATE device SET state = 1 WHERE serial = '$2'"
+                /usr/bin/wget -q http://localhost/device/state/update?id=$2&state=1
                 
         fi
 
         if [ "$1" = "WORKING" ]; then
                 $LIGHT_PATH BLUE BLINK &
-                /usr/bin/sqlite3 -init <(echo .timeout 5000) -line /HDD/index.db "UPDATE device SET state = 2 WHERE serial = '$2'"                
+                /usr/bin/wget -q http://localhost/device/state/update?id=$2&state=2
         fi
 }
 
