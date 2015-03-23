@@ -14,6 +14,17 @@ class DeviceModel(BaseModel):
     _pk = '_id'
     _daterange = {}
     _typecount = {}
+    _state = [ 
+        'READY',
+        'MOUNTING'
+        'BACKUP_STARTED', 
+        'BACKUP_INTERRUPTED', 
+        'BACKUP_COMPLETE', 
+        'FILE_INDEX_STARTED', 
+        'FILE_INDEX_COMPLETE', 
+        'THUMBNAIL_INDEX_STARTED' 
+    ]
+
     _info_file_map = {
         'serial': 'serial',
         'product_id': 'idProduct',
@@ -27,6 +38,7 @@ class DeviceModel(BaseModel):
         'new': 'new',
         'password': 'password'
     }
+
 
     def get_transfer_dirs(self):
         """Return this devices transfer directories"""

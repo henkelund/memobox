@@ -511,18 +511,18 @@
 		
 		if(obj.type == "video") {
 			$("#moddalVideoContainer").html('<video id="modalVideo" style="display: none;" width="100%" height="520" controls="controls" autoplay="autoplay"><source id="modalSource" src="" type="video/mp4" /></video>');					
-			$("#modalVideo > source").attr("src", "/files/stream/"+obj.id+"/null/nodownload/0");
-			$("#originalImage").attr("src", "/files/stream/"+obj.id+"/null/full/0");
+			$("#modalVideo > source").attr("src", "/file/view/"+obj.id);
+			$("#originalImage").attr("src", "/file/view/"+obj.id);
 			$("#modalVideo").load();
 			$("#modalVideo").show();
 			$("#modalImage").hide();
 			$("#print-button").hide();
 		} else {
-			$("#originalImage").attr("src", "/files/stream/"+obj.id+"/null/full/0");
+			$("#originalImage").attr("src", "/file/view/"+obj.id);
 			$("#modalVideo").hide();
 			$("#modalImage").show();
-			$("#zoomLink").attr("href", "/files/stream/"+obj.id+"/null/nodownload/0");
-			$("#modalImage").attr("src", "/files/stream/"+obj.id+"/null/thumbnail/520");
+			$("#zoomLink").attr("href", "/file/view/"+obj.id);
+			$("#modalImage").attr("src", "/file/thumbnail/medium/"+obj.id);
 			$("#print-button").show()
 		}
 		

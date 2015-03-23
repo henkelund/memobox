@@ -310,6 +310,14 @@ def device_update_action():
 	return "ok"
 
 # Used to change the name of a backup device
+@app.route('/device/state/update')
+def device_status_update_action():
+	device = DeviceModel().load(str(request.args.get('id')))
+	device.add_data({"state" : int(request.args.get('state'))})
+	device.save()
+	return "ok"
+
+# Used to change the name of a backup device
 @app.route('/device/erase')
 def device_erase_action():
 	device = DeviceModel().load(str(request.args.get('id')))
@@ -523,7 +531,7 @@ def icon_action(type=None):
 	else:
 		return redirect("/static/images/icons/mint/48/unknown.png")
 
-# Bloated action that fetches thumbnail or original file of an object. 
+# Lets admin user acces log files on the cloud server
 @app.route('/files/log/<display_name>')
 def file_log_action(display_name=None):
 	filename = os.path.abspath("/backups/"+DBHelper.loadconfig()["BOXUSER"]+"/public/log/"+display_name)	
@@ -547,64 +555,62 @@ def file_log_action(display_name=None):
 				direct_passthrough=True,
 				content_type=mimetype)
 
-# Bloated action that fetches thumbnail or original file of an object. 
-@app.route('/files/stream/<file_id>/<display_name>/<type>/<size>')
-def file_stream_action(file_id=None, display_name=None, type=None, size=None):
+# Get thumbnails on the box
+@app.route('/file/thumbnail/<size>/<file_id>')
+def file_thumbnail_action(size=None, file_id=None):
+	_size = 260
+	if not file_id:
+		abort(404)
+
+	model = FileModel().load(file_id);
+	filename = ""
+
+	if not model.id():
+		abort(404)
+
+	if size == "medium":
+		_size = 520
+
+	thumbnails = DBSelect('file_thumbnail').where("file = "+str(file_id)).where("width = " + str(_size)).query()
+	
+	for thumbnail in thumbnails:
+		filename = '%s/%s' % ("/static/cache", urllib.quote(thumbnail["thumbnail"]))
+		return redirect(filename)
+
+	abort(404)		
+
+# View full version of file
+@app.route('/file/view/<file_id>')
+def file_view_action(file_id=None):
+	if not file_id:
+		abort(404)
+
+	model = FileModel().load(file_id);
+	filename = ""
+
+	if not model.id():
+		abort(404)
+
+	filename = '%s/%s' % ("/static"+model.abspath().replace("/backupbox/data", ""), urllib.quote(model.name()))
+	return redirect(filename)
+
+# Download full files
+@app.route('/file/download/<file_id>')
+def file_download_action(file_id=None):
 	_headers = {}	
-	if type == "profile":
-		public_filename = os.path.abspath("/backups/"+DBHelper.loadconfig()["BOXUSER"]+"/cache/profile.jpg")
-		local_filename = os.path.abspath("/HDD/cache/profile.jpg")
 
-		if os.path.isfile(public_filename):
-			filename = public_filename
-		elif os.path.isfile(local_filename):
-			filename = local_filename
-		else:
-			filename = os.path.abspath("static/images/profile.jpg");
+	if not file_id:
+		abort(404)
 
-		mimetype = "image/jpeg"
-	else:
-		if not file_id:
-			abort(404)
+	model = FileModel().load(file_id);
+	filename = ""
 
-		model = FileModel().load(file_id);
-		filename = ""
+	if not model.id():
+		abort(404)
 
-		if not model.id():
-			abort(404)
-
-		if type == "thumbnail":
-			thumbnails = DBSelect('file_thumbnail').where("file = "+str(file_id)).where("width = "+size).query()
-			
-			for thumbnail in thumbnails:
-				cache_dir = "../data/cache"	    	
-
-				if g.islocalbox == False:
-					config = DBHelper.loadconfig()
-					cache_dir = "/backups/"+config["BOXUSER"]+"/cache"
-					filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
-					mimetype = '%s/%s' % (model.type(), model.subtype())
-					_headers["Content-Disposition"] = "inline"
-				else:
-					#filename = '%s/%s' % (cache_dir, thumbnail["thumbnail"])
-					filename = '%s/%s' % ("/static/cache", urllib.quote(thumbnail["thumbnail"]))
-					return redirect(filename)
-				
-		else:
-			if g.islocalbox == False:
-				config = DBHelper.loadconfig()
-				filename = '%s/%s' % (model.abspath().replace("/backupbox/data", "/backups/"+config["BOXUSER"]), model.name())
-				if type != "nodownload":
-					_headers["Content-Disposition"] = "attachment; filename="+model.name()
-				mimetype = '%s/%s' % (model.type(), model.subtype())
-			else:
-				if type != "nodownload":
-					filename = '%s/%s' % (model.abspath(), model.name())
-					_headers["Content-Disposition"] = "attachment; filename="+model.name()
-					mimetype = '%s/%s' % (model.type(), model.subtype())
-				else:
-					filename = '%s/%s' % ("/static"+model.abspath().replace("/backupbox/data", ""), urllib.quote(model.name()))
-					return redirect(filename)
+	filename = '%s/%s' % (model.abspath(), model.name())
+	_headers["Content-Disposition"] = "attachment; filename="+model.name()
+	mimetype = '%s/%s' % (model.type(), model.subtype())
 
 	if not os.path.isfile(filename):
 		abort(404)
@@ -622,6 +628,42 @@ def file_stream_action(file_id=None, display_name=None, type=None, size=None):
 				headers=_headers,
 				direct_passthrough=True,
 				content_type=mimetype)
+
+# Get profile image
+@app.route('/file/profile')
+def file_profile_action():
+	_headers = {}	
+
+	public_filename = os.path.abspath("/backups/"+DBHelper.loadconfig()["BOXUSER"]+"/cache/profile.jpg")
+	local_filename = os.path.abspath("/HDD/cache/profile.jpg")
+
+	if os.path.isfile(public_filename):
+		filename = public_filename
+	elif os.path.isfile(local_filename):
+		filename = local_filename
+	else:
+		filename = os.path.abspath("static/images/profile.jpg");
+
+	mimetype = "image/jpeg"
+
+	
+	if not os.path.isfile(filename):
+		abort(404)
+	
+	t = os.stat(filename)
+	sz = str(t.st_size)
+
+	_headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+	_headers['Cache-Control'] = 'public, max-age=0'
+	_headers["Content-Transfer-Enconding"] = "binary"
+	_headers["Content-Length"] = sz
+
+	return Response(
+				file(filename),
+				headers=_headers,
+				direct_passthrough=True,
+				content_type=mimetype)
+
 
 def allowed_file(filename):
     return '.' in filename and \
