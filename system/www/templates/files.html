@@ -71,7 +71,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 								         <li>
 											<ul id="deviceDropdown" class="dropdown-menu" role="menu">
 												<li ng-show="device.id > 0" ng-repeat="device in FilesCtrl.fileService.devices" id="{{device.id}}" class="device" device-repeat-directive>
-													<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}}</span></a>
+													<a href="javascript:void(0)" ng-click="infinity.nextPage('{{device.id}}')"><span>{{device.product_name}} <img ng-show="device.state != 0" src="/static/images/busy.gif" style="margin-left: 10px; "></span></a>
 												</li>
 											</ul>
 								         </li>
