@@ -138,10 +138,11 @@ def ping_action():
 
 	for message in messages:
 		_messages.append(message.values())
+		message.mark_as_read()
 
 	if len(_messages) > 0:
 		_response["messages"] = _messages
-
+	
 	return jsonify(_response)
 
 
