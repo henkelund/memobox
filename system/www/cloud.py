@@ -70,7 +70,6 @@ def admin_action():
 			_rows['uuid'] 			= row[2]
 			_rows['capacity'] 		= row[3]
 			_rows['used_space'] 	= row[4]
-			#_rows['last_ping'] 		= row[5]
 			_rows['username'] 		= row[6]
 			_rows['temp'] 			= row[7]
 			_rows['software'] 		= row[8]
