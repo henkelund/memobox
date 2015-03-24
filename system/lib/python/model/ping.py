@@ -37,15 +37,9 @@ class PingModel(BaseModel):
         )
     @staticmethod
     def ping(local_ip, public_ip, uuid, capacity, used_space, username, devicecount, cachecount, temp, software):
-		# Count files in cache folder
-		find = subprocess.Popen(['find', '/backupbox/data/cache', '-type', 'f'],stdout=subprocess.PIPE)
-		wc = subprocess.Popen(['wc', '-l'], stdin = find.stdout, stdout=subprocess.PIPE)
-		remote_cachecount = wc.stdout.readline().replace("\\n", "")
+		remote_cachecount = "0"
+		remote_devicecount = "0"
 
-		# Count files in cache folder
-		find = subprocess.Popen(['find', '/backupbox/data/devices', '-type', 'f'],stdout=subprocess.PIPE)
-		wc = subprocess.Popen(['wc', '-l'], stdin = find.stdout, stdout=subprocess.PIPE)
-		remote_devicecount = wc.stdout.readline().replace("\\n", "")
 
 		con = None
 
@@ -66,6 +60,7 @@ class PingModel(BaseModel):
 			                """ % (local_ip, public_ip, uuid, capacity, used_space, username, devicecount, cachecount, remote_devicecount, remote_cachecount, temp, software))
 				con.commit()
 			else:
+			     print 'UPDATE ping SET local_ip = "%s", public_ip = "%s", capacity = "%s", used_space = "%s", last_ping = NOW(), username = "%s", devicecount = "%s", cachecount = "%s", remote_devicecount = "%s", remote_cachecount = "%s", temp = "%s", software = "%s" WHERE uuid = "%s"' % (local_ip, public_ip, capacity, used_space, username, devicecount, cachecount, remote_devicecount, remote_cachecount, temp, software, uuid)
 			     cur.execute(
 			                """
 			                    UPDATE ping SET local_ip = "%s", public_ip = "%s", capacity = "%s", used_space = "%s", last_ping = NOW(), username = "%s", devicecount = "%s", cachecount = "%s", remote_devicecount = "%s", remote_cachecount = "%s", temp = "%s", software = "%s" WHERE uuid = "%s"

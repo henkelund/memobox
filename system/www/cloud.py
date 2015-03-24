@@ -58,6 +58,7 @@ def admin_action():
 	
 	try:
 	    con = mdb.connect('localhost', 'root', 'root', 'backupbox');
+	    con.autocommit(True)
 	    cur = con.cursor()
 	    cur.execute("SELECT *, DATE_FORMAT(NOW(), '%s') - DATE_FORMAT(last_ping, '%s') as last_online FROM ping")
 	    rows = cur.fetchall()
@@ -73,7 +74,7 @@ def admin_action():
 			_rows['username'] 		= row[6]
 			_rows['temp'] 			= row[7]
 			_rows['software'] 		= row[8]
-			_rows['last_online'] 	= row[9]
+			_rows['last_online'] 	= row[13]
 	    	
 			pingdb = '/backups/'+_rows['username']+"/ping.db"
 			userdb = '/backups/'+_rows['username']+"/index.db"
