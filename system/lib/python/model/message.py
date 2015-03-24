@@ -29,6 +29,23 @@ class MessageModel(BaseModel):
         
         return values
 
+    def send(self):
+        con = None
+
+        try:
+            con = mdb.connect('localhost', 'root', 'root', 'backupbox');
+            cur = con.cursor()
+            cur.execute("INSERT INTO messages (box, status, type,  message) VALUES("+str(self.box)+", 0, "+str(self.type)+" , '"+self.message+"')")
+            con.commit()
+
+        except mdb.Error, e:
+            print "Error %d: %s" % (e.args[0],e.args[1])
+
+        finally:    
+            if con:    
+                con.close()
+
+
     def mark_as_read(self):
         con = None
 
@@ -44,6 +61,29 @@ class MessageModel(BaseModel):
         finally:    
             if con:    
                 con.close()
+
+    @staticmethod
+    def get_box_by_uuid(uuid):
+        con = None
+        box_id = -1
+
+        try:
+            con = mdb.connect('localhost', 'root', 'root', 'backupbox');
+            cur = con.cursor()
+            cur.execute("SELECT id FROM ping WHERE uuid = '"+uuid+"'")
+            rows = cur.fetchall()
+
+            for row in rows:
+                box_id = row[0]
+
+        except mdb.Error, e:
+            print "Error %d: %s" % (e.args[0],e.args[1])
+
+        finally:    
+            if con:    
+                con.close()
+
+        return box_id
 
     @staticmethod
     def load_messages(uuid):

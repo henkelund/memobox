@@ -49,14 +49,24 @@ def before_request():
 	g.iscloudbox = not g.islocalbox
 	g.localaccess = PingModel.haslocalaccess(request)
 
+@app.route('/sendmessage')
+def sendmessage_action():
+	if request.args.get("reciever"):
+		m = MessageModel(-1, MessageModel.get_box_by_uuid(request.args.get('reciever')), 1, int(request.args.get("type")), request.args.get("message"))
+		m.send()
+	return redirect("/admin?status=success")
+
 # Start page route that redirects to login if box is on cloud
 @app.route('/admin')
 def admin_action():
 	boxes = {}
 	online = {}
+	response = "" 
+	status = False
 
-	response = ""; 
-	
+	if request.args.get('status') > 0:
+		status=True
+
 	try:
 	    con = mdb.connect('localhost', 'root', 'root', 'backupbox');
 	    con.autocommit(True)
@@ -95,14 +105,14 @@ def admin_action():
 			online[_rows['username']] 	= _rows['last_online']
 
 	except mdb.Error, e:
-		print "Error %d: %s" % (e.args[0],e.args[1])
+		print "Error %d: %s" % (e.args[0], e.args[1])
 	    
 	finally:    
 	        
 	    if con:    
 	        con.close()
 
-	return render_template('admin.html', boxes=boxes, online=online)
+	return render_template('admin.html', boxes=boxes, online=online, status=status)
 
 # Start page route that redirects to login if box is on cloud
 @app.route('/')
