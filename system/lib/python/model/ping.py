@@ -60,7 +60,6 @@ class PingModel(BaseModel):
 			                """ % (local_ip, public_ip, uuid, capacity, used_space, username, devicecount, cachecount, remote_devicecount, remote_cachecount, temp, software))
 				con.commit()
 			else:
-			     print 'UPDATE ping SET local_ip = "%s", public_ip = "%s", capacity = "%s", used_space = "%s", last_ping = NOW(), username = "%s", devicecount = "%s", cachecount = "%s", remote_devicecount = "%s", remote_cachecount = "%s", temp = "%s", software = "%s" WHERE uuid = "%s"' % (local_ip, public_ip, capacity, used_space, username, devicecount, cachecount, remote_devicecount, remote_cachecount, temp, software, uuid)
 			     cur.execute(
 			                """
 			                    UPDATE ping SET local_ip = "%s", public_ip = "%s", capacity = "%s", used_space = "%s", last_ping = NOW(), username = "%s", devicecount = "%s", cachecount = "%s", remote_devicecount = "%s", remote_cachecount = "%s", temp = "%s", software = "%s" WHERE uuid = "%s"

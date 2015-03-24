@@ -17,6 +17,7 @@ from helper.db import DBHelper, DBSelect
 
 # Box Models
 from model.ping import PingModel
+from model.message import MessageModel
 
 UPLOAD_FOLDER = '/tmp'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -120,7 +121,23 @@ def index_action():
 # Called by the local box client to send box information to the cloud software. Will never be used localy. 
 @app.route('/ping')
 def ping_action():
-	response = "" 
+	_response = { "status" : "ok" }
+	_messages = []
 	PingModel.ping(request.args.get('local_ip'), request.remote_addr, request.args.get('uuid'), request.args.get('available_space'), request.args.get('used_space'), request.args.get('username'), request.args.get('devicecount'), request.args.get('cachecount'), request.args.get('temp'), request.args.get('software'))
+	messages = MessageModel.load_messages(request.args.get('uuid'))
 
-	return "yes"
+	for message in messages:
+		_messages.append(message.values())
+
+	if len(_messages) > 0:
+		_response["messages"] = _messages
+
+	return jsonify(_response)
+
+
+# Called by the local box client to send box information to the cloud software. Will never be used localy. 
+@app.route('/messages')
+def messages_action():
+	messages = MessageModel.load_messages("");
+	messages[0].mark_as_read()
+	return jsonify(messages[0].values())
