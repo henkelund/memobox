@@ -25,11 +25,13 @@ from flask.ext.assets import Environment, Bundle
 from helper.db import DBHelper, DBSelect
 from helper.filter import FilterHelper
 from helper.image import ImageHelper
+from helper.event import EventHelper
 
 # Box Models
 from model.device import DeviceModel
 from model.box import BoxModel
 from model.file import FileModel
+from model.config import ConfigModel
 
 ImageHelper('static/images', 'mint')
 
@@ -86,6 +88,34 @@ def index_action():
 	FilterHelper.install() 
 
 	return render_template('index.html', username=g.username)
+
+# Info route that displays box debug information. For administration use only
+@app.route('/debug')
+def debug_action():
+	MESSAGE_TYPES = [
+        "Information", 
+        "Configuration",
+        "Reboot", 
+        "Shutdown"
+    ]
+
+	#f = ConfigModel.parse(None)
+	#for message in f["messages"]:
+	#	print MESSAGE_TYPES[int(message["type"])]
+	
+	#print ConfigModel.get_param("hello")
+	EventHelper.parse_events("http://localhost/static/json.txt")
+	#c = ConfigModel()
+	#c.set_param("key", "uber"); 
+	#c.set_param("value", "driver"); 
+	#c.save()
+
+	#params = ConfigModel.get_all_params()
+
+	#for param in params:
+	#	print param["key"]+"="+param["value"]
+
+	return "Debug"
 
 # Config route that loads session configuration 
 @app.route('/config')
