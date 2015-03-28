@@ -15,6 +15,7 @@ class EventHelper(object):
     EVENT_UPDATE        = 5
     EVENT_LOGBACKUP     = 6
     EVENT_FULLBACKUP    = 7 # Not used at the moment
+    EVENT_LED           = 8
 
     @staticmethod
     def parse_events(data):
@@ -42,6 +43,10 @@ class EventHelper(object):
                     subprocess.call(['/backupbox/system/bin/update.sh'])
                 elif message_id == EventHelper.EVENT_LOGBACKUP:
                     subprocess.call(['/backupbox/system/bin/backup.sh', 'LOGBACKUP'])
+                elif message_id == EventHelper.EVENT_LED:
+                    color = message["message"].split("=")[0]
+                    mode = message["message"].split("=")[1]
+                    subprocess.call(['/backupbox/system/bin/lights.sh', color, mode])
 
         return j
 
