@@ -5,6 +5,10 @@
 				font-family: Helvetica, Sans-Serif; 
 			}
 
+			a {
+				text-decoration: none; 
+			}
+
 			textarea {
 				width: 300px;
 				height: 200px;
@@ -12,14 +16,14 @@
 		</style>
 	</head>
 	<body>
-		<form action="/sendmessage">
+		<form action="/sendmessage" onSubmit="return send_message()">
 			{% if status %}
 			<br />
 			<span style="margin-bottom: 20px; padding: 5px; border: 1px solid black; background-color: #CCFFCC">Your message has been sent!</span>
 			{% endif %}
 			<h1>Send box message</h1>
 			<b>Reiever</b><br />
-			<select name="reciever">
+			<select id="username" name="username">
 				<option>Choose reciever</option>
 				{% for key, value in boxes.iteritems() %}
 					<option value="{{ boxes[key]['uuid'] }}">{{ key }}</option>
@@ -45,7 +49,7 @@
 		<h1>Activated boxes</h1>
 		<ul style="padding: 0px; margin: 0px; margin-left: 10px;">
 		{% for key, value in boxes.iteritems() %}
-			<li style="list-style: none; padding: 0px; margin: 0px;"> <span {% if boxes[key]["last_online"] is defined and boxes[key]["last_online"]|int < 120 %} style="color: #66CC66;" {% else %} style="color: red;" {% endif %} >{{ key }}</span> (<a href="#" onClick="toggle('{{ key }}')">+</a>)</li>
+			<li style="list-style: none; padding: 0px; margin: 0px;"> <span {% if boxes[key]["last_online"] is defined and boxes[key]["last_online"]|int < 120 %} style="color: #66CC66;" {% else %} style="color: red;" {% endif %} >{{ key }}</span> <a id="{{ key }}_container" href="#" onClick="toggle('{{ key }}', this.id)">+</a></li>
 			<ul id="{{ key }}" style="display: none;">
 				<li><a target="_blank" href="http://{{ key }}.backupbox.se/files/log/indexer.log">indexer.log</a></li>
 				<li><a target="_blank" href="http://{{ key }}.backupbox.se/files/log/automount.log">automount.log</a></li>
@@ -82,12 +86,27 @@
 		</ul>
 
 		<script>
-			function toggle(id) {
+			function toggle(id, this_id) {
 				var d = document.getElementById(id);
+				var e = document.getElementById(this_id);
+
+				if(e.innerHTML == "+") {
+					e.innerHTML = "-";
+				} else {
+					e.innerHTML = "+";
+				}
+
 				if(d.style.display == "block") {
 					d.style.display = "none";
 				} else {
 					d.style.display = "block";
+				}
+			}
+
+			function send_message() {
+				if(document.getElementById("username").selectedIndex == 0) {
+					alert("You must select a box to send the message to.");
+					return false; 
 				}
 			}
 		</script>

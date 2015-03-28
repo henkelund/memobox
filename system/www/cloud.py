@@ -1,7 +1,5 @@
 from __future__ import division
-import uwsgi
-import json
-import re
+import uwsgi, json, os, re
 import MySQLdb as mdb
 
 
@@ -53,7 +51,7 @@ def before_request():
 @app.route('/sendmessage')
 def sendmessage_action():
 	if request.args.get("reciever"):
-		m = MessageModel(-1, MessageModel.get_box_by_uuid(request.args.get('reciever')), 1, int(request.args.get("type")), request.args.get("message"))
+		m = MessageModel(-1, MessageModel.get_box_by_uuid(request.args.get('username')), 1, int(request.args.get("type")), request.args.get("message"))
 		m.send()
 	return redirect("/admin?status=success")
 
@@ -153,3 +151,27 @@ def messages_action():
 	messages = MessageModel.load_messages("");
 	messages[0].mark_as_read()
 	return jsonify(messages[0].values())
+
+# Lets admin user acces log files on the cloud server
+@app.route('/files/log/<display_name>')
+def file_log_action(display_name=None):
+	filename = os.path.abspath("/backups/"+DBHelper.loadconfig()["BOXUSER"]+"/public/log/"+display_name)	
+	
+	if not os.path.isfile(filename):
+		abort(404)
+	
+	t = os.stat(filename)
+	sz = str(t.st_size)
+	
+	_headers = {}	
+	_headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+	_headers['Cache-Control'] = 'public, max-age=0'
+	_headers["Content-Transfer-Enconding"] = "binary"
+	_headers["Content-Length"] = sz
+	mimetype = "text/plain"
+
+	return Response(
+				file(filename),
+				headers=_headers,
+				direct_passthrough=True,
+				content_type=mimetype)

@@ -1,15 +1,7 @@
 from __future__ import division
-import uwsgi
-import math
-import datetime as dt, time
-import os
-import json
-import urllib, urllib2
-import re
-import uuid
-import subprocess
-
 from werkzeug import secure_filename
+import uwsgi, math, os, json, urllib, urllib2, re, uuid, subprocess
+import datetime as dt, time
 
 #from dateutil.parser import parse
 from datetime import date
@@ -545,30 +537,6 @@ def icon_action(type=None):
 		return redirect("/static/images/icons/mint/48/"+type+".png")
 	else:
 		return redirect("/static/images/icons/mint/48/unknown.png")
-
-# Lets admin user acces log files on the cloud server
-@app.route('/files/log/<display_name>')
-def file_log_action(display_name=None):
-	filename = os.path.abspath("/backups/"+DBHelper.loadconfig()["BOXUSER"]+"/public/log/"+display_name)	
-	
-	if not os.path.isfile(filename):
-		abort(404)
-	
-	t = os.stat(filename)
-	sz = str(t.st_size)
-	
-	_headers = {}	
-	_headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
-	_headers['Cache-Control'] = 'public, max-age=0'
-	_headers["Content-Transfer-Enconding"] = "binary"
-	_headers["Content-Length"] = sz
-	mimetype = "text/plain"
-
-	return Response(
-				file(filename),
-				headers=_headers,
-				direct_passthrough=True,
-				content_type=mimetype)
 
 # Get thumbnails on the box
 @app.route('/file/thumbnail/<size>/<file_id>')
