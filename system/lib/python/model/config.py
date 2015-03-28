@@ -15,18 +15,18 @@ class ConfigModel(BaseModel):
     _table = 'config'
     _pk = '_id'
 
-    def get_param(self, key):
-        self.get_data(key)
-
     def set_param(self, key, value):
         self.set_data(key, value)
 
     @staticmethod
     def get_param(key):
+        _config = ConfigModel()
         models = ConfigModel.all().where("key = '"+key+"'")
         
         for model in models: 
-            return model.value()
+            _config = model
+
+        return _config
 
     @staticmethod
     def get_all_params():
@@ -41,7 +41,6 @@ class ConfigModel(BaseModel):
     @classmethod
     def _install(cls):
         """Define install routines for this model"""
-
         table = DBHelper.quote_identifier(cls._table)
         return (
             lambda: (

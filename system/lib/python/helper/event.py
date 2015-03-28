@@ -23,15 +23,17 @@ class EventHelper(object):
 
         if 'messages' in j:
             for message in j["messages"]:
-            	print EventHelper.EVENT_TYPES[int(message["type"])]
             	if EventHelper.EVENT_TYPES[int(message["type"])] == EventHelper.EVENT_TYPES[2]:
-            		key = message["message"].split("=")[0]
-            		value = message["message"].split("=")[1]
-            		
-            		c = ConfigModel()
-            		c.set_param("key", key)
-            		c.set_param("value", value)
-            		c.save()
+                    key = message["message"].split("=")[0]
+                    value = message["message"].split("=")[1]
+
+                    try:
+                        c = ConfigModel.get_param(key)
+                        c.set_param("key", key)
+                        c.set_param("value", value)
+                        c.save()
+                    except IndexError as e:
+                        print e
 
         return j
 

@@ -105,37 +105,23 @@ class DBHelper(object):
                 ', '.join(cols),
                 ', '.join('?' * len(row))
             )
+
             ids.append(self.query(sql, row.values()).lastrowid)
 
         return ids
         
     @staticmethod
     def islocal():
-    	config = DBHelper.loadconfig(None, "../data/local.cfg")
-    	
-    	if config["LOCAL"] and config["LOCAL"] == "true":
-    		return True
-    	else:
-    		if config["LOCAL"] and config["LOCAL"] == "false":
-				return False
+        return True
 
     @staticmethod
     def initdb(filename="index.db", fullpath=False):
-    	config = DBHelper.loadconfig(None, "../data/local.cfg")
     	dbname = ""
     	
         if fullpath:
             DBHelper(filename, 'yes')
-        elif config["LOCAL"] and config["LOCAL"] == "true":
-			print "../data/"+filename
+        else:
 			DBHelper("../data/"+filename)
-    	else:
-    		if config["BOXUSER"] and config["BOXUSER"] != "null":
-				print "/backups/"+config["BOXUSER"]+"/"+filename
-				DBHelper("/backups/"+config["BOXUSER"]+"/"+filename)
-    		else:
-				print "/backups/"+g.username+"/"+filename
-				DBHelper("/backups/"+g.username+"/"+filename)
 
     @staticmethod
     def loadconfig(username=None, dbfile=""):

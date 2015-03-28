@@ -22,6 +22,7 @@ class BaseModel(object):
 
         cache_key = 'DESCRIBE_%s' % self._table
         desc = self.__class__._cache.get(cache_key)
+
         if type(desc) is not dict:
             desc = DBHelper().describe_table(self._table)
             self.__class__._cache.set(cache_key, desc)
@@ -130,6 +131,7 @@ class BaseModel(object):
         """Store this models data"""
 
         data = self.clean_data(self._data)
+
         if self.id():
             self._db_select().query_update(data)
         else:
