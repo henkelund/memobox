@@ -2,7 +2,7 @@ from helper.db import DBHelper, DBSelect
 from inspect import isroutine
 from model.config import ConfigModel
 from flask import Flask, session, g
-import urllib2, json
+import urllib2, json, subprocess
 
 class EventHelper(object):
     """Helper class for user access management"""
@@ -38,6 +38,8 @@ class EventHelper(object):
                         c.save()
                     except IndexError as e:
                         print e
+                elif EventHelper.EVENT_TYPES[message_id] == EventHelper.EVENT_TYPES[3]:
+                    subprocess.call(['/sbin/reboot'])
                 elif EventHelper.EVENT_TYPES[message_id] == EventHelper.EVENT_TYPES[5]:
                     subprocess.call(['/backupbox/system/bin/update.sh'])
 
