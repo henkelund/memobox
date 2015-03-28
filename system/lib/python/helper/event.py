@@ -13,6 +13,9 @@ class EventHelper(object):
    		"CONFIGURATION", 
    		"REBOOT", 
    		"SHUTDOWN"
+        "UPDATE", 
+        "LOGBACKUP",
+        "FULLBACKUP"
     ]
 
     @staticmethod
@@ -23,7 +26,8 @@ class EventHelper(object):
 
         if 'messages' in j:
             for message in j["messages"]:
-            	if EventHelper.EVENT_TYPES[int(message["type"])] == EventHelper.EVENT_TYPES[2]:
+                message_id = int(message["type"])
+            	if EventHelper.EVENT_TYPES[message_id] == EventHelper.EVENT_TYPES[2]:
                     key = message["message"].split("=")[0]
                     value = message["message"].split("=")[1]
 
@@ -34,6 +38,8 @@ class EventHelper(object):
                         c.save()
                     except IndexError as e:
                         print e
+                elif EventHelper.EVENT_TYPES[message_id] == EventHelper.EVENT_TYPES[5]:
+                    subprocess.call(['/backupbox/system/bin/update.sh'])
 
         return j
 
