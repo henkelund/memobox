@@ -20,9 +20,6 @@ PYTHONPATH="$PYTHONPATH:$PYTHONDIR"
 PYTHON="$(which python)"
 DATETIME=$(date "+%Y-%m-%d %H:%M:%S")
 
-echo $DATA_DIR
-echo $DATABASE
-
 if [ "$1" == "RESET" ]; then 
 	find "$DATA_DIR/devices"  -name .__indexed__ -exec rm -rf {} \;
 	exit 0
