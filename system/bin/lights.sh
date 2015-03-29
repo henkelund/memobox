@@ -9,21 +9,29 @@ blinkfile="/tmp/$1BLINK"
 workfile="/tmp/$1WORK"
 
 init() {
-       direction=`cat /sys/class/gpio/gpio41_pd7/direction`
+       direction_red=`cat /sys/class/gpio/gpio41_pd7/direction`
+       direction_green=`cat /sys/class/gpio/gpio43_pd5/direction`
+       direction_blue=`cat /sys/class/gpio/gpio42_pd6/direction`
 
-       if [ "$direction" != "out" ]; then
-       	echo 41 > /sys/class/gpio/export
-       	echo 42 > /sys/class/gpio/export
+       if [ "$direction_green" != "out" ]; then
        	echo 43 > /sys/class/gpio/export
-       	echo out > /sys/class/gpio/gpio41_pd7/direction
-       	echo out > /sys/class/gpio/gpio42_pd6/direction
        	echo out > /sys/class/gpio/gpio43_pd5/direction
+       fi
+
+       if [ "$direction_blue" != "out" ]; then
+       	echo 42 > /sys/class/gpio/export
+       	echo out > /sys/class/gpio/gpio42_pd6/direction
+       fi
+
+       if [ "$direction_red" != "out" ]; then
+       	echo 41 > /sys/class/gpio/export
+       	echo out > /sys/class/gpio/gpio41_pd7/direction
        fi
 }
 
-if [ -f $lamps["GREEN"] ]; then
-	init
-fi
+#if [ -f $lamps["GREEN"] ]; then
+init
+#fi
 
 stopblink()
 {
