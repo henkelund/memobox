@@ -13,24 +13,28 @@ function messagemanager
         if [ "$1" = "DONE" ]; then
                 $LIGHT_PATH BLUE OFF &
                 if [ "$length" -ne 0 ]; then
-                	/usr/bin/wget -q http://localhost/device/state/update?id=$2&state=4
+                	/usr/bin/wget -q "http://localhost/device/state/update?id=$2&state=4"
+                    echo "http://localhost/device/state/update?id=$2&state=4"
                 fi
         fi
 
         if [ "$1" = "ERROR" ]; then
                 $LIGHT_PATH BLUE OFF &
-                /usr/bin/wget -q http://localhost/device/state/update?id=$2&state=3
+                /usr/bin/wget -q "http://localhost/device/state/update?id=$2&state=3"
+                echo "http://localhost/device/state/update?id=$2&state=3"
         fi
 
         if [ "$1" = "PENDING" ]; then
                 $LIGHT_PATH BLUE ON &
-                /usr/bin/wget -q http://localhost/device/state/update?id=$2&state=1
+                /usr/bin/wget -q "http://localhost/device/state/update?id=$2&state=1"
+                echo "http://localhost/device/state/update?id=$2&state=1"
                 
         fi
 
         if [ "$1" = "WORKING" ]; then
                 $LIGHT_PATH BLUE BLINK &
-                /usr/bin/wget -q http://localhost/device/state/update?id=$2&state=2
+                /usr/bin/wget -q "http://localhost/device/state/update?id=$2&state=2"
+                echo "http://localhost/device/state/update?id=$2&state=2"
         fi
 }
 
