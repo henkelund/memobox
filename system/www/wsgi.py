@@ -356,7 +356,7 @@ def device_detail_action():
 	return jsonify(device.get_data())
 
 # Gets a list of, and information about, all available devices. Used to populate navigation bar. 
-@app.route('/devices')
+@app.route('/device/list')
 def file_devices_action():
 	devices = []
 	

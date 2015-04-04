@@ -770,7 +770,7 @@
          */
         var FileService = function () {
             this.detailsResource = $resource('/files/details');
-            this.deviceResource = $resource('/devices');
+            this.deviceResource = $resource('/device/list');
             this.devices = [];
             this.init = false;
             this.details = [];
@@ -875,10 +875,37 @@
         return new FileService();
     });
 
+	// Create a service to expose our ping functionality.
+	box.factory('PingService', function($timeout, $http) {
+	      function PingService($timeout, $http) {
+	          var self = this;
+	          var lastTripTime = 0;
+	          
+	          self.onPingChanged = null;
+	          
+	          // Create the function to call to test the ping.
+	          var testPing = function() {
+	              var start = (new Date()).getTime();
+	              $http.get('/device/detail?id=1')
+	                  .success(function() {
+	                  	  //alert("yes");
+	                      lastTripTime = (new Date()).getTime() - start;
+	                      if(self.onPingChanged !== null) {
+	                        self.onPingChanged(lastTripTime);
+	                      }
+	                      $timeout(testPing, 5000);
+	                  });
+	          };
+	          testPing();
+	      }
+	      
+	      return new PingService($timeout, $http);
+	  });
+
     /**
      * Files controller
      */
-    box.controller('FilesCtrl', function ($scope, $rootScope, $http, $location, FileService, Infinity, fileUpload) {
+    box.controller('FilesCtrl', function ($scope, $rootScope, $http, $location, FileService, Infinity, PingService, fileUpload) {
         $rootScope.boxscope = $scope;
         this.fileService = FileService.loadDevices();        
         $scope.service = this.fileService;
