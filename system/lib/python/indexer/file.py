@@ -27,6 +27,8 @@ class FileIndexer(object):
     def index_device(self, device):
         """Index all new files for a given device"""
         transfer_dirs = device.get_transfer_dirs()
+        busy = False
+
         for transfer_dir in transfer_dirs:
 
             abstrans = os.path.join(self._basedir, transfer_dir)
@@ -34,6 +36,11 @@ class FileIndexer(object):
 
             if os.path.isfile(flagfile):
                 continue
+
+            # New fiels are being indexed. Change status of device state
+            if not busy:
+                busy = True
+                device.set_state(DeviceModel.FILE_INDEX_STARTED)
 
             for abspath, dirs, files in os.walk(abstrans):
                 for filename in files:
@@ -80,6 +87,12 @@ class FileIndexer(object):
 
             open(flagfile, 'w').close() # touch indexed flag
 
+        # Only switch status if any indexing was performed
+        if busy:
+            busy = False
+            device.set_state(DeviceModel.FILE_INDEX_COMPLETE)
+
+
 if (__name__ == '__main__'):
     """~$ python file.py path/to/database path/to/basedir"""
 
@@ -96,4 +109,5 @@ if (__name__ == '__main__'):
     DeviceModel.install()
     FileModel.install()
     FileIndexer(basedir).index_all_devices()
+
 

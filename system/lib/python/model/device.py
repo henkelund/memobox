@@ -3,8 +3,7 @@ from helper.db import DBHelper
 from helper.db import DBSelect
 from datetime import date
 from datetime import datetime
-import os
-import collections
+import os, urllib2, collections
 from glob import glob
 
 class DeviceModel(BaseModel):
@@ -14,16 +13,15 @@ class DeviceModel(BaseModel):
     _pk = '_id'
     _daterange = {}
     _typecount = {}
-    _state = [ 
-        'READY',
-        'MOUNTING'
-        'BACKUP_STARTED', 
-        'BACKUP_INTERRUPTED', 
-        'BACKUP_COMPLETE', 
-        'FILE_INDEX_STARTED', 
-        'FILE_INDEX_COMPLETE', 
-        'THUMBNAIL_INDEX_STARTED' 
-    ]
+
+    READY                       = 0
+    MOUNTING                    = 1
+    BACKUP_STARTED              = 2
+    BACKUP_INTERRUPTED          = 3
+    BACKUP_COMPLETE             = 4
+    FILE_INDEX_STARTED          = 5
+    FILE_INDEX_COMPLETE         = 6
+    THUMBNAIL_INDEX_STARTED     = 7
 
     _info_file_map = {
         'serial': 'serial',
@@ -39,6 +37,10 @@ class DeviceModel(BaseModel):
         'password': 'password'
     }
 
+    def set_state(self, state):
+        print 'http://localhost/device/state/update?id='+str(self.id())+"&state=" + str(state)
+        response = urllib2.urlopen('http://localhost/device/state/update?id='+str(self.id())+"&state=" + str(state))
+        html = response.read()
 
     def get_transfer_dirs(self):
         """Return this devices transfer directories"""

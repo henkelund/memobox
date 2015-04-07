@@ -18,17 +18,24 @@ class DBHelper(object):
 	            g.sqlite_db.set_db(db)
 	        return g.sqlite_db
         else:
-	        if not cls._instance:
-	            cls._instance = super(DBHelper, cls).__new__(cls, *args, **kwargs)
-	            cls._instance._conn = None
-	            cls._instance.set_db(db)
-	        return cls._instance
+            if not cls._instance:
+                print "Yes"
+                cls._instance = super(DBHelper, cls).__new__(cls, *args, **kwargs)
+                cls._instance._conn = None
+                cls._instance.set_db(db)
+            return cls._instance
 
     def __del__(self):
         """Destructor"""
 
         if self._conn is not None:
             self._conn.close()
+
+
+    def close_connection(cls):
+        if cls._instance and cls._instance._conn:
+            cls._instance._conn.close()
+            cls._instance = None
 
     @staticmethod
     def _row_factory(cursor, row):
