@@ -355,6 +355,17 @@ def device_detail_action():
 	device_data["last_backup"] = DeviceModel().last_backup(str(request.args.get('id')));
 	return jsonify(device.get_data())
 
+# Retreivs information about a device
+@app.route('/device/states')
+def device_states_action():
+	_devices = {}
+	devices = DeviceModel().all()
+
+	for device in devices:
+		_devices[device.id()] = str(device.state())
+
+	return jsonify(_devices)
+
 # Gets a list of, and information about, all available devices. Used to populate navigation bar. 
 @app.route('/device/list')
 def file_devices_action():

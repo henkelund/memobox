@@ -880,23 +880,32 @@
 	      function PingService($timeout, $http) {
 	          var self = this;
 	          var lastTripTime = 0;
-	          
+	          var _states = {};
+	          var _wait = 2000;
+
 	          self.onPingChanged = null;
 	          
 	          // Create the function to call to test the ping.
-	          var testPing = function() {
+	          var statePing = function() {
 	              var start = (new Date()).getTime();
-	              $http.get('/device/detail?id=1')
-	                  .success(function() {
-	                  	  //alert("yes");
-	                      lastTripTime = (new Date()).getTime() - start;
-	                      if(self.onPingChanged !== null) {
-	                        self.onPingChanged(lastTripTime);
-	                      }
-	                      $timeout(testPing, 5000);
-	                  });
+	              $http.get('/device/states')
+	                  .success(function(data) {
+	                  	_states = {};
+
+						for(var i in data) {
+							_states[i] = data[i];
+						}
+						
+						self.onPingChanged(_states);
+
+						$timeout(statePing, _wait);
+	                  }).
+					  error(function(data, status) {
+						$timeout(statePing, _wait);
+					  });
 	          };
-	          testPing();
+
+	          $timeout(statePing, _wait/3);
 	      }
 	      
 	      return new PingService($timeout, $http);
@@ -910,6 +919,33 @@
         this.fileService = FileService.loadDevices();        
         $scope.service = this.fileService;
         $scope.infinity = new Infinity($scope);
+        $scope.states = {};
+        $scope.statesum = 0; 
+
+	    PingService.onPingChanged = function(ping) {
+	    	// Check if any device state has changed
+	        if(JSON.stringify(ping) != JSON.stringify($scope.states)) {
+	        	$scope.states = ping;
+
+	        	for(var k in ping) {
+	        		for(var j=0; j<$scope.service.devices.length; j++) {
+	        			if($scope.service.devices[j].id == k) {
+	        				$scope.service.devices[j].state = ping[k];
+	        			}
+	        		}
+	        	}
+	        }
+
+	        // Calculate sum of all device states. If statesum > 0 at least on device is backuping or processing. 
+        	$scope.statesum = 0; 
+        	for(var d in $scope.service.devices) {
+        		var _id = $scope.service.devices[d].id;
+        		if(_id > 0) {
+        			$scope.statesum += $scope.service.devices[d].state;
+        		}
+        	}
+	    };
+
         $scope.items = [];
         $scope.files = [];
         $scope.types = {}

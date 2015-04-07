@@ -105,6 +105,15 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 								    </ul>								    
 								</div>
 							</div> 
+							<div ng-show="statesum > 0" id="deviceProgress">
+								<div ng-repeat="device in FilesCtrl.fileService.devices">
+									<p class="message" ng-if="device.id > 0">
+										<img src="/static/images/spinner.gif" alt="spinner" width="32" height="32"><br />
+										Backup is in progress for device: <b>{{ device.product_name }}</b>
+									</p>
+								</div>
+							</div>
+							
 							<ul ng-show="items && items.length > 0" id="thumbnails" class="thumbnails">
 								<li class="span3" ng-repeat="item in items" thumbnail-repeat-done="parseDate()">
 									<div id="photo-{{item.id}}" class="thumbnail">
@@ -141,35 +150,5 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 		    </ul>
 	    </div>
 		<div ng-include src=" '/templates/files.detail.html' "></div>
-		<!--  div ng-include src=" '/templates/user.html' "></div -->
-
-		<div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-hidden="true">
-	        <div class="modal-dialog">
-	            <div class="modal-content">
-	                <div class="modal-header">
-	                    <button type="button" class="close" onClick="stopVideo()" data-dismiss="modal" aria-hidden="true">&times;</button>
-	                    <h4 class="modal-title" id="userModal">Update profile information</h4>
-	                </div>
-	                <div class="modal-body">
-						<img id="profile-picture" style="margin-right: 10px;" width="80" height="80" src="/files/stream/null/null/profile/0" /><br />
-						<br />
-						<b>Upload profile picture</b><br />
-						<input id="fileupload" type="file" file-model="myFile" />
-						<br />
-						<b>Firstname</b><br />
-						<input id="firstname" type="text" name="firstname" value="Per-Mattas">
-						<br />
-						<b>Lastname</b><br />
-						<input id="lastname" type="text" name="lastname" value="Nordkvist"><br />
-						<br />
-						<button ng-click="saveProfile()" class="btn"><i class="icon-Save"></i> Save</button>
-	                </div>
-	                <div class="modal-footer">
-	                    <!-- button type="button" class="btn btn-default" data-dismiss="modal">Close</button -->
-	                </div>
-	            </div>
-	        </div>
-	    </div>
-		
 	</div>
 </div>
