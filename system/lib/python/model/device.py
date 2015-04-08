@@ -38,9 +38,8 @@ class DeviceModel(BaseModel):
     }
 
     def set_state(self, state):
-        print 'http://localhost/device/state/update?id='+str(self.id())+"&state=" + str(state)
-        response = urllib2.urlopen('http://localhost/device/state/update?id='+str(self.id())+"&state=" + str(state))
-        html = response.read()
+        self.set_data('state', state)
+        self.save()
 
     def get_transfer_dirs(self):
         """Return this devices transfer directories"""
