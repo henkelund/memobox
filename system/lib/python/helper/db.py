@@ -19,7 +19,6 @@ class DBHelper(object):
 	        return g.sqlite_db
         else:
             if not cls._instance:
-                print "Yes"
                 cls._instance = super(DBHelper, cls).__new__(cls, *args, **kwargs)
                 cls._instance._conn = None
                 cls._instance.set_db(db)

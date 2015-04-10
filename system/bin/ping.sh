@@ -23,6 +23,7 @@ if [ "$response" = "ok" ]; then
 	echo "yes"
 	$BIN_DIR/lights.sh GREEN ON &
 else
-	echo "$response $?"
+	echo "ERROR:$response"
+	echo "DEBUG;$?"
 	$BIN_DIR/lights.sh GREEN OFF &
 fi

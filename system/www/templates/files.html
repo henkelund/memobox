@@ -115,7 +115,7 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 
 							<div ng-show="statesum > 0" id="deviceProgress">
 								<div ng-repeat="device in FilesCtrl.fileService.devices">
-									<p class="message" ng-if="device.id > 0">
+									<p class="message" ng-if="device.id > 0 && device.state > 0">
 										<img src="/static/images/spinner.gif" alt="spinner" width="32" height="32"><br />
 										Backup is in progress for device: <b>{{ device.product_name }}</b>
 									</p>

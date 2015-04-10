@@ -26,3 +26,4 @@ git fetch --all
 git reset --hard origin/$CHANNEL
 /etc/init.d/uwsgi restart
 cd $BIN_DIR
+
