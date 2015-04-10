@@ -11,8 +11,6 @@ class DeviceModel(BaseModel):
 
     _table = 'device'
     _pk = '_id'
-    _daterange = {}
-    _typecount = {}
 
     READY                       = 0
     MOUNTING                    = 1
@@ -80,9 +78,11 @@ class DeviceModel(BaseModel):
         return self
 
     def get_typecount(self, device):
+        _typecount = {}
         #SELECT device, file.type, count(*) as count FROM "file" INNER JOIN "device" ON device._id = file.device GROUP BY device,file.type;
-        if len(self._typecount) == 0:
+        if len(_typecount) == 0:
             typecount = DBSelect('file',"device, file.type as t, count(*) as count").where("is_hidden = 0").join("device", "device._id = file.device").group("device").group("t")
+            print typecount
             result = typecount.query();
             
             _lastdevice = -1
@@ -93,7 +93,7 @@ class DeviceModel(BaseModel):
                 if int(r["device"]) != _lastdevice:
                     if _lastdevice != -1:
                         _data["all"] = _total
-                        self._typecount[_lastdevice] = _data
+                        _typecount[_lastdevice] = _data
                     _data = {}
                     _total = 0
                     _lastdevice = int(r["device"])
@@ -102,13 +102,13 @@ class DeviceModel(BaseModel):
                 _total = _total + int(r["count"])
 
             _data["all"] = _total
-            self._typecount[_lastdevice] = _data
+            _typecount[_lastdevice] = _data
 
             _images = 0
             _videos = 0
             _documents = 0
             
-            for key, value in self._typecount.iteritems():
+            for key, value in _typecount.iteritems():
                 if "image" in value:
                     _images += int(value["image"])
 
@@ -117,15 +117,16 @@ class DeviceModel(BaseModel):
 
                 _documents += int(value["all"])
 
-            self._typecount[-1] = { "images": _images, "videos": _videos, "documents": (_documents - _images - _videos) }
+            _typecount[-1] = { "images": _images, "videos": _videos, "documents": (_documents - _images - _videos) }
 
-        if device in self._typecount:
-            return self._typecount[device]
+        if device in _typecount:
+            return _typecount[device]
         else:
             return {}
 
     def get_daterange(self, device):
-        if len(self._daterange) == 0:
+        _daterange = {}
+        if len(_daterange) == 0:
             date_range = DBSelect('file',"device, strftime('%Y-%m', datetime(created_at, 'unixepoch')) as date, count(strftime('%Y-%m', datetime(created_at, 'unixepoch'))) as files").where("is_hidden = 0").where("width = 260").join("file_thumbnail", "file._id = file_thumbnail.file").group("device").group("date").order('device','DESC').order('date', 'DESC')
             rang = date_range.query()
             
@@ -135,7 +136,7 @@ class DeviceModel(BaseModel):
             for r in rang:
                 if int(r["device"]) != _lastdevice:
                     if _lastdevice != -1:
-                        self._daterange[_lastdevice] = _data
+                        _daterange[_lastdevice] = _data
                     _data = []
                     _lastdevice = int(r["device"])
 
@@ -144,12 +145,12 @@ class DeviceModel(BaseModel):
                 _temp["files"]  = r["files"]
                 _data.append(_temp)
 
-            self._daterange[int(_lastdevice)] = _data
+            _daterange[int(_lastdevice)] = _data
 
             _all = {}
             _all_months = []
 
-            for key, value in self._daterange.iteritems():
+            for key, value in _daterange.iteritems():
                 for month in value:
                     if month["date"] in _all:
                         _all[month["date"]] += month["files"]
@@ -161,10 +162,10 @@ class DeviceModel(BaseModel):
             for key, value in _all.iteritems():
                 _all_months.append({ "date": key, "files":value });
 
-            self._daterange[-1] = _all_months
+            _daterange[-1] = _all_months
 
-        if int(device) in self._daterange:
-            return self._daterange[int(device)]
+        if int(device) in _daterange:
+            return _daterange[int(device)]
         else:
             return {}
 

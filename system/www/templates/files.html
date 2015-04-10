@@ -105,6 +105,14 @@ $('#cssmenu').prepend('<div id="bg-one"></div><div id="bg-two"></div><div id="bg
 								    </ul>								    
 								</div>
 							</div> 
+							
+							<div ng-show="backupComplete" id="backupComplete">
+									<p class="message">
+										Your backup is now complete! <a ng-click="closeMessage()" href="#">close</a>
+									</p>
+								</div>
+							</div>
+
 							<div ng-show="statesum > 0" id="deviceProgress">
 								<div ng-repeat="device in FilesCtrl.fileService.devices">
 									<p class="message" ng-if="device.id > 0">

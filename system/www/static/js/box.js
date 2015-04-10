@@ -920,6 +920,7 @@
         $scope.service = this.fileService;
         $scope.infinity = new Infinity($scope);
         $scope.states = {};
+        $scope.backupComplete = false;
         $scope.statesum = 0; 
 
 	    PingService.onPingChanged = function(ping) {
@@ -937,13 +938,21 @@
 	        }
 
 	        // Calculate sum of all device states. If statesum > 0 at least on device is backuping or processing. 
-        	$scope.statesum = 0; 
+        	var _statesum = 0; 
         	for(var d in $scope.service.devices) {
         		var _id = $scope.service.devices[d].id;
         		if(_id > 0) {
-        			$scope.statesum += $scope.service.devices[d].state;
+        			_statesum += $scope.service.devices[d].state;
         		}
         	}
+
+        	if(_statesum == 0 && $scope.statesum > 0) {
+        		$scope.backupComplete = true;
+        		$scope.infinity.nextPage(-1);
+        		$scope.service.loadDevices();
+        	}
+
+        	$scope.statesum = _statesum;
 	    };
 
         $scope.items = [];
@@ -952,16 +961,6 @@
         $scope.state = "list"; 
 		$scope.infinity.loadShared();
 
-		$http({ method: 'GET', url: "/config" }).
-			success(function(data, status, headers, config) {
-		    	$scope.infinity.publish.config = data;
-		    	if(data["ISLOCAL"] == true) {
-		    		$(".islocal").show();
-		    	}
-		    	$("#firstname").val(data["FIRSTNAME"]);
-		    	$("#lastname").val(data["LASTNAME"]);
-			});
-
         if(!$scope.datatable)
 	        $scope.datatable = $('#otherfiles').dataTable({ "iDisplayLength": 30, "bLengthChange": false,   "columns": [
 			    { "width": "35px" },
@@ -969,6 +968,11 @@
 			    null,
 			    null
 			  ] });
+
+	    /* Method to close backup message */
+	    $scope.closeMessage = function () {
+	    	$scope.backupComplete = false;
+	    }
 
 	    /* Method to save user profile */ 
 	    $scope.saveProfile = function(){
