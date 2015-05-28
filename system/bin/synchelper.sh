@@ -5,29 +5,39 @@ LIGHT_PATH="$BIN_DIR/lights.sh"
 
 function messagemanager
 {    
+	string="$2"
+	length=$(echo ${#string})
+
         if [ "$1" = "DONE" ]; then
                 $LIGHT_PATH BLUE OFF &
+                if [ "$length" -ne 0 ]; then
+                	/usr/bin/wget -q --spider "http://localhost/device/state/update?id=$2&state=4"
+                fi
         fi
 
         if [ "$1" = "ERROR" ]; then
                 $LIGHT_PATH BLUE OFF &
+                    /usr/bin/wget -q --spider "http://localhost/device/state/update?id=$2&state=3"
         fi
 
         if [ "$1" = "PENDING" ]; then
                 $LIGHT_PATH BLUE ON &
+                /usr/bin/wget -q --spider "http://localhost/device/state/update?id=$2&state=1"
+                
         fi
 
         if [ "$1" = "WORKING" ]; then
                 $LIGHT_PATH BLUE BLINK &
+                /usr/bin/wget -q --spider "http://localhost/device/state/update?id=$2&state=2"
         fi
 }
 
 function exitmanager
 {
 	if [ "$1" = 0 ]; then
-		messagemanager DONE
+		return $1
 	else
-		messagemanager ERROR
+		messagemanager ERROR "$2"
 	fi
 	
 	exit $1
@@ -92,6 +102,17 @@ function devprop
     propfile=$(upfind "$path" "$2")
     if [ "$?" -ne 0 ]; then return 2; fi
     cat "$propfile"
+    return 0
+}
+
+####
+# Usage
+#   backupdir /dev/<device>
+#
+function serial
+{
+    serial=$(devprop "$1" serial)
+    echo "$serial"
     return 0
 }
 
