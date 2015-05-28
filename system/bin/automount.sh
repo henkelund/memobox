@@ -43,6 +43,11 @@ CHMOD="$(which chmod)"
 MV="$(which mv)"
 SED="$(which sed)"
 
+# Include some helper functions
+export DEVPATH
+source "$BIN_DIR/synchelper.sh"
+SERIAL="$(serial "$LABEL")"
+
 # Check for required executables
 for var in CHKMNT PMOUNT IFUSE IDEVICEPAIR UMOUNT MKDIR SLEEP RSYNC FIND XARGS \
            CHMOD MV SED GPHOTOFS
@@ -51,15 +56,9 @@ do
     if [ -z "$exe" ]
     then
         echo "Fatal: $var is not installed" 2>&1
-        exitmanager 11
+        exitmanager 11 $SERIAL
     fi
 done
-
-# Include some helper functions
-export DEVPATH
-source "$BIN_DIR/synchelper.sh"
-
-messagemanager PENDING
 
 # Check if data dir is a mountpoint
 #$CHKMNT -q "$DATA_DIR"
@@ -88,7 +87,7 @@ function _cleanup
             return 1
         fi
     done
-    return 0
+    exitmanager 0 $LABEL
 }
 
 # Make sure mount point exists and is free
@@ -97,15 +96,20 @@ _cleanup
 if [ $? -ne 0 ]
 then
     echo "[$$] Could not complete initial cleanup, exiting" 1>&2
-    exitmanager 3
+    exitmanager 3 $LABEL
 fi
 $MKDIR -p "$MNTPNT"
 if [ $? -ne 0 ]
 then
     echo "[$$] Could not create mount point" 1>&2
-    exitmanager 4
+    exitmanager 4 $LABEL
 fi
 trap _cleanup EXIT INT TERM
+
+SRC="$MNTPNT"
+DEST="$(backupdir "$LABEL")"
+
+messagemanager PENDING $SERIAL
 
 # Time to do what we came here for
 while [ $COUNT -lt $MAX ]
@@ -116,10 +120,10 @@ do
             $PMOUNT --read-only "$LABEL" "$LABEL" > /dev/null
             ;;
         "ifuse")
-            #$IDEVICEPAIR --udid "$LABEL" unpair #> /dev/null
+            $IDEVICEPAIR --udid "$LABEL" unpair #> /dev/null
+            $IDEVICEPAIR --udid "$LABEL" validate #> /dev/null
             $IDEVICEPAIR --udid "$LABEL" pair #> /dev/null
-            sleep 5
-	    $IFUSE "$MNTPNT" --udid "$LABEL" -o nonempty > /dev/null
+			$IFUSE "$MNTPNT" --udid "$LABEL" -o nonempty > /dev/null
             ;;
         "ptp")
             # Udev gives us a filename friendly label: {$BUSNUM}_{$DEVNUM}
@@ -161,7 +165,7 @@ do
             ;;
         *)
             echo "[$$] Unrecognized mount type '$MNTTYPE', exiting" 1>&2
-            exitmanager 5
+            exitmanager 5 $LABEL
             ;;
     esac
 
@@ -174,7 +178,7 @@ do
     if [ $(is_connected) -eq 0 ]
     then
         echo "[$$] Device disconnected while trying to mount" 1>&2
-        exitmanager 12
+        exitmanager 12 $LABEL
     fi
 
     # Some other instance of this script could potentially
@@ -193,17 +197,16 @@ done
 if [ $(is_mounted) -ne 1 ]
 then
     echo "[$$] Failed to mount after $COUNT attempts" 1>&2
-    exitmanager 7
+    exitmanager 7 $SERIAL
 fi
 
 # Prepare for file transfer
-SRC="$MNTPNT"
-DEST="$(backupdir "$LABEL")"
 if [ ! -d "$DEST" -o ! -w "$DEST" ]
 then
     echo "$DEST is not a writeable directory, exiting" 1>&2
-    exitmanager 8
+    exitmanager 8 $SERIAL
 fi
+
 TMPDEST="$DEST/tmp"
 $MKDIR -p "$TMPDEST"
 
@@ -212,11 +215,13 @@ $MKDIR -p "$TMPDEST"
 #if [ -d "$SRC/Phone/DCIM" ]; then SRC="$SRC/Phone/DCIM"; fi
 DCIMDIR="$(finddcim $MNTPNT)"
 if [ -d "$DCIMDIR/DCIM" ]; then SRC="$DCIMDIR/DCIM"; fi
-echo "$SRC"
-
 echo "[$$] DEBUG ($SRC)" 1>&2
 
-messagemanager WORKING
+messagemanager WORKING $SERIAL
+
+SRC_SIZE="$(du -s $SRC | awk '{ print $1 }')"
+echo "http://localhost/device/update?id=$LABEL&src_size=$SRC_SIZE"
+/usr/bin/wget -q --spider "http://localhost/device/update?id=$SERIAL&src_size=$SRC_SIZE"
 
 echo "[$$] Starting transfer from $SRC to $TMPDEST"
 $RSYNC                                               \
@@ -229,20 +234,27 @@ $RSYNC                                               \
     "$SRC/" "$TMPDEST/"                              \
     2>/dev/null
 err=$?
+
+echo "Error: $err"
+
 if [ $err -eq 23 ]
 then
     echo "[$$] Transfer had non-fatal errors" 2>&1
 elif [ $err -ne 0 ]
 then
     echo "[$$] Device disconnected during transfer (1) [$err]" 2>&1
-    exitmanager 9
+    exitmanager 9 $SERIAL
+else
+    messagemanager DONE $SERIAL
 fi
+
+
 # check if device looks disconnected
 SRC_LS_CNT=$(ls -1 "$MNTPNT" 2>/dev/null | wc -l)
 if [ $(is_connected) -eq 0 -o $SRC_LS_CNT -eq 0 ]
 then
     echo "[$$] Device disconnected during transfer (2)" 1>&2
-    exitmanager 10
+    exitmanager 10 $SERIAL
 fi
 
 $FIND "$TMPDEST"    \
