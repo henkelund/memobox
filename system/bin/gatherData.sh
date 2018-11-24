@@ -20,7 +20,7 @@ echo "Local IP Address: $lip" >> $INFOFILE
 uuid=`blkid -s UUID -o value /dev/sda1`
 echo "Unique Device ID: $uuid" >> $INFOFILE
 # Calculate free and total space of the backup drive
-freespace human /HDD >> $INFOFILE
+freespace human $BACKUP_DIR >> $INFOFILE
 
 ver=$(cd /backupbox && git log -1 --format=%cd .)
 echo "Current Software Version: $ver" >> $INFOFILE
@@ -28,7 +28,7 @@ echo "Current Software Version: $ver" >> $INFOFILE
 #gatherdevices $1>> $INFOFILE
 echo " " >> $INFOFILE
 echo "All Connected Devices" >> $INFOFILE
-/usr/bin/sqlite3  -init <(echo .timeout 5000) -line /HDD/index.db "select * from device" 2>/dev/null >> $INFOFILE
+/usr/bin/sqlite3  -init <(echo .timeout 5000) -line $BACKUP_DIR/index.db "select * from device" 2>/dev/null >> $INFOFILE
 
 ## Start writing the file used for pingin central server ##
 
@@ -42,5 +42,9 @@ uuid=`blkid -s UUID -o value /dev/sda1`
 echo "uuid=$uuid&" >> $PINGFILE
 #Append username to 
 echo "username=$BOXUSER&" >> $PINGFILE
+devicecount=`find $BACKUP_DIR/devices -type f | wc -l`
+echo "devicecount=$devicecount&" >> $PINGFILE
+cachecount=`find $BACKUP_DIR/cache -type f | wc -l`
+echo "cachecount=$cachecount&" >> $PINGFILE
 
-freespace computer /HDD >> $PINGFILE
+freespace computer $BACKUP_DIR >> $PINGFILE
