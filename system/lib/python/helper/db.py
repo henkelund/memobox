@@ -11,11 +11,18 @@ class DBHelper(object):
     def __new__(cls, db=':memory:', *args, **kwargs):
         """Override __new__ to implement singleton pattern"""
 
-        if not hasattr(g, "sqlite_db"):
-            g.sqlite_db = super(DBHelper, cls).__new__(cls, *args, **kwargs)
-            g.sqlite_db._conn = None
-            g.sqlite_db.set_db(db)
-        return g.sqlite_db
+        if not g:
+	        if not cls._instance:
+	            cls._instance = super(DBHelper, cls).__new__(cls, *args, **kwargs)
+	            cls._instance._conn = None
+	            cls._instance.set_db(db)
+	        return cls._instance
+        else:
+	        if not hasattr(g, "sqlite_db"):
+	            g.sqlite_db = super(DBHelper, cls).__new__(cls, *args, **kwargs)
+	            g.sqlite_db._conn = None
+	            g.sqlite_db.set_db(db)
+	        return g.sqlite_db
 
     def __del__(self):
         """Destructor"""
